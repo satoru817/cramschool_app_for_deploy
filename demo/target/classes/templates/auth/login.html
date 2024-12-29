@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::head}"></div>
+    <title>ログイン</title>
+</head>
+<body>
+<!-- ヘッダー -->
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
+
+
+    <main>
+        <div class="container pt-4 pb-5">
+            <div class="row justify-content-center">
+                <div class="col-xl-3 col-lg-4 col-md- col-sm-7">
+                    <h1 class="md-4 text-center">ログイン</h1>
+
+                    <!-- メッセージの表示 -->
+
+
+
+                    <form th:action="@{/login}" method="post">
+                        <div class="form-group mb-3">
+                            <input type="text" class="form-control" name="username" placeholder="ユーザー名" autofocus>
+                        </div>
+                        <div class="form-group mb-3">
+                            <input type="password" class="form-control" name="password" autocomplete="new-password"
+                                   placeholder="パスワード">
+                        </div>
+                        <label for="cramSchool">校舎名:</label>
+                        <select id="cramSchool" name="cramSchoolId">
+                            <!-- サーバーから取得したcramSchoolsのリストを表示 -->
+                            <option th:each="school : ${cramSchools}" th:value="${school.cramSchoolId}"
+                                    th:text="${school.name}"></option>
+                        </select><br>
+
+                        <div class="form-group d-flex justify-content-center my-4">
+                            <button type="submit" class="btn  shadow-sm w-100">ログイン</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+
+</div>
+<!-- フッター -->
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+</body>
+</html>

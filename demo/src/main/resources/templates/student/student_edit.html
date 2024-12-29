@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::head}"></div>
+    <title>Title</title>
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
+    <h1>生徒の編集</h1>
+    <form  th:object="${studentForm}" method="post" th:action="@{/studentExecEdit/__${id}__}">
+        <div>
+            <label for="code">生徒コード</label><br>
+            <input type="text" th:field="*{code}" style="color:blue;">
+            <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" style="color:red;"></div>
+        </div>
+        <div>
+            <label for="name" >生徒名</label><br>
+            <input type="text" th:field="*{name}" style="color:blue;">
+            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></div>
+        </div>
+        <div>
+            <label for="furigana">生徒名(ふりがな)</label><br>
+            <input type="text" th:field="*{furigana}" style="color:blue;">
+        </div>
+        <!--ステータスの編集を追加する必要がある-->
+        <div>
+            <label for="statusId">ステータス</label>
+            <div th:each="status:${statusList}">
+                <label>
+                    <input type="radio" th:field="*{statusId}" th:value="${status.getStatusId()}" >
+                    <span th:text="${status.getName()}"></span>
+                </label>
+            </div>
+        </div>
+        <div>
+            <label for="grade">現在の学年を選択してください。</label><br>
+            <label>
+                <input type="radio" th:field="*{grade}" value="1" >小学1年生
+            </label>
+            <label>
+                <input type="radio" th:field="*{grade}" value="2">小学2年生
+            </label>
+            <label>
+                <input type="radio" th:field="*{grade}" value="3">小学3年生
+            </label>
+            <label>
+                <input type="radio" th:field="*{grade}" value="4">小学4年生
+            </label>
+            <label>
+                <input type="radio" th:field="*{grade}" value="5">小学5年生
+            </label>
+            <label>
+                <input type="radio" th:field="*{grade}" value="6">小学6年生
+            </label>
+            <br>
+            <label>
+                <input type="radio" th:field="*{grade}" value="7">中学1年生
+            </label>
+            <label>
+                <input type="radio" th:field="*{grade}" value="8">中学2年生
+            </label>
+            <label>
+                <input type="radio" th:field="*{grade}" value="9">中学3年生
+            </label>
+            <br>
+            <label>
+                <input type="radio" th:field="*{grade}" value="10">高校1年生
+            </label>
+            <label>
+                <input type="radio" th:field="*{grade}" value="11">高校2年生
+            </label>
+            <label>
+                <input type="radio" th:field="*{grade}" value="12">高校3年生
+            </label>
+        </div>
+        <hr>
+        <label for="schoolId">所属学校名(該当する学校が無ければ登録して下さい）</label>
+        <div th:each="school:${schoolList}">
+            <label>
+                <input type="radio" th:field="*{schoolId}" th:value="${school.getSchoolId()}" >
+                <span th:text="${school.getName()}"></span>
+            </label>
+        </div>
+        <input type="submit" value="登録">
+    </form>
+    <div th:replace="~{fragment::footer}"></div>
+    <div th:replace="~{fragment::script}"></div>
+</div>
+</body>
+</html>

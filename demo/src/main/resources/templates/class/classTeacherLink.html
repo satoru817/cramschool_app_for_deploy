@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::head}"></div>
+    <title>クラス教師結び付け</title>
+    <style>
+        /* セレクトボックスの最小幅を設定 */
+        td,th {
+            min-width: 120px;  /* お好みの幅に調整可能 */
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            position: relative;
+            transform: rotateX(180deg);
+        }
+
+        /* テーブル自体を180度回転して正しい向きに戻す */
+        .table-responsive .table {
+            transform: rotateX(180deg);
+        }
+
+        /* テーブル全体のスタイル */
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        /* 固定列のスタイル */
+        .table th:nth-child(-n+3),
+        .table td:nth-child(-n+3) {
+            position: sticky;
+            background-color: white;
+            z-index: 1;
+        }
+
+        /* 各固定列の左位置を設定 */
+        .table th:nth-child(1),
+        .table td:nth-child(1) {
+            left: 0;
+            z-index: 2;
+        }
+
+        .table th:nth-child(2),
+        .table td:nth-child(2) {
+            left: 120px;
+            z-index: 2;
+        }
+
+        .table th:nth-child(3),
+        .table td:nth-child(3) {
+            left: 240px;
+            z-index: 2;
+        }
+
+        /* 固定列の影をつけてスクロール可能な部分との境界を明確に */
+        .table td:nth-child(3),
+        .table th:nth-child(3) {
+            box-shadow: 6px 0 8px -6px rgba(0,0,0,0.2);
+        }
+
+        /* セレクトボックスの最小幅を設定 */
+        select.form-control {
+            min-width: 120px;
+        }
+
+        /* テーブルセルの余白調整 */
+        .table th,
+        .table td {
+            padding: 8px;
+            white-space: nowrap;
+        }
+
+        /* ヘッダーの背景色を確実に表示 */
+        .thead-light th {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+    <div th:if="${success}" class="alert alert-success">
+        <p th:text="${success}"></p>
+    </div>
+    <div th:if="${editSuccess}" class="alert alert-success">
+        <p>クラス登録は成功しました。</p>
+    </div>
+
+    <h1 class="mb-4 text-center">クラスと教師の結び付け</h1>
+
+
+    <form th:action="@{/submitClassTeacherRegistration}" method="post">
+
+        <div class="text-center mb-4">
+            <button type="submit" class="btn btn-outline-primary">この内容で登録する</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-light">
+                <tr>
+                    <th class="stick">科目</th>
+                    <th class="stick">クラス名</th>
+                    <th class="stick">形態</th>
+                    <th>小1</th>
+                    <th>小2</th>
+                    <th>小3</th>
+                    <th>小4</th>
+                    <th>小5</th>
+                    <th>小6</th>
+                    <th>中1</th>
+                    <th>中2</th>
+                    <th>中3</th>
+                    <th>高1</th>
+                    <th>高2</th>
+                    <th>高3</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="klass : ${klasses}">
+                    <tr>
+
+
+                        <td class="stick">
+                              <span th:if="${klass.subject}"
+                              class="badge"
+                              th:classappend="${klass.subject == 'japanese' ? 'badge-danger' :
+                                            klass.subject == 'math' ? 'badge-primary' :
+                                            klass.subject == 'english' ? 'badge-success' :
+                                            klass.subject == 'science' ? 'badge-info' :
+                                            'badge-warning'}">
+                            <span th:if="${klass.subject == 'japanese'}">国語</span>
+                            <span th:if="${klass.subject == 'math'}">数学</span>
+                            <span th:if="${klass.subject == 'english'}">英語</span>
+                            <span th:if="${klass.subject == 'social'}">社会</span>
+                            <span th:if="${klass.subject == 'science'}">理科</span>
+                             </span>
+                        </td>
+
+                        <td th:text="${klass.name}" class="stick"></td>
+
+                        <td class="stick">
+                            <span th:if="${klass.isIndividual}" class="badge badge-info">個別</span>
+                            <span th:unless="${klass.isIndividual}" class="badge badge-warning">集団</span>
+                        </td>
+                        <!-- 各学年のセレクトボックス -->
+                        <td th:each="grade : ${#numbers.sequence(1, 12)}">
+                            <div class="d-flex flex-row align-items-center">
+                                <select th:name="'teacher_' + ${klass.klassId} + '_' + ${grade}" class="form-control">
+                                    <option value="">選択してください</option>
+                                    <option th:each="teacher : ${teachers}"
+                                            th:value="${teacher.userId}"
+                                            th:text="${teacher.name}"
+                                            th:selected="${currentTeachers[klass.klassId.toString()]?.get(grade)?.userId == teacher.userId}">
+                                    </option>
+                                </select>
+                                <a th:href="@{/class_history/teacher/__${klass.klassId}__/__${grade}__}"
+                                   class="ml-2"
+                                   target="_blank"
+                                   title="担当履歴を別タブで表示">
+                                    <i class="history_icon bi bi-clock-history"></i>
+                                </a>
+                            </div>
+                        </td>
+                        <input type="hidden" th:value="${klass.klassId}" name="klassId">
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-outline-primary mb-4 mt-2">この内容で登録する</button>
+        </div>
+    </form>
+
+
+
+
+</div>
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+<script>
+    const ths = document.querySelectorAll('th');
+    const tds = document.querySelectorAll('td');
+    ths.forEach(th=>{
+        th.classList.add('text-nowrap');
+    });
+
+    tds.forEach(td => {
+        td.classList.add('text-nowrap');
+    });
+
+</script>
+
+</body>
+</html>

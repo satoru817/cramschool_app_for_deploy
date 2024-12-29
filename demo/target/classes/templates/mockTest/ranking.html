@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>模試結果ランキング</title>
+  <div th:replace="~{fragment::head}"></div>
+  <script th:src="@{/js/hideScore.js}" defer></script>
+  <!-- SheetJS CDNを追加 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 th:text="${mockTest.name} + ' ' + ${rankType == 'top' ? '上位' : '下位'} + ${count} + '名ランキング'"></h2>
+    <button class="btn btn-outline-info" onclick = "hideScore()">
+      <i class="bi bi-arrows-collapse-vertical"></i>偏差値・点数非表示
+    </button>
+    <button class="btn btn-success" onclick="exportToExcel()">
+      <i class="bi bi-file-earmark-excel me-2"></i>Excelダウンロード
+    </button>
+  </div>
+
+  <!-- 既存のコード -->
+  <div class="d-flex">
+    <div class="me-2" style="min-width:350px;" th:each="entry : ${rankings}" th:unless="${entry.value.get(0).score == null || entry.value.get(0).score == 0}">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0" th:text="${entry.key == 'japanese' ? '国語' :
+                                                             entry.key == 'math' ? '数学' :
+                                                             entry.key == 'english' ? '英語' :
+                                                             entry.key == 'science' ? '理科' :
+                                                             entry.key == 'social' ? '社会' :
+                                                             entry.key == 'total3' ? '三科目合計' : '五科目合計'}">
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped ranking-table" th:data-subject="${entry.key}">
+              <thead>
+              <tr>
+                <th>順位</th>
+                <th>クラス</th>
+                <th>名前</th>
+                <th class="score">点数</th>
+                <th class="score">偏差値</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="ranking, stat : ${entry.value}">
+                <td th:text="${ranking.rank}"></td>
+                <td th:text="${ranking.className}"></td>
+                <td th:text="${ranking.studentName}" style="white-space:nowrap;"></td>
+                <td th:text="${ranking.score}" class="score"></td>
+                <td th:text="${ranking.standardScore}" style="color:red;" class="score"></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+
+<script th:inline="javascript">
+  function exportToExcel() {
+      // 新しいワークブックを作成
+      const wb = XLSX.utils.book_new();
+      const tables = document.getElementsByClassName('ranking-table');
+
+      // 最大行数を計算
+      let maxRows = 0;
+      Array.from(tables).forEach(table => {
+          const rows = table.getElementsByTagName('tr').length;
+          if (rows > maxRows) maxRows = rows;
+      });
+
+      // データの配列を作成
+      let allData = [];
+      const COLUMNS_PER_SUBJECT = 5; // 教科ごとの列数
+
+      // 各教科のデータを横に並べて配置
+      Array.from(tables).forEach((table, tableIndex) => {
+          const subject = table.closest('.card').querySelector('.card-title').textContent.trim();
+          const startCol = tableIndex * (COLUMNS_PER_SUBJECT + 1); // 教科間に1列空ける
+
+          // 教科名を配置
+          if (!allData[0]) allData[0] = [];
+          allData[0][startCol] = subject;
+
+          // ヘッダー行を配置
+          if (!allData[1]) allData[1] = [];
+          allData[1][startCol] = '順位';
+          allData[1][startCol + 1] = 'クラス';
+          allData[1][startCol + 2] = '名前';
+          allData[1][startCol + 3] = '点数';
+          allData[1][startCol + 4] = '偏差値';
+
+          // データ行を配置
+          const rows = table.getElementsByTagName('tr');
+          Array.from(rows).forEach((row, rowIndex) => {
+              // ヘッダー行をスキップ
+              if (rowIndex === 0) return;
+
+              // データ行の配列を作成
+              if (!allData[rowIndex + 1]) allData[rowIndex + 1] = [];
+
+              const cells = row.getElementsByTagName('td');
+              for (let i = 0; i < cells.length; i++) {
+                  allData[rowIndex + 1][startCol + i] = cells[i].textContent;
+              }
+          });
+      });
+
+      // 空の要素をnullまたは空文字列で埋める
+      const totalCols = Array.from(tables).length * (COLUMNS_PER_SUBJECT + 1);
+      allData.forEach(row => {
+          for (let i = 0; i < totalCols; i++) {
+              if (!row[i]) row[i] = '';
+          }
+      });
+
+      // ワークシートを作成
+      const ws = XLSX.utils.aoa_to_sheet(allData);
+
+      // スタイル設定
+      ws['!merges'] = [];
+      // 各教科名のセルを結合
+      Array.from(tables).forEach((_, index) => {
+          const startCol = index * (COLUMNS_PER_SUBJECT + 1);
+          ws['!merges'].push({
+              s: {r: 0, c: startCol},
+              e: {r: 0, c: startCol + COLUMNS_PER_SUBJECT - 1}
+          });
+      });
+
+      // 列幅の設定
+      const colWidths = [];
+      Array.from(tables).forEach(() => {
+          colWidths.push(
+              { wch: 6 },  // 順位
+              { wch: 8 },  // クラス
+              { wch: 12 }, // 名前
+              { wch: 6 },  // 点数
+              { wch: 8 },  // 偏差値
+              { wch: 2 }   // 空白列
+          );
+      });
+      ws['!cols'] = colWidths;
+
+      // シートをブックに追加
+      XLSX.utils.book_append_sheet(wb, ws, "模試ランキング");
+
+      // ファイル名を設定
+      const date = new Date();
+      const fileName = `模試ランキング_${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}.xlsx`;
+
+      // エクセルファイルとしてダウンロード
+      XLSX.writeFile(wb, fileName);
+  }
+
+  function hideScore(){
+
+  }
+</script>
+</body>
+</html>

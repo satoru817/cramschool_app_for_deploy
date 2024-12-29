@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::head}"></div>
+    <title>生徒一覧</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .btn-multi-gradient {
+          background: linear-gradient(90deg, #ff7eb9, #ff65a3, #7afcff, #feff9c);
+          color: white;
+          border: none;
+          border-radius: 5px;
+          transition: 0.3s;
+        }
+
+        .btn-multi-gradient:hover {
+          background: linear-gradient(90deg, #feff9c, #7afcff, #ff65a3, #ff7eb9);
+        }
+       .icon-button-top-right {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            z-index: 1;
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            font-size: 10px;
+            line-height: 1;
+        }
+        .icon-button-top-right-second {
+            position: absolute;
+            top: -5px;
+            right: 15px;
+            z-index: 1;
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            font-size: 10px;
+            line-height: 1;
+        }
+        /* アイコンボタンのホバー時のスタイル */
+        .icon-button-top-right:hover,
+        .icon-button-top-right-second:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<div th:replace="~{fragment::header}"></div>
+<main class="flex-grow-1">
+    <div class="container mt-5 justify-content-center align-items-center ">
+
+
+        <h1 class="mb-4 mt-4">ユーザー一覧</h1>
+        <div class="d-flex justify-content-center flex-wrap">
+            <div th:each="user : ${users}" class="m-3">
+                <div class="position-relative d-inline-block">
+                    <button class="btn btn-multi-gradient m-2" th:text="${user.getName()}"
+                            data-toggle="modal"
+                            th:data-target="'#userInfo' + ${user.getUserId()}"><!--ユーザーの内容を確認するモーダル-->
+                    </button>
+                    <!-- 編集ボタン -->
+                    <button class="btn btn-sm btn-warning rounded-circle icon-button-top-right"
+                            data-toggle="modal"
+                            th:data-target="'#editModal' + ${user.getUserId()}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <!-- 削除ボタン -->
+                    <button class="btn btn-sm btn-danger rounded-circle icon-button-top-right-second"
+                            data-toggle="modal"
+                            th:data-target="'#deleteModal' + ${user.getUserId()}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+
+                <!-- 編集モーダル -->
+                <div class="modal fade" th:id="'editModal' + ${user.getUserId()}" tabindex="-1"
+                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">ユーザー編集</h5>
+                                <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:id="'editForm' + ${user.getUserId()}" th:action="@{/user/edit}" method="post">
+                                    <input type="hidden" name="userId" th:value="${user.getUserId()}">
+
+                                    <!-- 名前入力 -->
+                                    <div class="form-group">
+                                        <label for="name">名前</label>
+                                        <input type="text" class="form-control" id="name" name="name"
+                                               th:value="${user.getName()}" required>
+                                    </div>
+
+                                    <!-- パスワード入力 -->
+                                    <div class="form-group">
+                                        <label for="password">新しいパスワード（変更する場合のみ）</label>
+                                        <input type="password" class="form-control" id="password" name="password">
+                                    </div>
+
+                                    <!-- 権限選択 -->
+                                    <div class="form-group">
+                                        <label for="roleId">権限</label>
+                                        <select class="form-control" id="roleId" name="roleId" required>
+                                            <option th:each="role : ${roles}"
+                                                    th:value="${role.getRoleId()}"
+                                                    th:text="${role.getName()}"
+                                                    th:selected="${user.getRole().getRoleId() == role.getRoleId()}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- 教室選択（複数選択可能） -->
+                                    <div class="form-group">
+                                        <label>所属教室</label>
+                                        <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto;">
+                                            <div class="custom-control custom-checkbox"
+                                                 th:each="cramSchool : ${cramSchools}">
+                                                <input type="checkbox" class="custom-control-input"
+                                                       th:id="'cramSchool' + ${cramSchool.getCramSchoolId()}+'_'+${user.userId}"
+                                                       name="cramSchoolIds"
+                                                       th:value="${cramSchool.getCramSchoolId()}"
+                                                       th:checked="${#lists.contains(user.getCramSchoolIds(), cramSchool.getCramSchoolId())}">
+                                                <label class="custom-control-label"
+                                                       th:for="'cramSchool' + ${cramSchool.getCramSchoolId()}+'_'+${user.userId}"
+                                                       th:text="${cramSchool.getName()}">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+                                <button type="submit" th:form="'editForm' + ${user.getUserId()}" class="btn btn-primary">保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 削除用モーダル -->
+                <div class="modal fade" th:id="'deleteModal' + ${user.getUserId()}" tabindex="-1"
+                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">ユーザー消去</h5>
+                                <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body"
+                                 th:text="${user.getName()} + 'さんを本当に削除しますか？この操作は取り消せません。'">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <form th:id="'deleteForm' + ${user.getUserId()}" th:action="@{/user/delete}" method="post">
+                                    <input type="hidden" id="userId" name="userId" th:value="${user.getUserId()}">
+                                    <button type="submit" class="btn btn-danger">削除</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ユーザー情報確認モーダル -->
+                <div class="modal fade" th:id="'userInfo' + ${user.getUserId()}" tabindex="-1"
+                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">ユーザー情報確認</h5>
+                                <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col-4 font-weight-bold">ユーザーID:</div>
+                                        <div class="col-8" th:text="${user.getUserId()}"></div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-4 font-weight-bold">名前:</div>
+                                        <div class="col-8" th:text="${user.getName()}"></div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-4 font-weight-bold">権限:</div>
+                                        <div class="col-8" th:text="${user.getRole().getName()}"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 font-weight-bold">所属教室:</div>
+                                        <div class="col-8">
+                                            <ul class="list-unstyled" th:if="${not #lists.isEmpty(user.getCramSchoolUsers())}">
+                                                <li th:each="cramSchoolUser : ${user.getCramSchoolUsers()}"
+                                                    th:text="${cramSchoolUser.getCramSchool().getName()}">
+                                                </li>
+                                            </ul>
+                                            <span th:if="${#lists.isEmpty(user.getCramSchoolUsers())}">所属教室なし</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center" th:if="${message}">
+            <div class="alert alert-info" th:text="${message}"></div>
+        </div>
+
+
+
+    </div>
+</main>
+
+
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+
+</body>
+</html>
+
+
+

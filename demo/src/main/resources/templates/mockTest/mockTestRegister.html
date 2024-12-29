@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::head}"></div>
+    <meta charset="UTF-8">
+    <title>CSVファイルアップロード</title>
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
+
+    <h1>進研模試CSVファイルアップロード</h1>
+    <form th:action="@{/registerMockTest}" enctype="multipart/form-data" method="post">
+        <label for="file">CSVファイルを選択:</label>
+        <input type="file" id="file" name="file" accept=".csv" required><br><br>
+
+        <label for="date">実施日:</label>
+        <input type="date" id="date" name="date" required><br><br>
+
+        <button type="submit">アップロード</button>
+    </form>
+    <div th:if="${error}">
+        <p style="color:red;" th:text="${error}"></p>
+    </div>
+    <div th:if="${success}">
+        <p style="color:green;" th:text="${success}"></p>
+    </div>
+
+    <div style="margin: 40px 0;"></div> <!-- フォームの間隔を広げるためのスペーサー -->
+
+    <h1>ハイレべル模試CSVファイルアップロード</h1>
+    <form th:action="@{/registerHighLevelMockTest}" enctype="multipart/form-data" method="post">
+        <label for="highFile">CSVファイルを選択:</label>
+        <input type="file" id="highFile" name="file" accept=".csv" required><br><br>
+
+        <label for="highDate">実施日:</label>
+        <input type="date" id="highDate" name="date" required><br><br>
+
+        <label for="testGrade">学年を選択:</label>
+        <select id="testGrade" name="testGrade" required>
+            <option value="" disabled selected>選択してください</option>
+            <option value="中１">中1</option>
+            <option value="中２">中2</option>
+            <option value="中３">中3</option>
+        </select><br><br>
+
+        <button type="submit">アップロード</button>
+    </form>
+    <div th:if="${highError}">
+        <p style="color:red;" th:text="${highError}"></p>
+    </div>
+    <div th:if="${highSuccess}">
+        <p style="color:green;" th:text="${highSuccess}"></p>
+    </div>
+
+</div>
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+</body>
+</html>

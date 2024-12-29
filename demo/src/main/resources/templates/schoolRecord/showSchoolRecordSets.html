@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::head}"></div>
+    <title>内申セット一覧</title>
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
+    <h1>内申記録セット（年度、学年、学期区分)一覧</h1>
+
+    <div class="list-group">
+        <div th:each="recordSet : ${schoolRecordSets.content}">
+            <a th:href="@{/schoolRecordResultSetRegister/{id}(id=${recordSet.schoolRecordSetId})}" class="list-group-item list-group-item-action">
+                <span th:text="${recordSet.term} + '年度 ' + ${recordSet.grade} + '年生 ' + ${recordSet.semester} + '学期'"></span>
+            </a>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <span>Page <strong th:text="${schoolRecordSets.number + 1}">1</strong> of <strong th:text="${schoolRecordSets.totalPages}">1</strong></span>
+
+        <nav>
+            <ul class="pagination">
+                <li class="page-item" th:if="${schoolRecordSets.hasPrevious()}">
+                    <a class="page-link" th:href="@{/showSchoolRecordSets(page=${schoolRecordSets.number - 1})}">Previous</a>
+                </li>
+                <li class="page-item" th:each="page : ${#numbers.sequence(0, schoolRecordSets.totalPages - 1)}">
+                    <a class="page-link" th:href="@{/showSchoolRecordSets(page=${page})}" th:text="${page + 1}"></a>
+                </li>
+                <li class="page-item" th:if="${schoolRecordSets.hasNext()}">
+                    <a class="page-link" th:href="@{/showSchoolRecordSets(page=${schoolRecordSets.number + 1})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+</body>
+</html>

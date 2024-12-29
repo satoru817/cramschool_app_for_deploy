@@ -1,0 +1,16 @@
+.pagination .page-item .active {
+    background-color: #007bff; /* Bootstrapのプライマリカラー */
+    color: white; /* 文字色 */
+    border-color: #007bff; /* ボーダーの色 */
+}
+.pagination .page-item .disabled {
+    color: #6c757d; /* グレーにする */
+    pointer-events: none; /* クリックできないようにする */
+}
+
+.navbar-brand {
+  background: url("/images/logo-1.svg") no-repeat center;
+  background-size: contain;
+  height: 50px;
+  width: 200px;
+}

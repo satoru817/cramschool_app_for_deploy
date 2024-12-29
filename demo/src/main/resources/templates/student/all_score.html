@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::head}"></div>
+    <script th:src="@{/js/all_score.js}" defer></script>
+
+    <!-- 変数定義を先に -->
+    <script th:inline="javascript">
+        const schoolRecordResults = /*[[${schoolRecordResultDataList}]]*/ [];
+        const regularTestResults = /*[[${regularTestResults}]]*/ [];
+        const mockTestResults = /*[[${mockTestResults}]]*/ [];
+    </script>
+    <!-- その後にチャート用のJSを読み込み -->
+    <script th:src="@{/js/school_record_chart.js}" defer></script>
+    <script th:src="@{/js/mockTest_modal.js}" defer></script>
+    <script th:src="@{/js/mock_test_chart.js}" defer></script>
+    <script th:src="@{/js/regular_test_chart.js}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+
+    <title>生徒個別成績画面</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js" defer></script>
+    <style>
+        /* 基本スタイル */
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        .table td {
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: none;
+            margin-bottom: 2rem;
+        }
+        .card-header {
+            border-bottom: 2px solid #e3e6f0;
+            background-color: #f8f9fa;
+            padding: 1rem 1.25rem;
+        }
+        .card-header h5 {
+            color: #4e73df;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* 模試テーブル専用スタイル */
+        .mocktest-wrapper {
+            width: 150%; /* 1.5ページ分の幅 */
+            max-width: none; /* Bootstrapのmax-widthを上書き */
+        }
+
+        .table-mocktest {
+            width: 100%;
+            font-size: 0.85rem;
+        }
+
+        .table-mocktest th,
+        .table-mocktest td {
+            padding: 0.5rem;
+            white-space: nowrap;
+        }
+
+        /* 科目グループのスタイル */
+        .subject-group {
+            background-color: rgba(0,0,0,.02);
+            border-right: 2px solid #dee2e6;
+        }
+
+        /* 合計のハイライト */
+        .total-cell {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        /* 偏差値セル */
+        .ss-cell {
+            color: #4e73df;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+<div th:replace="~{fragment::header}"></div>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0 text-gray-800 font-weight-bold" th:text="${student.name}+'さんの成績一覧'"></h1>
+            <button id="exportExcel" class="btn btn-primary">
+                <i class="fas fa-file-excel mr-2"></i>Excel出力
+            </button>
+        </div>
+    </div>
+
+    <!-- 定期テスト成績 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">定期テスト成績一覧</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th class="border-top-0">タイトル<span class="badge badge-info ml-1" style="font-size: 0.75rem; font-weight: normal;">()内は平均との差</span></th>
+                                <th class="border-top-0">国語</th>
+                                <th class="border-top-0">数学</th>
+                                <th class="border-top-0">英語</th>
+                                <th class="border-top-0">理科</th>
+                                <th class="border-top-0">社会</th>
+                                <th class="border-top-0">音楽</th>
+                                <th class="border-top-0">美術</th>
+                                <th class="border-top-0">技術</th>
+                                <th class="border-top-0">体育</th>
+                                <th class="border-top-0 bg-light">5科目</th>
+                                <th class="border-top-0 bg-light">9科目</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="dto : ${regularTestResults}">
+                                <td th:text="${dto.testName}" class="font-weight-bold text-primary"></td>
+                                <td th:text="${dto.japaneseWithDiff}"></td>
+                                <td th:text="${dto.mathWithDiff}"></td>
+                                <td th:text="${dto.englishWithDiff}"></td>
+                                <td th:text="${dto.scienceWithDiff}"></td>
+                                <td th:text="${dto.socialWithDiff}"></td>
+                                <td th:text="${dto.musicWithDiff}"></td>
+                                <td th:text="${dto.artWithDiff}"></td>
+                                <td th:text="${dto.techWithDiff}"></td>
+                                <td th:text="${dto.peWithDiff}"></td>
+                                <td th:text="${dto.total5WithDiff}" class="bg-light"></td>
+                                <td th:text="${dto.total9WithDiff}" class="bg-light"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-8">
+                            <canvas id="regularTestChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- その他のテスト成績 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">その他のテスト成績一覧</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>タイトル</th>
+                                <th>国語</th>
+                                <th>数学</th>
+                                <th>英語</th>
+                                <th>理科</th>
+                                <th>社会</th>
+                                <th>音楽</th>
+                                <th>美術</th>
+                                <th>技術</th>
+                                <th>体育</th>
+                                <th>5科目</th>
+                                <th>9科目</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="dto : ${otherTestResults}">
+                                <td th:text="${dto.otherTest.name ?: (dto.otherTest.grade + '年生' + dto.otherTest.semester + '学期')}" style="white-space:nowrap"></td>
+                                <td th:text="${dto.japanese}"></td>
+                                <td th:text="${dto.math}"></td>
+                                <td th:text="${dto.english}"></td>
+                                <td th:text="${dto.science}"></td>
+                                <td th:text="${dto.social}"></td>
+                                <td th:text="${dto.music}"></td>
+                                <td th:text="${dto.art}"></td>
+                                <td th:text="${dto.tech}"></td>
+                                <td th:text="${dto.pe}"></td>
+                                <td th:text="${dto.total5}"></td>
+                                <td th:text="${dto.total9}"></td>
+                            </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内申成績 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">内申成績一覧</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>タイトル</th>
+                                <th>国語</th>
+                                <th>数学</th>
+                                <th>英語</th>
+                                <th>理科</th>
+                                <th>社会</th>
+                                <th>音楽</th>
+                                <th>美術</th>
+                                <th>技術</th>
+                                <th>体育</th>
+                                <th>5科目</th>
+                                <th>9科目</th>
+                                <th>換算内申</th>
+                                <th>入試点</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="dto : ${schoolRecordResultDataList}">
+                                <td th:text="${dto.title}" style="white-space:nowrap"></td>
+                                <td th:text="${dto.japanese}"></td>
+                                <td th:text="${dto.math}"></td>
+                                <td th:text="${dto.english}"></td>
+                                <td th:text="${dto.science}"></td>
+                                <td th:text="${dto.social}"></td>
+                                <td th:text="${dto.music}"></td>
+                                <td th:text="${dto.art}"></td>
+                                <td th:text="${dto.tech}"></td>
+                                <td th:text="${dto.pe}"></td>
+                                <td th:text="${dto.total5}"></td>
+                                <td th:text="${dto.total9}"></td>
+                                <td th:text="${dto.weirdSum}"></td>
+                                <td th:text="${dto.projectedSchoolScore}"></td>
+                            </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-8">
+                            <canvas id="schoolRecordChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- 模試成績 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">模試成績一覧</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="mocktest-wrapper">
+                        <table class="table table-bordered table-hover table-mocktest mb-0">
+                            <thead>
+                            <tr>
+                                <th rowspan="2" style="min-width: 120px;">模試名</th>
+                                <th rowspan="2" style="min-width: 100px;">実施日</th>
+                                <!-- 科目グループ -->
+                                <th colspan="2" class="subject-group">国語</th>
+                                <th colspan="2" class="subject-group">数学</th>
+                                <th colspan="2" class="subject-group">英語</th>
+                                <th colspan="2" class="subject-group">理科</th>
+                                <th colspan="2" class="subject-group">社会</th>
+                                <!-- 合計グループ -->
+                                <th colspan="6" class="subject-group">合計</th>
+                                <!-- 志望校グループ -->
+                                <th colspan="12">志望校情報</th>
+                            </tr>
+                            <tr>
+                                <!-- 各科目の列 -->
+                                <th>得点</th>
+                                <th>偏差値</th>
+                                <th>得点</th>
+                                <th>偏差値</th>
+                                <th>得点</th>
+                                <th>偏差値</th>
+                                <th>得点</th>
+                                <th>偏差値</th>
+                                <th>得点</th>
+                                <th>偏差値</th>
+                                <!-- 合計の列 -->
+                                <th>3科目</th>
+                                <th>3偏差値</th>
+                                <th>5科目</th>
+                                <th>5偏差値</th>
+                                <th>700点換算</th>
+                                <!-- 志望校の列 -->
+                                <th>志望校1</th>
+                                <th>可能性1</th>
+                                <th>志望校2</th>
+                                <th>可能性2</th>
+                                <th>志望校3</th>
+                                <th>可能性3</th>
+                                <th>志望校4</th>
+                                <th>可能性4</th>
+                                <th>志望校5</th>
+                                <th>可能性5</th>
+                                <th>志望校6</th>
+                                <th>可能性6</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- 既存のクラスを維持 -->
+                            <tr th:each="result : ${mockTestResults}" class="result-row">
+                                <td class="student-name" th:text="${result.testName}"></td>
+                                <td class="date" th:text="${result.date}"></td>
+                                <td class="japanese solid" th:text="${result.japanese}"></td>
+                                <td class="japanese-ss" th:text="${result.japaneseSs}"></td>
+                                <td class="math solid" th:text="${result.math}"></td>
+                                <td class="math-ss" th:text="${result.mathSs}"></td>
+                                <td class="english solid" th:text="${result.english}"></td>
+                                <td class="english-ss" th:text="${result.englishSs}"></td>
+                                <td class="social solid" th:text="${result.social}"></td>
+                                <td class="social-ss" th:text="${result.socialSs}"></td>
+                                <td class="science solid" th:text="${result.science}"></td>
+                                <td class="science-ss" th:text="${result.scienceSs}"></td>
+                                <td class="total-3" th:text="${result.total3}"></td>
+                                <td class="total3-ss" th:text="${result.total3Ss}"></td>
+                                <td class="total-5" th:text="${result.total5}"></td>
+                                <td class="total5-ss" th:text="${result.total5Ss}"></td>
+                                <td class="adjusted_score" th:text="${result.adjustedScore}"></td>
+                                <div th:replace="~{fragment::dreamSchool}"></div>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-8">
+                            <canvas id="mockTestChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragment::mockTestModal}"></div>
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+</body>
+</html>

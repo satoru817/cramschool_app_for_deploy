@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta th:replace="~{fragment::head}"/>
+    <title>ユーザー情報登録</title>
+    <script th:src="@{/js/user_register.js}" defer></script>
+    <style>
+        /* チェックされているradioボタンのlabelをbtn-infoに */
+        .form-check-input:checked + .role-label {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+<!-- ヘッダー -->
+<div th:replace="~{fragment::header}"></div>
+
+<!-- メインコンテンツ -->
+<main class="flex-grow-1">
+    <div class="container pt-4 pb-5">
+        <div class="row justify-content-center">
+            <div class="col-xl-5 col-lg-6 col-md-8">
+                <h1 class="mb-4 text-center">ユーザー登録</h1>
+
+                <form method="post" th:action="@{/user/register}" th:object="${userRegisterDto}" id="registration_form">
+                    <!-- ユーザー名入力 -->
+                    <div class="mb-3 row">
+                        <label for="name" class="col-md-5 col-form-label fw-bold">
+                            <div class="d-flex align-items-center">
+                                <span class="mr-1">ユーザー名</span>
+                                <span class="badge bg-danger">必須</span>
+                            </div>
+                        </label>
+                        <div class="col-md-7">
+                            <input type="text" class="form-control" th:field="*{name}" placeholder="ユーザー名を入力してください" required>
+                            <div th:if="${#fields.hasErrors('name')}" class="text-danger small mt-1" th:errors="*{name}"></div>
+                        </div>
+                    </div>
+
+                    <!-- パスワード入力 -->
+                    <div class="mb-3 row">
+                        <label for="password" class="col-md-5 col-form-label fw-bold">
+                            <div class="d-flex align-items-center">
+                                <span class="mr-1">パスワード</span>
+                                <span class="badge bg-danger">必須</span>
+                            </div>
+                        </label>
+                        <div class="col-md-7">
+                            <input type="password" class="form-control" th:field="*{password}" placeholder="パスワードを入力してください" required>
+                            <div th:if="${#fields.hasErrors('password')}" class="text-danger small mt-1" th:errors="*{password}"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3 row d-flex justify-content-center">
+                        <div class="alert alert-info text-center" id="min_length_validation" style="display:none;">
+                            パスワードは8文字以上にしてください。
+                        </div>
+                    </div>
+
+                    <!-- パスワード確認 -->
+                    <div class="mb-3 row">
+                        <label for="passwordConfirmation" class="col-md-5 col-form-label fw-bold">
+                            <div class="d-flex align-items-center">
+                                <span class="mr-1">パスワード（確認用）</span>
+                                <span class="badge bg-danger">必須</span>
+                            </div>
+                        </label>
+                        <div class="col-md-7">
+                            <input  type="password" class="form-control" id="passwordConfirmation" placeholder="確認用パスワードを入力してください" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 row d-flex justify-content-center">
+                        <div class="alert alert-danger text-center" id="password_validation"　style="display:none;">確認用のパスワードが一致しません</div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="roleId" class="col-md-5 col-form-label fw-bold">
+                            <div class="d-flex align-items-center">
+                                <span class="mr-1">権限</span>
+                                <span class="badge bg-danger">必須</span>
+                            </div>
+                        </label>
+                        <div class="col-md-7 d-flex flex-wrap">
+                            <div th:each="role : ${roles}" class="form-check">
+                                <input th:id="${'role-' + role.getRoleId()}" th:value="${role.getRoleId()}" type="radio"
+                                       th:field="*{roleId}" class="form-check-input" required style="display:none;">
+                                <label  th:for="${'role-' + role.getRoleId()}" th:text="${role.getName()}" class="btn btn-outline-info role-label"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="selectedCramSchoolIds" class="col-md-5 col-form-label fw-bold">
+                            <div class="d-flex align-items-center">
+                                <span class="mr-1">校舎</span>
+                                <span class="badge bg-danger">必須</span>
+                            </div>
+                        </label>
+                        <div class="checkbox_buttons">
+                            <div th:each="cramSchool : ${cramSchools}">
+                                <div class="category_button">
+                                    <input type="checkbox" th:name="selectedCramSchoolIds" th:value="${cramSchool.cramSchoolId}" th:id="'cramSchool_' + ${cramSchool.cramSchoolId}" >
+                                    <label th:for="'cramSchool_' + ${cramSchool.cramSchoolId}" th:text="${cramSchool.name}"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="d-flex justify-content-center">
+                        <input type="submit" class="btn btn-primary"　value="登録">
+                    </div>
+
+                    <!-- フォームエラーメッセージ -->
+                    <div class="text-danger mb-3" style="display:none;" id="input_mistakes">入力内容に不備があります。御確認下さい</div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- フッター -->
+<div th:replace="~{fragment::footer}" class="mt-auto"></div>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+body{
+    background-color:#f5f5f5 ;
+}
+
+.result-row {
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+.result-row:hover {
+    background-color: #e2e6ea;
+}
+
+.no_wrap{
+     white-space: nowrap;
+}
+
+    /* チェックボックスのスタイル */
+.checkbox_buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.category_button input {
+    display: none;
+}
+.category_button label {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+.category_button input:checked + label {
+    background-color: #007bff;
+    color: white;
+}
+
+.history_icon {
+    transition: transform 0.2s ease; /* アニメーションの設定 */
+}
+
+.history_icon:hover {
+    transform: scale(1.2);
+    color: red;/* ホバー時に1.2倍に拡大 */
+}

@@ -1,0 +1,112 @@
+.result-row:nth-child(even) {
+  background-color: #f8f9fa;
+}
+.result-row {
+  transition: background-color 0.3s;
+}
+.result-row:hover {
+  background-color: #e2e6ea;
+}
+.table-container {
+  overflow-x: auto;
+}
+[class^="dream-school"] {
+  white-space: nowrap;
+}
+[class$="ss"] {
+  background-color: rgba(192, 192, 192, 0.8);
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 1rem;
+  border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: center;
+}
+
+.table td, .table th {
+  padding: 0.75rem;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.btn-outline-success {
+  transition: all 0.3s;
+}
+
+.btn-outline-success:hover {
+  transform: translateY(-1px);
+}
+
+.table-responsive {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+td[class$="-ss"] {
+  font-weight: 500;
+  text-align: center;
+}
+
+.student-name {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.student-name:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.main-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.title-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sort-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.sort-btn {
+  color: #6c757d;
+  text-decoration: none;
+}
+
+.sort-btn:hover {
+  color: #0056b3;
+}

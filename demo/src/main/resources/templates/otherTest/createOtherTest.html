@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::head}"></div>
+    <meta charset="UTF-8">
+    <title>その他のテスト作成</title>
+    <style>
+        .toggle-button {
+            display: flex;
+            align-items: center;
+        }
+        .toggle-button input {
+            display: none; /* 隠す */
+        }
+        .toggle-button label {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+        .toggle-button input:checked + label {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* チェックされているradioボタンのlabelをbtn-infoに */
+        .form-check-input:checked + label {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+        .form-check-input{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
+    <h1>その他のテスト作成</h1>
+    <div th:if="${message}" class="alert alert-info" role="alert">
+        <span th:text="${message}"></span>
+    </div>
+    <form th:action="@{/otherTest/register}" method="post" th:object="${otherTest}">
+        <div class="form-group">
+            <label for="name">その他のテストの名前</label>
+            <input type="text" th:field="*{name}" required><br><br>
+        </div>
+        <div class="form-group">
+            <label for="date">実施日:</label>
+            <input type="date" th:field="*{date}" required><br><br>
+        </div>
+
+        <div class="form-group">
+            <label>学年:</label>
+            <div class="toggle-button">
+                <input type="radio" id="grade1" th:field="*{grade}" value="1" required>
+                <label for="grade1">中学1年生</label>
+                <input type="radio" id="grade2" th:field="*{grade}" value="2">
+                <label for="grade2">中学2年生</label>
+                <input type="radio" id="grade3" th:field="*{grade}" value="3">
+                <label for="grade3">中学3年生</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>学期</label>
+            <div class="toggle-button">
+                <input type="radio" id="semester1" th:field="*{semester}" value="1" required>
+                <label for="semester1">1学期</label>
+                <input type="radio" id="semester2" th:field="*{semester}" value="2">
+                <label for="semester2">2学期</label>
+                <input type="radio" id="semester3" th:field="*{semester}" value="3">
+                <label for="semester3">3学期</label>
+            </div>
+        </div>
+
+        <label for="schoolId">実施学校名</label>
+        <div class="d-flex flex-wrap justify-content-center col-md-8">
+            <div th:each="school : ${schools}">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{schoolId}" th:value="${school.getSchoolId()}" th:id="schoolId__${school.schoolId}__">
+                    <label class="form-check-label btn btn-outline-info m-2" th:for="'schoolId' + ${school.getSchoolId()}">
+                        <span th:text="${school.getName()}"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-outline-primary shadow">作成</button>
+    </form>
+
+    <div th:if="${error}">
+        <p style="color:red;" th:text="${error}"></p>
+    </div>
+    <div th:if="${success}">
+        <p style="color:green;" th:text="${success}"></p>
+    </div>
+</div>
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+
+</body>
+</html>

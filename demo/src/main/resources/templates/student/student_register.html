@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>生徒登録</title>
+    <div th:replace="~{fragment::head}"></div>
+    <style>
+        /* チェックされているradioボタンのlabelをbtn-infoに */
+        .form-check-input:checked + label {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+        .form-check-input{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+
+<div class="container mt-5">
+    <h1 class="text-center">生徒登録をしてください</h1>
+
+    <form th:action="@{/studentRegister}" th:object="${studentForm}" method="post">
+        <div class="form-group">
+            <label for="code">生徒コード</label>
+            <input type="text" th:field="*{code}" class="col col-md-2 form-control" style="color:blue;">
+            <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="text-danger"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="name">生徒名</label>
+            <input type="text" th:field="*{name}" class="col col-md-2 form-control" style="color:blue;">
+            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="furigana">ふりがな</label>
+            <input type="text" th:field="*{furigana}" class="col col-md-2 form-control" style="color:blue;">
+        </div>
+
+        <div class="form-group">
+            <label for="statusId">ステータス</label>
+            <div class="d-flex flex-wrap justify-content-center col-md-6">
+                <div th:each="status : ${statusList}">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" th:field="*{statusId}" th:value="${status.getStatusId()}" th:id="statusId__${status.getStatusId()}__">
+                        <label class="form-check-label btn btn-outline-info m-2" th:for="'statusId' + ${status.getStatusId()}">
+                            <span th:text="${status.getName()}"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+            <label>現在の学年を選択してください。</label>
+            <div class="d-flex flex-wrap justify-content-center col-md-8">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="1" id="grade1">
+                    <label class="form-check-label btn btn-outline-info m-2 " th:for="'grade1'">小学1年生</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="2" id="grade2">
+                    <label class="form-check-label btn btn-outline-info m-2 btn " th:for="'grade2'">小学2年生</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="3" id="grade3">
+                    <label class="form-check-label btn btn-outline-info m-2 btn " th:for="'grade3'">小学3年生</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="4" id="grade4">
+                    <label class="form-check-label btn btn-outline-info m-2 " th:for="'grade4'">小学4年生</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="5" id="grade5">
+                    <label class="form-check-label btn btn-outline-info m-2" th:for="'grade5'">小学5年生</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="6" id="grade6">
+                    <label class="form-check-label btn btn-outline-info m-2" th:for="'grade6'">小学6年生</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="7" id="grade7">
+                    <label class="form-check-label btn btn-outline-info m-2" th:for="'grade7'">中学1年生</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="8" id="grade8">
+                    <label class="form-check-label btn btn-outline-info m-2" th:for="'grade8'">中学2年生</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="9" id="grade9">
+                    <label class="form-check-label btn btn-outline-info m-2" th:for="'grade9'">中学3年生</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="10" id="grade10">
+                    <label class="form-check-label btn btn-outline-info m-2" th:for="'grade10'">高校1年生</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="11" id="grade11">
+                    <label class="form-check-label btn btn-outline-info m-2" th:for="'grade11'">高校2年生</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{grade}" value="12" id="grade12">
+                    <label class="form-check-label btn btn-outline-info m-2" th:for="'grade12'">高校3年生</label>
+                </div>
+            </div>
+
+            <div th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" class="text-danger"></div>
+        </div>
+
+
+        <hr>
+        <div class="form-group">
+            <label for="schoolId">所属学校名</label>
+            <div class="d-flex flex-wrap justify-content-center col-md-8">
+                <div th:each="school : ${schoolList}">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" th:field="*{schoolId}" th:value="${school.getSchoolId()}" th:id="schoolId__${school.schoolId}__">
+                        <label class="form-check-label btn btn-outline-info m-2" th:for="'schoolId' + ${school.getSchoolId()}">
+                            <span th:text="${school.getName()}"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-8 d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary">登録</button>
+        </div>
+
+
+
+    </form>
+
+    <hr>
+    <h3>CSVファイルのアップロードはこちらから</h3>
+    <p>CSVのencodingをUTF-8にする方法は<a href="https://atmarkit.itmedia.co.jp/ait/articles/2112/20/news026.html#:~:text=Excel%202016%E4%BB%A5%E9%99%8D%E3%81%AE%E5%A0%B4%E5%90%88%E3%80%81CSV%E3%81%A7%E4%BF%9D%E5%AD%98%E3%81%97%E3%81%9F%E3%81%84%E3%82%B7%E3%83%BC%E3%83%88,%E3%82%88%E3%81%84%EF%BC%88Excel%202016%E3%81%A7%E3%81%AF%E3%80%81%E6%9B%B4%E6%96%B0">こちら</a></p>
+
+    <form method="post" enctype="multipart/form-data" th:action="@{/studentUploadCSV}" class="mt-3">
+        <div class="form-group">
+            <input type="file" name="file" accept=".csv" required class="form-control-file">
+        </div>
+        <button type="submit" class="btn btn-success mt-3">アップロード</button>
+    </form>
+</div>
+
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+</body>
+</html>

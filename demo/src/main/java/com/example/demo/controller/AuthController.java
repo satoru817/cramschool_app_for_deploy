@@ -24,7 +24,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.io.IOException;
 import java.util.List;
 
-
+/**
+ * 認証処理を担当するコントローラークラスです。
+ * ログイン、ログイン成功時の処理、およびセッション管理を行います。
+ */
 @Controller
 @RequiredArgsConstructor
 @Slf4j
@@ -33,7 +36,13 @@ public class AuthController {
     private final UserRepository userRepository;
     private final UserDetailsServiceImpl userDetailsService;
 
-
+    /**
+     * ログイン画面を表示します。
+     * 塾の一覧をモデルに追加して、ログインページを返します。
+     *
+     * @param model ビューに渡すモデル
+     * @return ログイン画面のテンプレート名
+     */
     @GetMapping("/login")
     public String login(Model model) {
         List<CramSchool> cramSchools = cramSchoolRepository.findAll();
@@ -41,6 +50,16 @@ public class AuthController {
         return "auth/login";
     }
 
+    /**
+     * ログイン成功時の処理を行います。
+     * セッションから塾IDを取得し、ユーザー情報を更新して新しいセッションを作成します。
+     *
+     * @param authentication 認証情報
+     * @param userDetails ログインユーザーの詳細情報
+     * @param request HTTPリクエスト
+     * @param model ビューに渡すモデル
+     * @return トップページのテンプレート名
+     */
     @GetMapping("/success")
     public String loginSuccess(Authentication authentication, @AuthenticationPrincipal UserDetailsImpl userDetails,
                                HttpServletRequest request,
@@ -77,6 +96,13 @@ public class AuthController {
         return "index";
     }
 
+    /**
+     * セキュリティコンテキストの認証情報を更新し、新しいセッションを作成します。
+     *
+     * @param username ユーザー名
+     * @param authentication 現在の認証情報
+     * @param request HTTPリクエスト
+     */
     private void updateSecurityContextWithNewAuthentication(String username, Authentication authentication,
                                                             HttpServletRequest request) {
         log.info("updateSecurityContextWithNewAuthenticationが呼び出されました: {}", username);

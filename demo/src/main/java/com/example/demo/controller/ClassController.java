@@ -33,7 +33,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-//todo:クラスはまとめて作るようにする！
+
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -52,7 +52,14 @@ public class ClassController {
 
 
 
-    //その生徒のクラス所属履歴を全て表示する。
+    /**
+     * 特定の生徒のクラス所属履歴を表示します。
+     * 各科目ごとの所属履歴を取得し、時系列順に表示します。
+     *
+     * @param studentId 生徒ID
+     * @param model ビューに渡すモデル
+     * @return クラス履歴表示画面のテンプレート名
+     */
     @GetMapping("/class_history/{id}")
     public String classHistory(
             @PathVariable("id")Integer studentId,
@@ -75,7 +82,14 @@ public class ClassController {
         return "class/history/student";
     }
 
-    //特定のクラスの特定の学年を担当してきた教師を表示する
+    /**
+     * 特定のクラスの特定学年における担当教師の履歴を表示します。
+     *
+     * @param klassId クラスID
+     * @param grade 学年
+     * @param model ビューに渡すモデル
+     * @return 教師履歴表示画面のテンプレート名
+     */
     @GetMapping("/class_history/teacher/{klassId}/{grade}")
     public String classTeacherLinkHistory(@PathVariable("klassId")Integer klassId,
                                           @PathVariable("grade")Integer grade,
@@ -93,7 +107,16 @@ public class ClassController {
         return "class/history/teacher";
 
     }
-
+    /**
+     * 教師のクラス担当期間を更新します。
+     *
+     * @param klassUserId クラス担当教師ID
+     * @param startDate 担当開始日
+     * @param endDate 担当終了日
+     * @param grade 学年
+     * @param redirectAttributes リダイレクト時の属性
+     * @return リダイレクト先のURL
+     */
     @PostMapping("/klass-users/update")
     public String updateKlassUser(@RequestParam("klassUserId")Integer klassUserId,
                                   @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
@@ -117,7 +140,16 @@ public class ClassController {
 
 
     }
-
+    /**
+     * 生徒のクラス所属期間を更新します。
+     *
+     * @param klassStudentId クラス所属生徒ID
+     * @param studentId 生徒ID
+     * @param createdAt 所属開始日
+     * @param changedAt 所属終了日
+     * @param redirectAttributes リダイレクト時の属性
+     * @return リダイレクト先のURL
+     */
     @PostMapping("/klass-students/update")
     public String updateKlassStudent(@RequestParam("klassStudentId") Integer klassStudentId,
                                      @RequestParam("studentId") Integer studentId,
@@ -136,7 +168,16 @@ public class ClassController {
         redirectAttributes.addFlashAttribute("message", message);
         return "redirect:/class_history/" + studentId; // 適切なリダイレクト先に変更してください
     }
-    //ok
+
+    /**
+     * クラスの担当教師を一括登録します。
+     * 複数のクラスに対して同時に教師を割り当てることができます。
+     *
+     * @param allParams クラスと教師の割り当て情報
+     * @param userDetails ログインユーザー情報
+     * @param redirectAttributes リダイレクト時の属性
+     * @return リダイレクト先のURL
+     */
     @Transactional
     @PostMapping("/submitClassTeacherRegistration")
     public String classTeacherRegistration(
@@ -179,6 +220,14 @@ public class ClassController {
         return "redirect:/classTeacherLink";
     }
 
+
+    /**
+     * クラスと教師の割り当て画面を表示します。
+     *
+     * @param userDetails ログインユーザー情報
+     * @param model ビューに渡すモデル
+     * @return クラス教師割り当て画面のテンプレート名
+     */
     @Transactional
     @GetMapping("/classTeacherLink")
     public String classTeacherLink(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -199,6 +248,16 @@ public class ClassController {
         return "class/classTeacherLink";
     }
 
+    /**
+     * 個別クラスを作成します。
+     * 単一の科目に対するクラスを作成します。
+     *
+     * @param userDetails ログインユーザー情報
+     * @param klass 作成するクラス情報
+     * @param result バリデーション結果
+     * @param redirectAttributes リダイレクト時の属性
+     * @return リダイレクト先のURL
+     */
     @Transactional
     @PostMapping("/createIndividualClass")
     public String createIndividualClass(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -230,7 +289,16 @@ public class ClassController {
     }
 
 
-    //五科目いっぺんに作る
+    /**
+     * グループクラスを作成します。
+     * 5教科分のクラスを一括で作成します。
+     *
+     * @param userDetails ログインユーザー情報
+     * @param klass 作成するクラスの基本情報
+     * @param result バリデーション結果
+     * @param redirectAttributes リダイレクト時の属性
+     * @return リダイレクト先のURL
+     */
     @Transactional
     @PostMapping("/createGroupClass")
     public String createGroupClass(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -262,7 +330,13 @@ public class ClassController {
     }
 
 
-    //OK
+    /**
+     * クラス編集画面を表示します。
+     *
+     * @param userDetails ログインユーザー情報
+     * @param model ビューに渡すモデル
+     * @return クラス編集画面のテンプレート名
+     */
     @GetMapping("/classEdit")
     public String classEdit(@AuthenticationPrincipal UserDetailsImpl userDetails,Model model){
         CramSchool cramSchool = userDetails.getCramSchool();
@@ -277,7 +351,12 @@ public class ClassController {
         return "class/classEditView";
     }
 
-    //OK
+    /**
+     * クラスを削除します。
+     *
+     * @param id 削除するクラスのID
+     * @return リダイレクト先のURL
+     */
     @Transactional
     @GetMapping("/classDelete/{id}")
     public String deleteClass(@PathVariable("id")Integer id){
@@ -287,7 +366,16 @@ public class ClassController {
     }
 
 
-    //OK
+    /**
+     * 五教科（国語、数学、英語、理科、社会）のクラスを一括で作成します。
+     * 入力されたクラス名と順序を使用して、各教科のクラスを生成します。
+     *
+     * @param userDetails ログインユーザー情報（所属する塾の情報を含む）
+     * @param klass クラスの基本情報（名前、順序など）
+     * @param result バリデーション結果
+     * @param redirectAttributes リダイレクト時の属性
+     * @return クラス編集画面へのリダイレクトURL
+     */
     @Transactional
     @PostMapping("/createClass")
     public String createClass(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -331,6 +419,19 @@ public class ClassController {
         return "redirect:/classEdit";
     }
 
+    /**
+     * 生徒のクラス編集画面を表示します。
+     * 生徒の検索と、クラス割り当ての一覧を表示します。
+     *
+     * @param userDetails ログインユーザー情報
+     * @param model ビューに渡すモデル
+     * @param pageable ページング情報
+     * @param name 検索する生徒名
+     * @param grade 検索する学年
+     * @param klassId 検索するクラスID
+     * @param currentPage 現在のページ番号
+     * @return 生徒クラス編集画面のテンプレート名
+     */
     @GetMapping("/studentClassEdit")
     public String studentClassEdit(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                    Model model,
@@ -448,7 +549,13 @@ public class ClassController {
 //    }
 
 
-    //"N/A"は絶対に全教室、全科目で作る必要がある。
+    /**
+     * 現在の生徒のクラス所属情報をClassRegistrationFormにセットします。
+     * 各科目について、現在所属しているクラスの情報を設定します。
+     *
+     * @param classRegistrationForms フォームのリスト
+     * @param studentPage 生徒の一覧（ページング）
+     */
     private void setCurrentKlassToClassRegistrationForm(List<ClassRegistrationForm> classRegistrationForms, Page<Student> studentPage) {
         LocalDate today = termAndYearService.getTodayAsLocalDate();
         for (Student student : studentPage.getContent()) {
@@ -493,7 +600,16 @@ public class ClassController {
         }
     }
 
-
+    /**
+     * 生徒のクラス所属情報を一括で更新します。
+     *
+     * @param params リクエストパラメータ
+     * @param grade 学年フィルター
+     * @param name 名前フィルター
+     * @param currentPage 現在のページ番号
+     * @param redirectAttributes リダイレクト時の属性
+     * @return リダイレクト先のURL
+     */
     @PostMapping("/submitClassRegistration")
     public String submitClassRegistration(@RequestParam Map<String, String> params,
                                           @RequestParam(name="grade",required = false) String grade,
@@ -568,13 +684,27 @@ public class ClassController {
         redirectAttributes.addAttribute("currentPage", currentPage);
         return "redirect:/studentClassEdit";
     }
-
+    /**
+     * クラス所属情報から以前のクラスIDを取得します。
+     *
+     * @param klassStudent クラス所属情報
+     * @return クラスID（所属情報がない場合はnull）
+     */
     private Integer getPrevKlassId(KlassStudent klassStudent) {
         return (klassStudent != null) ? klassStudent.getKlass().getKlassId() :null;
     }
 
 
-
+    /**
+     * クラス所属情報を更新します。
+     * 新旧のクラスIDを比較し、変更がある場合のみ更新を行います。
+     *
+     * @param student 生徒
+     * @param today 今日の日付
+     * @param newKlassId 新しいクラスID
+     * @param prevKlassId 以前のクラスID
+     * @param isUpdated 更新フラグ
+     */
     private void updateClassIfChanged(Student student, LocalDate today, Integer newKlassId, Integer prevKlassId, AtomicBoolean isUpdated) {
 
         if (prevKlassId != null && !newKlassId.equals(prevKlassId)) {

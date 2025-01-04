@@ -290,3 +290,46 @@ CREATE TABLE IF NOT EXISTS class_users(
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+--流入経路を保存するためのテーブル
+CREATE TABLE IF NOT EXISTS funnels(
+    funnel_id INT NOT NULL  PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS inquiries (
+    inquiry_id INT AUTO_INCREMENT PRIMARY KEY,
+    funnel_id INT NOT NULL,
+    school_branch_id INT NOT NULL,
+    student_id INT,
+    introducer_id INT,
+    el1 INT,
+    name_kanji VARCHAR(100) NOT NULL,
+    name_kana VARCHAR(100) NOT NULL,
+    inquiry_date DATE NOT NULL,
+    code INT,
+    enrollment_date DATE,
+    withdrawal_date DATE,
+    FOREIGN KEY (funnel_id) REFERENCES funnels(funnel_id),
+    FOREIGN KEY (cram_school_id) REFERENCES　cram_schools(cram_school_id),
+    FOREIGN KEY (student_id) REFERENCES students(student_id),
+    FOREIGN KEY (introducer_id) REFERENCES students(student_id)
+);
+
+CREATE TABLE IF NOT EXISTS actions (
+    action_id INT AUTO_INCREMENT PRIMARY KEY,
+    action_name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS action_histories (
+    action_history_id INT AUTO_INCREMENT PRIMARY KEY,
+    inquiry_id INT NOT NULL,
+    action_id INT NOT NULL,
+    action_date DATE NOT NULL,
+    user_id INT NOT NULL,--担当者を入れる
+    comment TEXT,
+    FOREIGN KEY (inquiry_id) REFERENCES inquiries(inquiry_id),
+    FOREIGN KEY (action_id) REFERENCES actions(action_id),
+    FOREIGN KEY (staff_id) REFERENCES users(user_id)
+);
+
+

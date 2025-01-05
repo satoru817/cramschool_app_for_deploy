@@ -20,18 +20,9 @@ import java.util.List;
 public class TermAndYearService {
     public final LocalDate maxLocalDate = LocalDate.of(9999, 12, 31);
     public final LocalDate minLocalDate = LocalDate.of(1000, 1, 1);
-    //mysqlのあつかえる上限と下限に合わせている。
-    public final java.sql.Date maxSqlDate = java.sql.Date.valueOf("9999-12-31");
-    public final java.sql.Date minSqlDate = java.sql.Date.valueOf("1970-01-01");
 
 
-    public java.sql.Date getSqlToday(){
-        return  new java.sql.Date(System.currentTimeMillis());
 
-    }
-
-    @Getter
-    private static String classOptions = "特選,α,β1,β2,サッカー1,サッカー2,N/A";
 
 
     public List<String> getAvailableGrades() {
@@ -43,9 +34,7 @@ public class TermAndYearService {
         return LocalDate.now();
     }
 
-    public Date getTodayAsDate(){
-        return new Date();
-    }
+
 
     public LocalDate getTodayAsLocalDate(){
         return LocalDate.now();
@@ -214,7 +203,7 @@ public class TermAndYearService {
             case 12:
                 return "高３";
             default:
-                return "不明な学年";
+                return "未定義";
         }
     }
 

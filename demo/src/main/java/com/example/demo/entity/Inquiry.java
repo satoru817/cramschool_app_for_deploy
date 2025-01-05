@@ -23,6 +23,7 @@ public class Inquiry {
     @JoinColumn(name = "funnel_id", nullable = false)
     private Funnel funnel;
 
+
     @ManyToOne
     @JoinColumn(name = "school_branch_id", nullable = false)
     private CramSchool cramSchool;
@@ -36,6 +37,9 @@ public class Inquiry {
     private Student introducer;
 
     private Integer el1;
+
+    @Transient
+    private String gradeStr;
 
     @Column(nullable = false)
     private String nameKanji;

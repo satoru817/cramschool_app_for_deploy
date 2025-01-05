@@ -1,4 +1,8 @@
 package com.example.demo.repository;
 
-public interface FunnelRepository {
+import com.example.demo.entity.ActionHistory;
+import com.example.demo.entity.Funnel;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface FunnelRepository extends JpaRepository<Funnel,Integer> {
 }

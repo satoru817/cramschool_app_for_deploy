@@ -299,7 +299,7 @@ CREATE TABLE IF NOT EXISTS funnels(
 CREATE TABLE IF NOT EXISTS inquiries (
     inquiry_id INT AUTO_INCREMENT PRIMARY KEY,
     funnel_id INT NOT NULL,
-    school_branch_id INT NOT NULL,
+    cram_school_id INT NOT NULL,
     student_id INT,
     introducer_id INT,
     el1 INT,
@@ -310,7 +310,7 @@ CREATE TABLE IF NOT EXISTS inquiries (
     enrollment_date DATE,
     withdrawal_date DATE,
     FOREIGN KEY (funnel_id) REFERENCES funnels(funnel_id),
-    FOREIGN KEY (cram_school_id) REFERENCES　cram_schools(cram_school_id),
+    FOREIGN KEY (cram_school_id) REFERENCES cram_schools(cram_school_id),
     FOREIGN KEY (student_id) REFERENCES students(student_id),
     FOREIGN KEY (introducer_id) REFERENCES students(student_id)
 );
@@ -329,7 +329,7 @@ CREATE TABLE IF NOT EXISTS action_histories (
     comment TEXT,
     FOREIGN KEY (inquiry_id) REFERENCES inquiries(inquiry_id),
     FOREIGN KEY (action_id) REFERENCES actions(action_id),
-    FOREIGN KEY (staff_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 

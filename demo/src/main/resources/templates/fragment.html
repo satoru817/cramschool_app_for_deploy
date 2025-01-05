@@ -22,16 +22,24 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- メンバー関連 -->
             <div class="btn-group mr-2 ">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                    <i class="bi mr-2 bi-person-lines-fill"></i> 生徒関連
+                    <i class="bi mr-2 bi-people-fill"></i> メンバー
                 </button>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" th:href="@{/studentRegister}"><i class="bi mr-2 bi-person-plus"></i> 生徒登録</a>
                     <a class="dropdown-item" th:href="@{/studentShow}"><i class="bi mr-2 bi-people"></i> 生徒一覧</a>
                     <a class="dropdown-item" th:href="@{/registerSchool}"><i class="bi mr-2 bi-building"></i> 学校登録</a>
+                    <div sec:authorize="hasRole('ROLE_ADMIN')">
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" th:href="@{/user/show}"><i class="bi mr-2 bi-list-stars"></i> ユーザー一覧</a>
+                        <a class="dropdown-item" th:href="@{/user/register}"><i class="bi mr-2 bi-person-plus-fill"></i> 新規ユーザー作成</a>
+                    </div>
                 </div>
             </div>
+
+            <!-- ステータス関連 -->
             <div class="btn-group mr-2 ">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                     <i class="bi mr-2 bi-gear"></i> ステータス関連
@@ -43,31 +51,42 @@
                     <a class="dropdown-item" th:href="@{/classTeacherLink}"><i class="bi mr-2 bi-link"></i>クラス教師結び付け</a>
                 </div>
             </div>
+
+            <!-- 成績関連 -->
             <div class="btn-group mr-2 ">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                    <i class="bi mr-2 bi-file-text"></i> テスト関連
+                    <i class="bi mr-2 bi-graph-up"></i> 成績
                 </button>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" th:href="@{/createRegularTest}"><i class="bi mr-2 bi-plus-circle"></i> 定期テスト作成</a>
                     <a class="dropdown-item" th:href="@{/createPastRegularTest}"><i class="bi mr-2 bi-clock-history"></i> 定期テスト作成(過去)</a>
                     <a class="dropdown-item" th:href="@{/showAllRegularTest}"><i class="bi mr-2 bi-list-ul"></i> 定期テスト一覧(学校別）</a>
                     <a class="dropdown-item" th:href="@{/showAllRegularTestInChunks}"><i class="bi mr-2 bi-grid-3x3"></i> 定期テスト一覧(塊)</a>
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" th:href="@{/otherTest/create}"><i class="bi mr-2 bi-file-plus"></i> その他のテスト作成</a>
                     <a class="dropdown-item" th:href="@{/otherTest/show}"><i class="bi mr-2 bi-files"></i> その他のテスト一覧</a>
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" th:href="@{/mockTestRegisterForm}"><i class="bi mr-2 bi-file-arrow-up"></i> 模試CSV登録</a>
                     <a class="dropdown-item" th:href="@{/mockTests}"><i class="bi mr-2 bi-clipboard-data"></i> 模試一覧</a>
-                </div>
-            </div>
-            <div class="btn-group mr-2 ">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                    <i class="bi mr-2 bi-card-checklist"></i> 内申関連
-                </button>
-                <div class="dropdown-menu">
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" th:href="@{/registerSchoolRecord}"><i class="bi mr-2 bi-plus-square"></i> 内申一括作成</a>
                     <a class="dropdown-item" th:href="@{/showSchoolRecordSets}"><i class="bi mr-2 bi-collection"></i> 内申編集(セット)</a>
                     <a class="dropdown-item" th:href="@{/showSchoolRecords}"><i class="bi mr-2 bi-building"></i> 内申編集（学校毎)</a>
                 </div>
             </div>
+
+            <!-- 営業関連（新規追加） -->
+            <div class="btn-group mr-2 ">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                    <i class="bi mr-2 bi-briefcase"></i> 営業
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" th:href="@{/funnel/index}"><i class="bi mr-2 bi-funnel"></i> ファネル一覧</a>
+                    <a class="dropdown-item" th:href="@{/action/index}"><i class="bi mr-2 bi-list-check"></i> アクション一覧</a>
+                </div>
+            </div>
+
+            <!-- 認証関連 -->
             <div class="btn-group mr-2 ">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                     <i class="bi mr-2 bi-shield-lock"></i> 認証関連
@@ -82,15 +101,8 @@
                     </div>
                 </div>
             </div>
-            <div class="btn-group mr-2 " sec:authorize="hasRole('ROLE_ADMIN')">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                    <i class="bi mr-2 bi-people-fill"></i> ユーザー関連
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" th:href="@{/user/show}"><i class="bi mr-2 bi-list-stars"></i> ユーザー一覧</a>
-                    <a class="dropdown-item" th:href="@{/user/register}"><i class="bi mr-2 bi-person-plus-fill"></i> 新規ユーザー作成</a>
-                </div>
-            </div>
+
+            <!-- 塾校舎関連 -->
             <div class="btn-group mr-2 " sec:authorize="hasRole('ROLE_ADMIN')">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                     <i class="bi mr-2 bi-building"></i> 塾校舎関連
@@ -100,6 +112,8 @@
                     <a class="dropdown-item" th:href="@{/cramSchool/register}"><i class="bi mr-2 bi-building-add"></i> 塾校舎作成</a>
                 </div>
             </div>
+
+            <!-- ユーザー情報表示 -->
             <div class="navbar-nav mr-5">
                 <div class="navbar-nav">
                     <div class="navbar-nav">

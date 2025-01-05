@@ -88,3 +88,27 @@ INSERT IGNORE INTO `schools` (`school_id`, `name`, `cram_school_id`) VALUES
 (7, '翔陽高校', 6),
 (9, '鑓水中学校', 6),
 (23,'みなみ野中学校',1);
+
+INSERT IGNORE INTO `funnels` (`funnel_id`,`name`) VALUES
+    (1,'口コミ・紹介'),
+    (2,'口コミ・紹介（親）'),
+    (3,'口コミ・紹介（子）'),
+    (4,'兄弟'),
+    (5,'広告'),
+    (6,'直来'),
+    (7,'比較サイト'),
+    (8,'blog'),
+    (9,'SNS'),
+    (10,'チラシ'),
+    (11,'HP'),
+    (12,'Ameba塾探し'),
+    (13,'塾ナビ'),
+    (14,'塾選'),
+    (15,'塾シル'),
+    (16,'塾ログ');
+
+INSERT IGNORE INTO `actions` (`action_name`) VALUES
+    ('初回面談'),
+    ('体験授業'),
+    ('入塾面談'),
+    ('入塾');

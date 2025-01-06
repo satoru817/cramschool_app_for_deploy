@@ -136,6 +136,7 @@ CREATE TABLE IF NOT EXISTS mock_tests (
     FOREIGN KEY (cram_school_id) REFERENCES cram_schools(cram_school_id) ON DELETE CASCADE
 );
 
+--totalの列にformulaを利用することにした。
 CREATE TABLE IF NOT EXISTS mock_test_results (
     mock_test_id INT NOT NULL,
     student_id INT NOT NULL,
@@ -149,9 +150,9 @@ CREATE TABLE IF NOT EXISTS mock_test_results (
     science_ss INT,
     social INT,
     social_ss INT,
-    total3 INT GENERATED ALWAYS AS (COALESCE(japanese,0) + COALESCE(math,0) + COALESCE(english,0)) STORED,
+    total3 INT,
     total3_ss INT,
-    total5 INT GENERATED ALWAYS AS (COALESCE(japanese,0) + COALESCE(math,0) + COALESCE(english,0) + COALESCE(science,0) + COALESCE(social,0)) STORED,
+    total5 INT,
     total5_ss INT,
     dream_school1 VARCHAR(100),
     dream_school1_probability INT,
@@ -298,14 +299,14 @@ CREATE TABLE IF NOT EXISTS funnels(
 
 CREATE TABLE IF NOT EXISTS inquiries (
     inquiry_id INT AUTO_INCREMENT PRIMARY KEY,
-    funnel_id INT NOT NULL,
+    funnel_id INT,
     cram_school_id INT NOT NULL,
     student_id INT,
     introducer_id INT,
     el1 INT,
     name_kanji VARCHAR(100) NOT NULL,
-    name_kana VARCHAR(100) NOT NULL,
-    inquiry_date DATE NOT NULL,
+    name_kana VARCHAR(100),
+    inquiry_date DATE NOT NULL,--formで自動的に
     code INT,
     enrollment_date DATE,
     withdrawal_date DATE,

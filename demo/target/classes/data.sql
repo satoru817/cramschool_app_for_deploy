@@ -112,3 +112,5 @@ INSERT IGNORE INTO `actions` (`action_name`) VALUES
     ('体験授業'),
     ('入塾面談'),
     ('入塾');
+
+

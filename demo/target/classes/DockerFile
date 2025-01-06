@@ -1,0 +1,10 @@
+FROM openjdk:17-jdk-slim
+
+# 環境変数の設定
+ENV PORT=8080
+
+EXPOSE ${PORT}
+
+# JARファイルのコピーと実行
+COPY target/*.jar app.jar
+ENTRYPOINT ["java",  "-jar", "/app.jar"]

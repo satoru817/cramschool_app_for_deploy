@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
+import org.hibernate.annotations.Formula;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -62,20 +63,6 @@ public class MockTestResult implements Serializable {
     @Column(name = "social_ss")
     private Integer socialSs;
 
-//    @Transient  // DBには保存しない
-//    public Integer getTotal3() {
-//        return (japanese != null && math != null && english != null)
-//                ? japanese + math + english
-//                : null;
-//    }
-//
-//    @Transient
-//    public Integer getTotal5() {
-//        return (japanese != null && math != null && english != null
-//                && science != null && social != null)
-//                ? japanese + math + english + science + social
-//                : null;
-//    }
 
 
     @Column(name = "total3_ss")
@@ -85,10 +72,10 @@ public class MockTestResult implements Serializable {
     @Column(name = "total5_ss")
     private Integer total5Ss;
 
-    @Column(name="total3")
+    @Formula("(coalesce(japanese,0) + coalesce(math,0) + coalesce(english,0))")
     private Integer total3;
 
-    @Column(name="total5")
+    @Formula("(coalesce(japanese,0) + coalesce(math,0) + coalesce(english,0) + coalesce(science,0) + coalesce(social,0))")
     private Integer total5;
 
     @Column(name = "dream_school1")

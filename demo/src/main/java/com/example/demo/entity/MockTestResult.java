@@ -72,10 +72,10 @@ public class MockTestResult implements Serializable {
     @Column(name = "total5_ss")
     private Integer total5Ss;
 
-    @Formula("(coalesce(japanese,0) + coalesce(math,0) + coalesce(english,0))")
+
     private Integer total3;
 
-    @Formula("(coalesce(japanese,0) + coalesce(math,0) + coalesce(english,0) + coalesce(science,0) + coalesce(social,0))")
+
     private Integer total5;
 
     @Column(name = "dream_school1")

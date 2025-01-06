@@ -53,8 +53,24 @@ public class MockTestController {
         return klass != null ? klass.getName() : null;
     }
 
+    // Total3とTotal5を計算するヘルパーメソッド
+    private Integer calculateTotal3(Integer japanese, Integer math, Integer english) {
+        // いずれかがnullの場合はnullを返す
+        if (japanese == null || math == null || english == null) {
+            return null;
+        }
+        return japanese + math + english;
+    }
+
+    private Integer calculateTotal5(Integer japanese, Integer math, Integer english, Integer science, Integer social) {
+        // いずれかがnullの場合はnullを返す
+        if (japanese == null || math == null || english == null || science == null || social == null) {
+            return null;
+        }
+        return japanese + math + english + science + social;
+    }
+
     //分析画面へ遷移するメソッド
-    //todo:任意のクラスにその模試が行われていた時点で所属していた生徒の平均を各科目および合計科目について作る必要がある。
     @GetMapping("/mockTest/analysis/{id}")
     public String analyzeResult(@PathVariable("id") Integer mockTestId, Model model) {
         // MockTestの存在確認
@@ -68,7 +84,7 @@ public class MockTestController {
 
         LocalDate testDate = mockTest.getDate();
 
-        //模試を受けた生徒の模試当日の学年（本当は模試自体に学年を紐づけてもよかったが、そうしていない)
+        //模試を受けた生徒の模試当日の学年
         Integer grade = termAndYearService.getGrade(student,mockTest.getDate());
 
         // 各教科の平均点を取得
@@ -78,12 +94,9 @@ public class MockTestController {
                             subject.getValue(),
                             mockTest,
                             testDate
-                            //grade
-
                     );
             log.info("averages:{}",averages.toString());
 
-            //クラスの担当教師は別のクエリで取得する。期間まで考慮していっぺんに取得するのが困難だった。
             averages.forEach(average->{
                 userService.setTeacherName(cramSchool,average,subject.getValue(),grade,testDate);
             });
@@ -119,14 +132,13 @@ public class MockTestController {
             totalAverages.add(averageOfEveryClass);
             subjectAverages.put(totalSubject.getValue(),totalAverages);
         }
-        // コントローラーで事前にフィルタリング
 
         UtilForNullRemoval.eraseNullEntry(subjectAverages);
 
         model.addAttribute("mockTest", mockTest);
         model.addAttribute("subjectAverages", subjectAverages);
 
-        return "mockTest/analysis";  // テンプレート名
+        return "mockTest/analysis";
     }
 
     @GetMapping("/mockTestResults/ranking/{id}")
@@ -139,10 +151,7 @@ public class MockTestController {
                 .orElseThrow(() -> new RuntimeException("Mock test not found"));
         LocalDate testDate = mockTest.getDate();
 
-        // 各教科のランキングを取得
-        Map<String, List<SubjectRankingDto>> rankings = new LinkedHashMap<>();//LinkedHashMapは順序を保持できる
-
-
+        Map<String, List<SubjectRankingDto>> rankings = new LinkedHashMap<>();
 
         // 国語のランキング
         List<SubjectRankingDto> japaneseRanking = mockTestResultService.findSubjectRankingDto(mockTestId, count, rankType.equals("bottom"),"japanese");
@@ -181,16 +190,15 @@ public class MockTestController {
 
         // 三科目のランキング
         List<SubjectRankingDto> total3Ranking = mockTestResultService.findSubjectRankingDto(mockTestId, count, rankType.equals("bottom"),"total3");
-        socialRanking.forEach(dto -> {
-            //dto.setClassName(getClassNameOrNull(classStudentService.findKlassForSocialByStudentAndDate(studentRepository.getReferenceById(dto.getStudentId()), testDate)));
+        total3Ranking.forEach(dto -> {
             //このクラス名取得のメソッドは複雑だから後で作る。
         });
         rankings.put("total3", total3Ranking);
 
         // 五科目のランキング
         List<SubjectRankingDto> total5Ranking = mockTestResultService.findSubjectRankingDto(mockTestId, count, rankType.equals("bottom"),"total5");
-        socialRanking.forEach(dto -> {
-            //dto.setClassName(getClassNameOrNull(classStudentService.findKlassForSocialByStudentAndDate(studentRepository.getReferenceById(dto.getStudentId()), testDate)));
+        total5Ranking.forEach(dto -> {
+            //このクラス名取得のメソッドは複雑だから後で作る。
         });
         rankings.put("total5", total5Ranking);
 
@@ -201,8 +209,6 @@ public class MockTestController {
 
         return "mockTest/ranking";
     }
-
-
 
     @Transactional
     @PostMapping("/registerMockTest")
@@ -222,9 +228,6 @@ public class MockTestController {
                                                    Model model) {
         return handleMockTestUpload(userDetails, file, date, model, true, testGrade);
     }
-
-
-
 
     private String handleMockTestUpload(UserDetailsImpl userDetails, MultipartFile file, LocalDate date, Model model, boolean isHighLevel, String... testGrade) {
         log.info("Starting mock test upload process - File: {}, Date: {}, IsHighLevel: {}", file.getOriginalFilename(), date, isHighLevel);
@@ -331,16 +334,27 @@ public class MockTestController {
             log.debug("Setting scores for mock test result - IsHighLevel: {}", isHighLevel);
 
             // 点数の設定
-            mockTestResult.setJapanese(parseInteger(record.get(isHighLevel ? "国語得点" : "国語\n得点")));
-            mockTestResult.setMath(parseInteger(record.get(isHighLevel ? "数学得点" : "数学\n得点")));
-            mockTestResult.setEnglish(parseInteger(record.get(isHighLevel ? "英語得点" : "英語\n得点")));
-            mockTestResult.setScience(parseInteger(record.get(isHighLevel ? "理科得点" : "理科\n得点")));
-            mockTestResult.setSocial(parseInteger(record.get(isHighLevel ? "社会得点" : "社会\n得点")));
+            Integer japanese = parseInteger(record.get(isHighLevel ? "国語得点" : "国語\n得点"));
+            Integer math = parseInteger(record.get(isHighLevel ? "数学得点" : "数学\n得点"));
+            Integer english = parseInteger(record.get(isHighLevel ? "英語得点" : "英語\n得点"));
+            Integer science = parseInteger(record.get(isHighLevel ? "理科得点" : "理科\n得点"));
+            Integer social = parseInteger(record.get(isHighLevel ? "社会得点" : "社会\n得点"));
 
-            log.debug("Scores set - Japanese: {}, Math: {}, English: {}, Science: {}, Social: {}",
+            mockTestResult.setJapanese(japanese);
+            mockTestResult.setMath(math);
+            mockTestResult.setEnglish(english);
+            mockTestResult.setScience(science);
+            mockTestResult.setSocial(social);
+
+            // total3とtotal5を計算してセット
+            mockTestResult.setTotal3(calculateTotal3(japanese, math, english));
+            mockTestResult.setTotal5(calculateTotal5(japanese, math, english, science, social));
+
+            log.debug("Scores set - Japanese: {}, Math: {}, English: {}, Science: {}, Social: {}, Total3: {}, Total5: {}",
                     mockTestResult.getJapanese(), mockTestResult.getMath(),
                     mockTestResult.getEnglish(), mockTestResult.getScience(),
-                    mockTestResult.getSocial());
+                    mockTestResult.getSocial(), mockTestResult.getTotal3(),
+                    mockTestResult.getTotal5());
 
             // 偏差値の設定
             mockTestResult.setJapaneseSs(parseOptionalDouble(record.get(isHighLevel ? "国語全国偏差値" : "国語\n偏差値")));
@@ -367,6 +381,7 @@ public class MockTestController {
             throw e;
         }
     }
+
     private void setDreamSchoolInfo(CSVRecord record, MockTestResult mockTestResult) {
         mockTestResult.setDreamSchool1(getDreamSchoolValue(record.get("志望校名１")));
         mockTestResult.setDreamSchool2(getDreamSchoolValue(record.get("志望校名２")));
@@ -390,7 +405,6 @@ public class MockTestController {
         return "mockTest/mockTestRegister";
     }
 
-    //模試一覧ページ
     @GetMapping("/mockTests")
     public String getMockTests(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                @PageableDefault(page = 0, size = 10, sort = "date", direction = Sort.Direction.DESC) Pageable pageable,
@@ -400,17 +414,15 @@ public class MockTestController {
         return "mockTest/mockTests";
     }
 
-    //すべての模試の結果を表示するビュー
     @GetMapping("/mockTestResults/all/{id}")
     public String showAllMockTestResults(
             @PathVariable("id") Integer mockTestId,
             @RequestParam(name = "sort", required = false) String sort,
             Model model) {
 
-        String sortField = "id"; // デフォルトのソートフィールド
-        String sortDirection = "asc"; // デフォルトのソート方向
+        String sortField = "id";
+        String sortDirection = "asc";
 
-        // sortパラメータがある場合の処理
         if (sort != null && !sort.trim().isEmpty()) {
             String[] sortParams = sort.split(",");
             sortField = sortParams[0];
@@ -420,13 +432,11 @@ public class MockTestController {
         List<MockTestResult> mockTestResults;
 
         MockTest mockTest = mockTestRepository.getReferenceById(mockTestId);
-        // クラスでのソート
+
         if ("klass".equals(sortField)) {
             mockTestResults = mockTestResultService
                     .findAllResultsByMockTestWithIntegratedKlassSort(mockTest, sortDirection);
-        }
-        // その他のフィールドでのソート
-        else {
+        } else {
             mockTestResults = mockTestResultRepository
                     .findAllResultsByMockTestIdWithSort(mockTestId, sortField, sortDirection);
         }
@@ -460,26 +470,28 @@ public class MockTestController {
         return "mockTest/mockTestResultShow";
     }
 
-    //テスト実施日のクラスを挿入している
-    public void setKlassNameForList(List<MockTestResult> results){
-        MockTest test = results.get(0).getMockTest();
-        LocalDate date = test.getDate();
-        results.forEach(result->{
-            result.setKlassName(classStudentService.findIntegratedKlassName(result.getStudent(),date));
-        });
+    public void setKlassNameForList(List<MockTestResult> results) {
+        if (results != null && !results.isEmpty()) {
+            MockTest test = results.get(0).getMockTest();
+            LocalDate date = test.getDate();
+            results.forEach(result -> {
+                result.setKlassName(classStudentService.findIntegratedKlassName(result.getStudent(), date));
+            });
+        }
     }
 
-    //テスト実施日のクラスを挿入している
-    public void setKlassName(Page<MockTestResult> results){
-        MockTest test = results.getContent().get(0).getMockTest();
-        LocalDate date = test.getDate();
-        results.forEach(result->{
-            result.setKlassName(classStudentService.findIntegratedKlassName(result.getStudent(),date));
-        });
+    public void setKlassName(Page<MockTestResult> results) {
+        if (results != null && !results.isEmpty()) {
+            MockTest test = results.getContent().get(0).getMockTest();
+            LocalDate date = test.getDate();
+            results.forEach(result -> {
+                result.setKlassName(classStudentService.findIntegratedKlassName(result.getStudent(), date));
+            });
+        }
     }
 
     private Integer parseInteger(String value) {
-        return (value == null || value.trim().isEmpty()) ? null : Integer.valueOf(value.trim());//0でなくてnullが入るように改修
+        return (value == null || value.trim().isEmpty()) ? null : Integer.valueOf(value.trim());
     }
 
     private Integer parseOptionalDouble(String value) {
@@ -494,22 +506,20 @@ public class MockTestController {
         return dreamSchool != null && !dreamSchool.trim().isEmpty() ? dreamSchool : null;
     }
 
-
     @Transactional
     @GetMapping("/mockTest/delete/{id}")
     public String deleteMockTest(@PathVariable("id")Integer mockTestId,
-                                 RedirectAttributes redirectAttributes){
+                                 RedirectAttributes redirectAttributes) {
         String message;
-        try{
+        try {
             mockTestRepository.deleteById(mockTestId);
-            message="mock test deleted successfully!";
-        }catch(RuntimeException e){
+            message = "mock test deleted successfully!";
+        } catch(RuntimeException e) {
             log.error("error happened during deletion of mock test :{}", e.getMessage());
             message = "mock test deletion failed";
         }
 
-        redirectAttributes.addFlashAttribute("message",message);
+        redirectAttributes.addFlashAttribute("message", message);
         return "redirect:/mockTests";
-
     }
 }

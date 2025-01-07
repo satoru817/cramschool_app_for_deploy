@@ -25,7 +25,7 @@ public class Inquiry {
 
 
     @ManyToOne
-    @JoinColumn(name = "school_branch_id", nullable = false)
+    @JoinColumn(name = "cram_school_id", nullable = false)
     private CramSchool cramSchool;
 
     @ManyToOne(fetch = FetchType.LAZY)

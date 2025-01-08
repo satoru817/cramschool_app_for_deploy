@@ -4,10 +4,12 @@ import com.example.demo.dto.InquiryDTO;
 import com.example.demo.entity.Inquiry;
 import com.example.demo.repository.InquiryRepository;
 import com.example.demo.service.TermAndYearService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,5 +34,15 @@ public class InquiryService {
 
         return inquiries;
 
+    }
+
+    @Transactional
+    public boolean save(Inquiry inquiry){
+        try{
+            inquiryRepository.save(inquiry);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 }

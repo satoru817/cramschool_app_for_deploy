@@ -84,6 +84,7 @@ public class TermAndYearService {
     }
 
     //小学一年生は1高校3年生は12の数値から小学校入学時(3/31)時点の西暦を算出する関数
+    //absGradeから、el1を計算するメソッド
     public int getWhenEnteredElementarySchool(int abGrade){
 
         // 今年の4月1日を取得
@@ -145,6 +146,7 @@ public class TermAndYearService {
         }
     }
 
+    //absGradeを得るメソッド
     public Integer convertGrade(String grade) {
         switch (grade) {
             case "小１":
@@ -205,6 +207,11 @@ public class TermAndYearService {
             default:
                 return "未定義";
         }
+    }
+
+    public Integer getEl1FromGradeStr(String gradeStr){
+        Integer grade = convertGrade(gradeStr);
+        return getWhenEnteredElementarySchool(grade);
     }
 
 

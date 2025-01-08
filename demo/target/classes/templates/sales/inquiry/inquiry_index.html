@@ -14,6 +14,12 @@
         <div class="container pt-4 pb-5 container">
             <h1 class="mb-4 text-center">問合せ一覧</h1>
 
+            <div class="text-center mb-4">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#createInquiryModal">
+                    <i class="fas fa-plus"></i> 新規問合せ作成
+                </button>
+            </div>
+
             <div class="row justify-content-center">
                 <div class="col-12">
                     <div class="card shadow-sm">
@@ -110,6 +116,82 @@
                         </nav>
                     </div>
                 </div>
+            </div>
+
+            <!-- 作成モーダル -->
+            <div class="modal fade" id="createInquiryModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">新規問合せ作成</h5>
+                            <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="createInquiryForm" th:action="@{/sales/inquiry/create}" method="post">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">問合せ者名</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="name"
+                                           name="name"
+                                           required
+                                           placeholder="問合せ者名を入力してください">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="cramSchoolId" class="form-label">教室選択</label>
+                                    <select class="form-select" id="cramSchoolId" name="cramSchoolId" required>
+                                        <option value="">教室を選択してください</option>
+                                        <option th:each="school : ${cramSchools}"
+                                                th:value="${school.cramSchoolId}"
+                                                th:text="${school.name}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="funnelId" class="form-label">ファネル選択</label>
+                                    <select class="form-select" id="funnelId" name="funnelId" required>
+                                        <option value="">ファネルを選択してください</option>
+                                        <option th:each="funnel : ${funnels}"
+                                                th:value="${funnel.funnelId}"
+                                                th:text="${funnel.name}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="gradeStr" class="form-label">学年選択</label>
+                                    <select class="form-select" id="gradeStr" name="gradeStr" required>
+                                        <option value="">学年を選択してください</option>
+                                        <option value="小１">小１</option>
+                                        <option value="小２">小２</option>
+                                        <option value="小３">小３</option>
+                                        <option value="小４">小４</option>
+                                        <option value="小５">小５</option>
+                                        <option value="小６">小６</option>
+                                        <option value="中１">中１</option>
+                                        <option value="中２">中２</option>
+                                        <option value="中３">中３</option>
+                                        <option value="高１">高１</option>
+                                        <option value="高２">高２</option>
+                                        <option value="高３">高３</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                            <button type="submit" form="createInquiryForm" class="btn btn-primary">作成</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center" th:if="${message}">
+                <div class="alert alert-info" th:text="${message}"></div>
             </div>
         </div>
     </main>

@@ -28,6 +28,7 @@ public class Inquiry {
     @JoinColumn(name = "cram_school_id", nullable = false)
     private CramSchool cramSchool;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private Student student;

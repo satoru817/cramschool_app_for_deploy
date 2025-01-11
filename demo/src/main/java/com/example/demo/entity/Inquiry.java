@@ -45,7 +45,7 @@ public class Inquiry {
     @Column(nullable = false)
     private String nameKanji;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String nameKana;
 
     @Column(nullable = false)

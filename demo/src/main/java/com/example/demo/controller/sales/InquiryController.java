@@ -50,7 +50,13 @@ public class InquiryController {
                             @RequestParam(name="page",required = false)Integer curPage,
                             @PageableDefault(page = 0, size = 10,sort = "inquiryDate", direction = Sort.Direction.DESC) Pageable pageable){
         int page = (curPage != null)? curPage:pageable.getPageNumber();
-        pageable = PageRequest.of(page,pageable.getPageSize());
+        pageable = PageRequest.of(
+                page,
+                pageable.getPageSize(),
+                pageable.getSort()  // 既存のソート情報を保持
+        );
+
+        //todo:sortが消えている。下のメソッドのせい
         Page<Inquiry> inquiries = inquiryService.findAllAndSetField(pageable);
 
         List<CramSchool> cramSchools = cramSchoolRepository.findAll();
@@ -72,7 +78,8 @@ public class InquiryController {
                          @ModelAttribute InquiryPostDTO inquiryPostDTO
                          ){
         Inquiry inquiry = new Inquiry();
-        inquiry.setInquiryDate(LocalDate.now());
+        inquiry.setNameKanji(inquiryPostDTO.getName());
+        inquiry.setInquiryDate(inquiryPostDTO.getInquiryDate());
         if(inquiryPostDTO.getGradeStr() != null){
             Integer el1 = termAndYearService.getEl1FromGradeStr(inquiryPostDTO.getGradeStr());
             inquiry.setEl1(el1);
@@ -93,7 +100,22 @@ public class InquiryController {
 
         return "redirect:/sales/inquiry/index";
 
+    }
 
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Integer id,
+                         RedirectAttributes redirectAttributes){
+        String message;
+        String deleted = inquiryService.delete(id);
+        if(deleted != null){
+            message = "該当の問合せの削除に成功しました:"+deleted;
+        }else{
+            message = "問合せの削除に失敗しました。";
+        }
+
+        redirectAttributes.addFlashAttribute("message",message);
+
+        return "redirect:/sales/inquiry/index";
     }
 
 

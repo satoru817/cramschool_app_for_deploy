@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class InquiryPostDTO {
     @NotNull(message = "ファネルを選択してください")
@@ -16,6 +18,8 @@ public class InquiryPostDTO {
     private String name;
 
     private String gradeStr;//サーバーサイドでel1に変換する
+
+    private LocalDate inquiryDate;
 
 
 }

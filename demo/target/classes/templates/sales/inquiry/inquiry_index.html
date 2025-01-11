@@ -34,23 +34,24 @@
                                         <th scope="col">ファネル</th>
                                         <th scope="col">学年</th>
                                         <th scope="col">問合せ日</th>
+                                        <th scope="col">削除</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr th:each="inquiry : ${inquiries}">
                                         <td class="text-muted" th:text="${inquiry.inquiryId}"></td>
                                         <td>
-                                            <span class="badge text-bg-secondary shadow-sm"
+                                            <span class="badge text-secondary shadow-sm"
                                                   th:text="${inquiry.cramSchool.name}">
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge text-bg-info shadow-sm badge_hover"
+                                            <span class="badge text-info shadow-sm badge_hover"
                                                   th:text="${inquiry.nameKanji}">
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge text-bg-primary shadow-sm"
+                                            <span class="badge text-primary shadow-sm"
                                                   th:text="${inquiry.funnel.name}">
                                             </span>
                                         </td>
@@ -61,6 +62,15 @@
                                             <span class="text-muted"
                                                   th:text="${#temporals.format(inquiry.inquiryDate, 'yyyy/MM/dd')}">
                                             </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-danger btn-sm"
+                                                    data-toggle="modal"
+                                                    data-target="#deleteModal"
+                                                    th:data-inquiry-id="${inquiry.inquiryId}"
+                                                    th:data-person-name="${inquiry.nameKanji}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -180,6 +190,11 @@
                                         <option value="高３">高３</option>
                                     </select>
                                 </div>
+
+                                <div class="mb-3">
+                                    <label for="inquiryDate" class="form-label">問合せ日選択</label>
+                                    <input type="date" id="inquiryDate" name="inquiryDate" required>
+                                </div>
                             </form>
                         </div>
                         <div class="modal-footer">
@@ -197,7 +212,54 @@
     </main>
 </div>
 
+<!--削除モーダル-->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    問合せ削除の確認
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>以下の問合せを削除してもよろしいですか？</p>
+                <p class="font-weight-bold" id="personNameConfirm"></p>
+                <p class="text-danger">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    この操作は取り消せません。
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> キャンセル
+                </button>
+                <a  class="btn btn-danger" id="deleteLink">
+                    <i class="bi bi-trash"></i> 削除する
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
 <!-- フッター -->
 <div th:replace="~{fragment::footer}"></div>
+
+<script>
+    $(document).ready(function() {
+      $('#deleteModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        const inquiryId = button.data('inquiry-id');
+        const personName = button.data('person-name');
+
+        const modal = $(this);
+        modal.find('#personNameConfirm').text(personName);
+        modal.find('#deleteLink').attr('href', '/sales/inquiry/delete/' + inquiryId);
+      });
+    });
+</script>
 </body>
 </html>

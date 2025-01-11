@@ -45,4 +45,15 @@ public class InquiryService {
             return false;
         }
     }
+
+    @Transactional
+    public String delete(Integer inquiryId){
+        Inquiry inquiry = inquiryRepository.getReferenceById(inquiryId);
+        try{
+            inquiryRepository.deleteById(inquiryId);
+            return inquiry.getNameKanji();
+        } catch (Exception e) {
+            return "";
+        }
+    }
 }

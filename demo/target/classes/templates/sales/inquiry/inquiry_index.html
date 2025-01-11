@@ -34,7 +34,9 @@
                                         <th scope="col">ファネル</th>
                                         <th scope="col">学年</th>
                                         <th scope="col">問合せ日</th>
+                                        <th scope="col">応対録</th>
                                         <th scope="col">削除</th>
+                                        <th scope="col">編集</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -64,6 +66,12 @@
                                             </span>
                                         </td>
                                         <td>
+                                            <a class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-clock-history"></i>
+                                            </a>
+
+                                        </td>
+                                        <td>
                                             <button class="btn btn-outline-danger btn-sm"
                                                     data-toggle="modal"
                                                     data-target="#deleteModal"
@@ -71,6 +79,12 @@
                                                     th:data-person-name="${inquiry.nameKanji}">
                                                 <i class="bi bi-trash"></i>
                                             </button>
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-outline-info btn-sm"
+                                                th:href="@{/sales/inquiry/edit/__${inquiry.inquiryId}__}">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -211,6 +225,8 @@
         </div>
     </main>
 </div>
+
+
 
 <!--削除モーダル-->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">

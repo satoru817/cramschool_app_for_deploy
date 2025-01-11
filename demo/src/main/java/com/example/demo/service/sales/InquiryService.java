@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class InquiryService {
@@ -55,5 +57,22 @@ public class InquiryService {
         } catch (Exception e) {
             return "";
         }
+    }
+
+    public Inquiry findById(Integer inquiryId){
+       Inquiry inquiry = inquiryRepository.findById(inquiryId)
+               .orElseThrow(()->new RuntimeException("該当の問合せが見つかりませんでした。"));
+
+        String gradeStr = "";
+        if (inquiry.getEl1() != null) {
+            try {
+                gradeStr = termAndYearService.getCurrentGradeFromEl1(inquiry.getEl1());
+            } catch (Exception e) {
+                gradeStr = "";
+            }
+        }
+        inquiry.setGradeStr(gradeStr != null ? gradeStr : "");
+
+        return inquiry;
     }
 }

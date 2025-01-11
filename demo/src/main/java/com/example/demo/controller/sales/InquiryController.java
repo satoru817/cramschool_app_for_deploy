@@ -59,26 +59,29 @@ public class InquiryController {
         //todo:sortが消えている。下のメソッドのせい
         Page<Inquiry> inquiries = inquiryService.findAllAndSetField(pageable);
 
-        List<CramSchool> cramSchools = cramSchoolRepository.findAll();
-
-        List<User> users = userRepository.findAll();
-
-        List<Funnel> funnels = funnelRepository.findAll(); // Add this line
-        model.addAttribute("funnels", funnels);
-
         model.addAttribute("inquiries",inquiries);
-        model.addAttribute("cramSchools",cramSchools);
-        model.addAttribute("users",users);
+
+        setFunnelsAndUsersAndCramSchoolsToModel(model);
         return "sales/inquiry/inquiry_index";
 
     }
 
-    @PostMapping("/create")
-    public String create(RedirectAttributes redirectAttributes,
-                         @ModelAttribute InquiryPostDTO inquiryPostDTO
-                         ){
+    private void setFunnelsAndUsersAndCramSchoolsToModel(Model model){
+
+        List<CramSchool> cramSchools = cramSchoolRepository.findAll();
+        List<User> users = userRepository.findAll();
+        List<Funnel> funnels = funnelRepository.findAll();
+
+        model.addAttribute("funnels", funnels);
+        model.addAttribute("cramSchools",cramSchools);
+        model.addAttribute("users",users);
+    }
+
+    private boolean upsertInquiryPostDTO(InquiryPostDTO inquiryPostDTO){
         Inquiry inquiry = new Inquiry();
+        inquiry.setInquiryId(inquiryPostDTO.getInquiryId());
         inquiry.setNameKanji(inquiryPostDTO.getName());
+        inquiry.setNameKana(inquiryPostDTO.getKana());
         inquiry.setInquiryDate(inquiryPostDTO.getInquiryDate());
         if(inquiryPostDTO.getGradeStr() != null){
             Integer el1 = termAndYearService.getEl1FromGradeStr(inquiryPostDTO.getGradeStr());
@@ -88,8 +91,18 @@ public class InquiryController {
         inquiry.setCramSchool(cramSchoolRepository.getReferenceById(inquiryPostDTO.getCramSchoolId()));
         inquiry.setFunnel(funnelRepository.getReferenceById(inquiryPostDTO.getFunnelId()));
 
-        boolean b = inquiryService.save(inquiry);
+        return inquiryService.save(inquiry);
+    }
+
+    @PostMapping("/create")
+    public String create(RedirectAttributes redirectAttributes,
+                         @ModelAttribute InquiryPostDTO inquiryPostDTO
+                         ){
+
+        boolean b = upsertInquiryPostDTO(inquiryPostDTO);
+
         String message;
+
         if(b){
             message = "新規問合せの保存に成功しました。";
         }else{
@@ -117,6 +130,46 @@ public class InquiryController {
 
         return "redirect:/sales/inquiry/index";
     }
+
+    @GetMapping("/edit/{id}")
+    public String edit(@PathVariable Integer id,
+                       Model model){
+        Inquiry inquiry = inquiryService.findById(id);
+        setFunnelsAndUsersAndCramSchoolsToModel(model);
+
+        InquiryPostDTO inquiryPostDTO = InquiryPostDTO.builder()
+                .inquiryId(inquiry.getInquiryId())
+                .inquiryDate(inquiry.getInquiryDate())
+                .kana(inquiry.getNameKana())
+                .cramSchoolId(inquiry.getCramSchool().getCramSchoolId())
+                .gradeStr(inquiry.getGradeStr())
+                .funnelId(inquiry.getFunnel().getFunnelId())
+                .name(inquiry.getNameKanji())
+                .build();
+
+        model.addAttribute("inquiryPostDTO",inquiryPostDTO);
+        return "sales/inquiry/inquiry_edit";
+
+    }
+
+    @PostMapping("/edit/{id}/update")
+    public String update(@ModelAttribute InquiryPostDTO inquiryPostDTO,
+                         RedirectAttributes redirectAttributes){
+        boolean b = upsertInquiryPostDTO(inquiryPostDTO);
+
+        String message;
+
+        if(b){
+            message = "問合せの更新に成功しました。";
+        }else{
+            message="問合せの更新に失敗しました。";
+        }
+
+        redirectAttributes.addFlashAttribute("message",message);
+        return "redirect:/sales/inquiry/index";
+    }
+
+
 
 
 

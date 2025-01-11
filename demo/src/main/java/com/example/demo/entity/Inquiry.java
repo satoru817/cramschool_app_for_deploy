@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -49,6 +50,7 @@ public class Inquiry {
     private String nameKana;
 
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")//date picker利用の為にこうしている
     private LocalDate inquiryDate;
 
     private Integer code;

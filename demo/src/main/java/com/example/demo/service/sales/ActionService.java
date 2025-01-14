@@ -1,9 +1,13 @@
 package com.example.demo.service.sales;
 
 import com.example.demo.entity.Action;
+import com.example.demo.entity.ActionHistory;
+import com.example.demo.entity.Inquiry;
 import com.example.demo.repository.ActionHistoryRepository;
 import com.example.demo.repository.ActionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +17,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ActionService {
     private final ActionRepository actionRepository;
+    private final ActionHistoryRepository actionHistoryRepository;
+
+    public Page<ActionHistory> getAllActionHistory(Inquiry inquiry, Pageable pageable){
+        return actionHistoryRepository.findByInquiry(inquiry,pageable);
+    }
 
     public List<Action> getAll() {
         return actionRepository.findAll();

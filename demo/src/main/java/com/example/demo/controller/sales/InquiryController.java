@@ -7,9 +7,11 @@ import com.example.demo.repository.FunnelRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.TermAndYearService;
 import com.example.demo.service.UserService;
+import com.example.demo.service.sales.ActionService;
 import com.example.demo.service.sales.InquiryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +40,7 @@ public class InquiryController {
     private final UserRepository userRepository;
     private final FunnelRepository funnelRepository;
     private final TermAndYearService termAndYearService;
+    private final ActionService actionService;
 
     /**
      * 問合せ一覧画面を表示します。
@@ -65,6 +68,36 @@ public class InquiryController {
         return "sales/inquiry/inquiry_index";
 
     }
+
+    /**
+     * 一つの問合せに結びつく全てのアクションの履歴を表示します。
+     * また、このページからアクションの基本的なcrud操作が出来るようにします。
+     * @param model
+     * @param curPage
+     * @param pageable
+     * @return ある問合せに結びついたアクションの一覧画面
+     */
+    @GetMapping("/actions/{id}")
+    public String actionsOfAnInquiry(Model model,
+                                     @PathVariable(name="id")Integer inquiryId,
+                                     @RequestParam(name="page",required = false)Integer curPage,
+                                     @PageableDefault(page=0,size=10,sort="actionDate")Pageable pageable){
+        int page = (curPage != null) ? curPage:pageable.getPageNumber();
+        pageable = PageRequest.of(
+                page,
+                pageable.getPageSize(),
+                pageable.getSort()
+        );
+
+        Inquiry inquiry = inquiryService.findById(inquiryId);
+
+        Page<ActionHistory> actionHistories = actionService.getAllActionHistory(inquiry,pageable);
+
+        model.addAttribute("actionHistories",actionHistories);
+        return "sales/action_history/of_one_inquiry";
+    }
+
+
 
     private void setFunnelsAndUsersAndCramSchoolsToModel(Model model){
 

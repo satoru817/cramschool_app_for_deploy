@@ -5,10 +5,11 @@
     <title>問合せ一覧</title>
     <link rel="stylesheet" th:href="@{/css/name_badge.css}" />
 </head>
-<body class="d-flex flex-column min-vh-100">
-<div class="wrapper">
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 min-vh-100">
     <!-- ヘッダー -->
-    <div th:replace="~{fragment::header}"></div>
+
 
     <main>
         <div class="container pt-4 pb-5 container">

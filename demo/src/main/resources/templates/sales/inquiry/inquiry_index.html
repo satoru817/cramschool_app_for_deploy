@@ -3,7 +3,7 @@
 <head>
     <div th:replace="~{fragment::head}"></div>
     <title>問合せ一覧</title>
-    <link rel="stylesheet" th:href="@{/css/name_badge.css}" />
+    <link rel="stylesheet" th:href="@{/css/name_badge.css}"/>
 </head>
 <body>
 <div th:replace="~{fragment::header}"></div>
@@ -68,7 +68,7 @@
                                         </td>
                                         <td>
                                             <a class="btn btn-outline-primary btn-sm"
-                                                th:href="@{/sales/inquiry/actions/__${inquiry.inquiryId}__}">
+                                               th:href="@{/sales/inquiry/actions/__${inquiry.inquiryId}__}">
                                                 <i class="bi bi-clock-history"></i>
                                             </a>
 
@@ -84,7 +84,7 @@
                                         </td>
                                         <td>
                                             <a class="btn btn-outline-info btn-sm"
-                                                th:href="@{/sales/inquiry/edit/__${inquiry.inquiryId}__}">
+                                               th:href="@{/sales/inquiry/edit/__${inquiry.inquiryId}__}">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
                                         </td>
@@ -96,46 +96,89 @@
                     </div>
 
                     <!-- ページネーション -->
+                    <!-- ページネーション -->
+                    <!-- ページネーション -->
                     <div th:if="${inquiries.getTotalPages() > 1}" class="d-flex justify-content-center mt-4">
                         <nav aria-label="問合せ一覧ページ">
                             <ul class="pagination">
                                 <!-- 前へボタン -->
                                 <li class="page-item">
-                                    <span th:if="${inquiries.isFirst()}" class="page-link pagination_itemBox rounded-circle disabled">
-                                        <span class="pagination_prevArrow"></span>
-                                    </span>
-                                    <a th:unless="${inquiries.isFirst()}"
-                                       th:href="@{/sales/inquiry/index(page=${inquiries.getNumber() - 1})}"
-                                       class="page-link pagination_itemBox rounded-circle">
-                                        <span class="pagination_prevArrow"></span>
+        <span
+                th:if="${inquiries.isFirst()}"
+                class="page-link pagination_itemBox rounded-circle disabled"
+        >
+          <span class="pagination_prevArrow"></span>
+        </span>
+                                    <a
+                                    th:unless="${inquiries.isFirst()}"
+                                    th:href="@{/sales/inquiry/index(page=${inquiries.getNumber() - 1})}"
+                                    class="page-link pagination_itemBox rounded-circle"
+                                    >
+                                    <span class="pagination_prevArrow"></span>
                                     </a>
                                 </li>
 
+                                <!-- ページ番号（最初のページ） -->
+                                <li class="page-item" th:if="${inquiries.getNumber() >= 3}">
+                                <a
+                                    th:href="@{/sales/inquiry/index(page=0)}"
+                                    class="page-link pagination_itemBox rounded-circle"
+                                    >1</a>
+                                </li>
+
+                                <!-- 省略記号（前） -->
+                                <li class="page-item" th:if="${inquiries.getNumber() >= 4}">
+                                    <span class="page-link pagination_itemBox rounded-circle">...</span>
+                                </li>
+
                                 <!-- ページ番号（中央部分） -->
-                                <th:block th:with="start=${inquiries.getNumber() <= 2 ? 0 : inquiries.getNumber() - 2},
-                                                 end=${inquiries.getTotalPages() - inquiries.getNumber() <= 3 ? inquiries.getTotalPages() - 1 : inquiries.getNumber() + 2}">
+                                <th:block
+                                        th:with="start=${inquiries.getNumber() <= 2 ? 0 : inquiries.getNumber() - 2},
+                 end=${inquiries.getTotalPages() - inquiries.getNumber() <= 3 ? inquiries.getTotalPages() - 1 : inquiries.getNumber() + 2}"
+                                >
                                     <li class="page-item" th:each="i : ${#numbers.sequence(start, end)}">
-                                        <span th:if="${i == inquiries.getNumber()}"
-                                              class="page-link pagination_itemBox rounded-circle active"
-                                              th:text="${i + 1}">
-                                        </span>
-                                        <a th:unless="${i == inquiries.getNumber()}"
-                                           th:href="@{/sales/inquiry/index(page=${i})}"
-                                           class="page-link pagination_itemBox rounded-circle"
-                                           th:text="${i + 1}">
-                                        </a>
+          <span
+                  th:if="${i == inquiries.getNumber()}"
+                  class="page-link pagination_itemBox rounded-circle active"
+                  th:text="${i + 1}"
+          ></span>
+                                    <a
+                                        th:unless="${i == inquiries.getNumber()}"
+                                        th:href="@{/sales/inquiry/index(page=${i})}"
+                                        class="page-link pagination_itemBox rounded-circle"
+                                        th:text="${i + 1}"
+                                        ></a>
                                     </li>
                                 </th:block>
 
+                                <!-- 省略記号（後） -->
+                                <li class="page-item" th:if="${inquiries.getTotalPages() - inquiries.getNumber() > 4}">
+                                    <span class="page-link pagination_itemBox rounded-circle">...</span>
+                                </li>
+
+                                <!-- 最後のページ -->
+                                <li class="page-item" th:if="${inquiries.getTotalPages() - inquiries.getNumber() > 3}">
+                                    <a
+                                    th:href="@{/sales/inquiry/index(page=${inquiries.getTotalPages() - 1})}"
+                                    class="page-link pagination_itemBox rounded-circle"
+                                    th:text="${inquiries.getTotalPages()}"
+                                    ></a>
+                                </li>
+
                                 <!-- 次へボタン -->
                                 <li class="page-item">
-                                    <span th:if="${inquiries.isLast()}" class="page-link pagination_itemBox rounded-circle disabled">
-                                        <span class="pagination_nextArrow"></span>
-                                    </span>
-                                    <a th:unless="${inquiries.isLast()}"
-                                       th:href="@{/sales/inquiry/index(page=${inquiries.getNumber() + 1})}"
-                                       class="page-link pagination_itemBox rounded-circle">
-                                        <span class="pagination_nextArrow"></span>
+        <span
+                th:if="${inquiries.isLast()}"
+                class="page-link pagination_itemBox rounded-circle disabled"
+        >
+          <span class="pagination_nextArrow"></span>
+        </span>
+                                    <a
+                                    th:unless="${inquiries.isLast()}"
+                                    th:href="@{/sales/inquiry/index(page=${inquiries.getNumber() + 1})}"
+                                    class="page-link pagination_itemBox rounded-circle"
+                                    >
+                                    <span class="pagination_nextArrow"></span>
                                     </a>
                                 </li>
                             </ul>
@@ -278,9 +321,9 @@
 </div>
 
 
-
 <!--削除モーダル-->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
@@ -304,7 +347,7 @@
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">
                     <i class="bi bi-x-circle"></i> キャンセル
                 </button>
-                <a  class="btn btn-danger" id="deleteLink">
+                <a class="btn btn-danger" id="deleteLink">
                     <i class="bi bi-trash"></i> 削除する
                 </a>
 

@@ -144,6 +144,7 @@
                 </div>
             </div>
 
+
             <!-- 作成モーダル -->
             <div class="modal fade" id="createInquiryModal" tabindex="-1">
                 <div class="modal-dialog">
@@ -155,42 +156,66 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form id="createInquiryForm" th:action="@{/sales/inquiry/create}" method="post">
+                            <form id="createInquiryForm" th:action="@{/sales/inquiry/create}"
+                                  th:object="${inquiryFirstPostDTO}" method="post">
+
+                                <!-- 問合せ者名 -->
                                 <div class="mb-3">
                                     <label for="name" class="form-label">問合せ者名</label>
                                     <input type="text"
                                            class="form-control"
                                            id="name"
                                            name="name"
+                                           th:field="*{name}"
                                            required
                                            placeholder="問合せ者名を入力してください">
+
                                 </div>
 
+                                <!-- ふりがな -->
+                                <div class="mb-3">
+                                    <label for="kana" class="form-label">ふりがな</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="kana"
+                                           name="kana"
+                                           th:field="*{kana}"
+                                           placeholder="ふりがなを入力してください">
+                                </div>
+
+                                <!-- 教室選択 -->
                                 <div class="mb-3">
                                     <label for="cramSchoolId" class="form-label">教室選択</label>
-                                    <select class="form-select" id="cramSchoolId" name="cramSchoolId" required>
+                                    <select class="form-select" id="cramSchoolId" name="cramSchoolId"
+                                            th:field="*{cramSchoolId}" required>
                                         <option value="">教室を選択してください</option>
                                         <option th:each="school : ${cramSchools}"
                                                 th:value="${school.cramSchoolId}"
                                                 th:text="${school.name}">
                                         </option>
                                     </select>
+
                                 </div>
 
+                                <!-- ファネル選択 -->
                                 <div class="mb-3">
                                     <label for="funnelId" class="form-label">ファネル選択</label>
-                                    <select class="form-select" id="funnelId" name="funnelId" required>
+                                    <select class="form-select" id="funnelId" name="funnelId"
+                                            th:field="*{funnelId}" required>
                                         <option value="">ファネルを選択してください</option>
                                         <option th:each="funnel : ${funnels}"
                                                 th:value="${funnel.funnelId}"
                                                 th:text="${funnel.name}">
                                         </option>
                                     </select>
+
                                 </div>
 
+                                <!-- 学年選択 -->
                                 <div class="mb-3">
                                     <label for="gradeStr" class="form-label">学年選択</label>
-                                    <select class="form-select" id="gradeStr" name="gradeStr" required>
+                                    <select class="form-select" id="gradeStr" name="gradeStr"
+                                            th:field="*{gradeStr}" required>
                                         <option value="">学年を選択してください</option>
                                         <option value="小１">小１</option>
                                         <option value="小２">小２</option>
@@ -207,9 +232,33 @@
                                     </select>
                                 </div>
 
+                                <!-- 問合せ日選択 -->
                                 <div class="mb-3">
                                     <label for="inquiryDate" class="form-label">問合せ日選択</label>
-                                    <input type="date" id="inquiryDate" name="inquiryDate" required>
+                                    <input type="date" id="inquiryDate" name="inquiryDate"
+                                           th:field="*{inquiryDate}" required>
+                                </div>
+
+                                <!-- コメント -->
+                                <div class="mb-3">
+                                    <label for="comment" class="form-label">コメント</label>
+                                    <textarea class="form-control" id="comment" name="comment"
+                                              th:field="*{comment}" rows="3"
+                                              placeholder="コメントを入力してください"></textarea>
+                                </div>
+
+                                <!-- 担当者ID（hidden） -->
+                                <div class="mb-3">
+                                    <label for="funnelId" class="form-label">対応者選択</label>
+                                    <select class="form-select" id="userId" name="userId"
+                                            th:field="*{userId}" required>
+                                        <option value="">対応者を選択してください</option>
+                                        <option th:each="user : ${users}"
+                                                th:value="${user.userId}"
+                                                th:text="${user.name}">
+                                        </option>
+                                    </select>
+
                                 </div>
                             </form>
                         </div>

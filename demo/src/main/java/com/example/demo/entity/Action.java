@@ -1,13 +1,12 @@
 package com.example.demo.entity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 // Action.java
+@Builder
 @Entity
 @Table(name = "actions")
 @Data
@@ -22,5 +21,7 @@ public class Action {
     private String actionName;
 
     @OneToMany(mappedBy = "action",fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ActionHistory> actionHistories;
 }

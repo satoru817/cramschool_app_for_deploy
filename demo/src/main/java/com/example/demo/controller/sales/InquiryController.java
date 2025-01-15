@@ -2,13 +2,12 @@ package com.example.demo.controller.sales;
 
 import com.example.demo.entity.*;
 import com.example.demo.mapper.InquiryMapper;
-import com.example.demo.repository.CramSchoolRepository;
-import com.example.demo.repository.FunnelRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.TermAndYearService;
 import com.example.demo.service.UserService;
 import com.example.demo.service.sales.ActionService;
 import com.example.demo.service.sales.InquiryService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -41,6 +41,27 @@ public class InquiryController {
     private final FunnelRepository funnelRepository;
     private final TermAndYearService termAndYearService;
     private final ActionService actionService;
+    private final ActionRepository actionRepository;
+    private final ActionHistoryRepository actionHistoryRepository;
+
+    private static final String FIRST_ACTION = "初回問合せ";
+
+    @PostConstruct
+    public void init() {
+        try {
+            // "初回問合せ"アクションが存在するか確認
+            if (actionRepository.findByActionName(FIRST_ACTION).isEmpty()) {
+                Action initialAction = Action.builder()
+                        .actionName(FIRST_ACTION)
+                        .build();
+                actionRepository.save(initialAction);
+            }
+        } catch (Exception e) {
+            // ログ出力
+            // 初期データ作成失敗時のハンドリング
+            throw new RuntimeException("Failed to initialize default action", e);
+        }
+    }
 
     /**
      * 問合せ一覧画面を表示します。
@@ -61,8 +82,17 @@ public class InquiryController {
 
         //todo:sortが消えている。下のメソッドのせい
         Page<Inquiry> inquiries = inquiryService.findAllAndSetField(pageable);
+        List<User> users = userRepository.findAll();
+        List<Action> actions = actionService.getAll();
+        List<CramSchool> cramSchools = cramSchoolRepository.findAll();
+
 
         model.addAttribute("inquiries",inquiries);
+        model.addAttribute("users",users);
+        model.addAttribute("actions",actions);
+        model.addAttribute("cramSchools",cramSchools);
+        model.addAttribute("inquiryFirstPostDTO",new InquiryFirstPostDTO());
+
 
         setFunnelsAndUsersAndCramSchoolsToModel(model);
         return "sales/inquiry/inquiry_index";
@@ -127,12 +157,48 @@ public class InquiryController {
         return inquiryService.save(inquiry);
     }
 
+    @Transactional
+    private boolean insertInquiryFirstPostDTOAndFirstActionHistory(InquiryFirstPostDTO inquiryFirstPostDTO){
+        Inquiry inquiry = Inquiry.builder()
+                .funnel(funnelRepository.getReferenceById(inquiryFirstPostDTO.getFunnelId()))
+                .cramSchool(cramSchoolRepository.getReferenceById(inquiryFirstPostDTO.getCramSchoolId()))
+                .nameKanji(inquiryFirstPostDTO.getName())
+                .nameKana(inquiryFirstPostDTO.getKana())
+                .inquiryDate(inquiryFirstPostDTO.getInquiryDate())
+                .build();
+
+        if(inquiryFirstPostDTO.getGradeStr() != null){
+            Integer el1 = termAndYearService.getEl1FromGradeStr(inquiryFirstPostDTO.getGradeStr());
+            inquiry.setEl1(el1);
+        }
+
+        try{
+            inquiryService.save(inquiry);
+        }catch (RuntimeException e){
+            return false;
+        }
+
+        Action firstAction = actionRepository.getByActionName(FIRST_ACTION);
+
+        ActionHistory firstActionHistory = ActionHistory.builder()
+                .action(firstAction)
+                .inquiry(inquiry)
+                .actionDate(inquiryFirstPostDTO.getInquiryDate())
+                .user(userRepository.getReferenceById(inquiryFirstPostDTO.getUserId()))
+                .comment(inquiryFirstPostDTO.getComment())
+                .build();
+
+        boolean b = actionHistoryRepository.save(firstActionHistory) != null;
+        return b;
+    }
+
+    //todo:新規問合せのActionHistoryも同時に作るように修正する必要がある。
     @PostMapping("/create")
     public String create(RedirectAttributes redirectAttributes,
-                         @ModelAttribute InquiryPostDTO inquiryPostDTO
+                         @ModelAttribute InquiryFirstPostDTO inquiryFirstPostDTO
                          ){
 
-        boolean b = upsertInquiryPostDTO(inquiryPostDTO);
+        boolean b = insertInquiryFirstPostDTOAndFirstActionHistory(inquiryFirstPostDTO);
 
         String message;
 

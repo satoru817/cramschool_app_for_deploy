@@ -1,344 +1,367 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <div th:replace="~{fragment::head}"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <div th:replace="~{fragment::head}"></div>
 
-  <style>
-    /* 既存のスタイルを保持しつつ追加 */
-    .student-name, .dream-school {
+    <style>
+      /* 既存のスタイルを保持しつつ追加 */
+      .student-name,
+      .dream-school {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-    .result-row:nth-child(even) {
+      }
+      .result-row:nth-child(even) {
         background-color: #f8f9fa;
-    }
-    .result-row {
+      }
+      .result-row {
         transition: background-color 0.3s;
-    }
-    .result-row:hover {
+      }
+      .result-row:hover {
         background-color: #e2e6ea;
-    }
-    .table-container {
+      }
+      .table-container {
         overflow-x: auto;
-    }
-    [class^="dream-school"] {
+      }
+      [class^="dream-school"] {
         white-space: nowrap;
-    }
-    [class$="ss"] {
+      }
+      [class$="ss"] {
         background-color: rgba(192, 192, 192, 0.8);
-    }
+      }
 
-    /* 新しく追加するスタイル */
-    .card {
+      /* 新しく追加するスタイル */
+      .card {
         box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         border-radius: 0.5rem;
         margin-bottom: 1.5rem;
-    }
+      }
 
-    .card-header {
+      .card-header {
         background-color: #f8f9fa;
         border-bottom: 1px solid rgba(0, 0, 0, 0.125);
         padding: 1rem;
         border-radius: 0.5rem 0.5rem 0 0 !important;
-    }
+      }
 
-    .card-body {
+      .card-body {
         padding: 1.25rem;
-    }
+      }
 
-    .table thead th {
+      .table thead th {
         background-color: #f8f9fa;
         border-bottom: 2px solid #dee2e6;
         position: sticky;
         top: 0;
         z-index: 1;
-    }
+      }
 
-    .table td, .table th {
+      .table td,
+      .table th {
         padding: 0.75rem;
         vertical-align: middle;
-    }
+      }
 
-    .form-group {
+      .form-group {
         margin-bottom: 1rem;
-    }
+      }
 
-    .btn-outline-success {
+      .btn-outline-success {
         transition: all 0.3s;
-    }
+      }
 
-    .btn-outline-success:hover {
+      .btn-outline-success:hover {
         transform: translateY(-1px);
-    }
+      }
 
-    .page-link {
+      .page-link {
         color: #28a745;
-    }
+      }
 
-    .page-item.active .page-link {
+      .page-item.active .page-link {
         background-color: #28a745;
         border-color: #28a745;
-    }
+      }
 
-    .modal-content {
+      .modal-content {
         border-radius: 0.5rem;
-    }
+      }
 
-    .modal-header {
+      .modal-header {
         background-color: #f8f9fa;
         border-radius: 0.5rem 0.5rem 0 0;
-    }
+      }
 
-    /* テーブルのレスポンシブ対応を強化 */
-    .table-responsive {
+      /* テーブルのレスポンシブ対応を強化 */
+      .table-responsive {
         max-height: 70vh;
         overflow-y: auto;
-    }
+      }
 
-    /* 検索フォームの改善 */
-    .search-section {
+      /* 検索フォームの改善 */
+      .search-section {
         background-color: #fff;
         padding: 1.5rem;
         border-radius: 0.5rem;
-    }
+      }
 
-    /* ヘッダー部分のスタイリング */
-    .page-header {
+      /* ヘッダー部分のスタイリング */
+      .page-header {
         margin-bottom: 2rem;
         padding-bottom: 1rem;
         border-bottom: 1px solid #dee2e6;
-    }
+      }
 
-    /* 成績表示のセル改善 */
-    td[class$="-ss"] {
+      /* 成績表示のセル改善 */
+      td[class$="-ss"] {
         font-weight: 500;
         text-align: center;
-    }
+      }
 
-    /* リンクのスタイル改善 */
-    .student-name {
+      /* リンクのスタイル改善 */
+      .student-name {
         color: #007bff;
         text-decoration: none;
         transition: color 0.3s;
-    }
+      }
 
-    .student-name:hover {
+      .student-name:hover {
         color: #0056b3;
         text-decoration: underline;
-    }
+      }
 
-.card-body {
-    padding: 1.25rem;
-    position: relative;  /* 追加 */
-}
+      .card-body {
+        padding: 1.25rem;
+        position: relative; /* 追加 */
+      }
 
-.table-container {
-    overflow-x: auto;
-    max-height: 80vh;
-}
+      .table-container {
+        overflow-x: auto;
+        max-height: 80vh;
+      }
 
-.table thead th {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-}
-  </style>
-  <script th:src="@{/js/mockTest_modal.js}" defer></script>
-</head>
+      .table thead th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+    </style>
+    <script th:src="@{/js/mockTest_modal.js}" defer></script>
+  </head>
 
-<body>
-<div th:replace="~{fragment::header}"></div>
-<div class="container-fluid mt-5">
-  <div class="d-flex align-items-center mb-2">
-    <h2 class="mb-0" th:text="${mockTestResults.content.get(0).mockTest.name}+'結果確認画面'"></h2>
-    <div class="ml-3">
-      <a class="text-decoration-none btn btn-outline-success" th:href="@{/mockTest/analysis/__${mockTestResults.content.get(0).mockTest.id}__}">結果分析</a>
-    </div>
-    <div class="ml-3">
-      <a class="btn btn-outline-warning text-decoration-none" th:href="@{/mockTestResults/all/__${mockTestResults.content.get(0).mockTest.id}__}">全件表示</a>
-    </div>
-  </div>
-
-  <!-- 成功メッセージの表示 -->
-  <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-    <span th:text="${successMessage}"></span>
-    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">×</button>
-  </div>
-
-
-  <div class="row g-2">
-    <!-- 左カラム：検索機能 -->
-    <div class="col-md-3">
-      <div class="card">
-        <div class="card-header bg-light">
-          <h5 class="card-title mb-0">学生検索</h5>
+  <body>
+    <div th:replace="~{fragment::header}"></div>
+    <div class="container-fluid mt-5">
+      <div class="d-flex align-items-center mb-2">
+        <h2 class="mb-0" th:text="${mockTestResults.content.get(0).mockTest.name}+'結果確認画面'"></h2>
+        <div class="ml-3">
+          <a
+            class="text-decoration-none btn btn-outline-success"
+            th:href="@{/mockTest/analysis/__${mockTestResults.content.get(0).mockTest.id}__}"
+            >結果分析</a
+          >
         </div>
-        <div class="card-body">
-          <form th:action="@{/mockTestResults/{id}(id=${mockTestId})}" method="get">
-            <div class="form-group">
-              <label for="searchName">学生名</label>
-              <div class="input-group">
-                <input type="text"
-                       class="form-control"
-                       id="searchName"
-                       placeholder="学生名を入力"
-                       name="searchName"
-                       th:value="${searchName}">
-                <button class="btn btn-outline-primary" type="submit">
-                  <i class="bi bi-search"></i> 検索
-                </button>
+        <div class="ml-3">
+          <a
+            class="btn btn-outline-warning text-decoration-none"
+            th:href="@{/mockTestResults/all/__${mockTestResults.content.get(0).mockTest.id}__}"
+            >全件表示</a
+          >
+        </div>
+      </div>
+
+      <!-- 成功メッセージの表示 -->
+      <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">×</button>
+      </div>
+
+      <div class="row g-2">
+        <!-- 左カラム：検索機能 -->
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0">学生検索</h5>
+            </div>
+            <div class="card-body">
+              <form th:action="@{/mockTestResults/{id}(id=${mockTestId})}" method="get">
+                <div class="form-group">
+                  <label for="searchName">学生名</label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="searchName"
+                      placeholder="学生名を入力"
+                      name="searchName"
+                      th:value="${searchName}"
+                    />
+                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i> 検索</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0">ランキング作成</h5>
+            </div>
+            <div class="card-body">
+              <form th:action="@{/mockTestResults/ranking/{id}(id=${mockTestId})}" method="get">
+                <div class="form-group mb-3">
+                  <label for="rankType" class="form-label">順位の種類</label>
+                  <select class="form-select" id="rankType" name="rankType" required>
+                    <option value="">選択してください</option>
+                    <option value="top">上位</option>
+                    <option value="bottom">下位</option>
+                  </select>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="count" class="form-label">表示人数</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="count"
+                    name="count"
+                    min="1"
+                    max="100"
+                    required
+                    placeholder="表示する人数を入力"
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary">ランキングを表示</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右カラム：結果テーブル -->
+        <div class="col-md-9">
+          <div class="card">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0">模試結果一覧</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>学生名</th>
+                      <th>クラス名</th>
+                      <!-- 国語のグループ -->
+                      <th>国語</th>
+                      <th>国語偏差値</th>
+                      <!-- 数学のグループ -->
+                      <th>数学</th>
+                      <th>数学偏差値</th>
+                      <!-- 英語のグループ -->
+                      <th>英語</th>
+                      <th>英語偏差値</th>
+                      <!-- 社会のグループ -->
+                      <th>社会</th>
+                      <th>社会偏差値</th>
+                      <!-- 理科のグループ -->
+                      <th>理科</th>
+                      <th>理科偏差値</th>
+                      <!-- 合計のグループ -->
+                      <th>3科目合計</th>
+                      <th>3科目偏差値</th>
+                      <th>5科目合計</th>
+                      <th>5科目偏差値</th>
+                      <!-- 志望校情報 -->
+                      <th>志望校1</th>
+                      <th>合格可能性1</th>
+                      <th>志望校2</th>
+                      <th>合格可能性2</th>
+                      <th>志望校3</th>
+                      <th>合格可能性3</th>
+                      <th>志望校4</th>
+                      <th>合格可能性4</th>
+                      <th>志望校5</th>
+                      <th>合格可能性5</th>
+                      <th>志望校6</th>
+                      <th>合格可能性6</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="result : ${mockTestResults.content}" class="result-row">
+                      <td>
+                        <a
+                          th:href="@{/student/all_score/__${result.student.id}__}"
+                          th:text="${result.student.getName()}"
+                          class="student-name text-blue-600 hover:text-blue-800 hover:underline"
+                        ></a>
+                      </td>
+                      <td class="text-nowrap">
+                        <span class="badge badge-info" th:text="${result.klassName}"></span>
+                      </td>
+                      <td class="japanese solid" th:text="${result.japanese}"></td>
+                      <td class="japanese-ss" th:text="${result.japaneseSs}"></td>
+                      <td class="math solid" th:text="${result.math}"></td>
+                      <td class="math-ss" th:text="${result.mathSs}"></td>
+                      <td class="english solid" th:text="${result.english}"></td>
+                      <td class="english-ss" th:text="${result.englishSs}"></td>
+                      <td class="social solid" th:text="${result.social}"></td>
+                      <td class="social-ss" th:text="${result.socialSs}"></td>
+                      <td class="science solid" th:text="${result.science}"></td>
+                      <td class="science-ss" th:text="${result.scienceSs}"></td>
+                      <td class="total-3" th:text="${result.getTotal3()}"></td>
+                      <td class="total3-ss" th:text="${result.total3Ss}"></td>
+                      <td class="total-5" th:text="${result.getTotal5()}"></td>
+                      <td class="total5-ss" th:text="${result.total5Ss}"></td>
+                      <div th:replace="~{fragment::dreamSchool}"></div>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- ページネーション -->
+              <div th:if="${mockTestResults.totalPages > 1}" class="d-flex justify-content-center mt-3">
+                <nav aria-label="模試結果ページ">
+                  <ul class="pagination mb-0">
+                    <li class="page-item">
+                      <span th:if="${mockTestResults.isFirst()}" class="page-link disabled">前</span>
+                      <a
+                        th:unless="${mockTestResults.isFirst()}"
+                        th:href="@{/mockTestResults/{id}(id=${mockTestId}, searchName=${searchName}, page=${mockTestResults.number - 1})}"
+                        class="page-link"
+                        >前</a
+                      >
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(0, mockTestResults.totalPages - 1)}" class="page-item">
+                      <span th:if="${i == mockTestResults.number}" class="page-link active" th:text="${i + 1}"></span>
+                      <a
+                        th:unless="${i == mockTestResults.number}"
+                        th:href="@{/mockTestResults/{id}(id=${mockTestId}, searchName=${searchName}, page=${i})}"
+                        class="page-link"
+                        th:text="${i + 1}"
+                      ></a>
+                    </li>
+                    <li class="page-item">
+                      <span th:if="${mockTestResults.isLast()}" class="page-link disabled">次</span>
+                      <a
+                        th:unless="${mockTestResults.isLast()}"
+                        th:href="@{/mockTestResults/{id}(id=${mockTestId}, searchName=${searchName}, page=${mockTestResults.number + 1})}"
+                        class="page-link"
+                        >次</a
+                      >
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
-          </form>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header bg-light">
-          <h5 class="card-title mb-0">ランキング作成</h5>
-        </div>
-        <div class="card-body">
-          <form th:action="@{/mockTestResults/ranking/{id}(id=${mockTestId})}" method="get">
-            <div class="form-group mb-3">
-              <label for="rankType" class="form-label">順位の種類</label>
-              <select class="form-select" id="rankType" name="rankType" required>
-                <option value="">選択してください</option>
-                <option value="top">上位</option>
-                <option value="bottom">下位</option>
-              </select>
-            </div>
-            <div class="form-group mb-3">
-              <label for="count" class="form-label">表示人数</label>
-              <input type="number"
-                     class="form-control"
-                     id="count"
-                     name="count"
-                     min="1"
-                     max="100"
-                     required
-                     placeholder="表示する人数を入力">
-            </div>
-            <button type="submit" class="btn btn-primary">ランキングを表示</button>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- 右カラム：結果テーブル -->
-    <div class="col-md-9">
-      <div class="card">
-        <div class="card-header bg-light">
-          <h5 class="card-title mb-0">模試結果一覧</h5>
-        </div>
-        <div class="card-body">
-          <div class="table-container">
-            <table class="table">
-              <thead>
-              <tr>
-                <th>学生名</th>
-                <th>クラス名</th>
-                <!-- 国語のグループ -->
-                <th>国語</th>
-                <th>国語偏差値</th>
-                <!-- 数学のグループ -->
-                <th>数学</th>
-                <th>数学偏差値</th>
-                <!-- 英語のグループ -->
-                <th>英語</th>
-                <th>英語偏差値</th>
-                <!-- 社会のグループ -->
-                <th>社会</th>
-                <th>社会偏差値</th>
-                <!-- 理科のグループ -->
-                <th>理科</th>
-                <th>理科偏差値</th>
-                <!-- 合計のグループ -->
-                <th>3科目合計</th>
-                <th>3科目偏差値</th>
-                <th>5科目合計</th>
-                <th>5科目偏差値</th>
-                <!-- 志望校情報 -->
-                <th>志望校1</th>
-                <th>合格可能性1</th>
-                <th>志望校2</th>
-                <th>合格可能性2</th>
-                <th>志望校3</th>
-                <th>合格可能性3</th>
-                <th>志望校4</th>
-                <th>合格可能性4</th>
-                <th>志望校5</th>
-                <th>合格可能性5</th>
-                <th>志望校6</th>
-                <th>合格可能性6</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr th:each="result : ${mockTestResults.content}" class="result-row">
-                <td>
-                  <a th:href="@{/student/all_score/__${result.student.id}__}" th:text="${result.student.getName()}" class="student-name text-blue-600 hover:text-blue-800 hover:underline"></a>
-                </td>
-                <td class="text-nowrap">
-                  <span class="badge badge-info" th:text="${result.klassName}"></span>
-                </td>
-                <td class="japanese solid" th:text="${result.japanese}"></td>
-                <td class="japanese-ss" th:text="${result.japaneseSs}"></td>
-                <td class="math solid" th:text="${result.math}"></td>
-                <td class="math-ss" th:text="${result.mathSs}"></td>
-                <td class="english solid" th:text="${result.english}"></td>
-                <td class="english-ss" th:text="${result.englishSs}"></td>
-                <td class="social solid" th:text="${result.social}"></td>
-                <td class="social-ss" th:text="${result.socialSs}"></td>
-                <td class="science solid" th:text="${result.science}"></td>
-                <td class="science-ss" th:text="${result.scienceSs}"></td>
-                <td class="total-3" th:text="${result.getTotal3()}"></td>
-                <td class="total3-ss" th:text="${result.total3Ss}"></td>
-                <td class="total-5" th:text="${result.getTotal5()}"></td>
-                <td class="total5-ss" th:text="${result.total5Ss}"></td>
-                <div th:replace="~{fragment::dreamSchool}"></div>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- ページネーション -->
-          <div th:if="${mockTestResults.totalPages > 1}" class="d-flex justify-content-center mt-3">
-            <nav aria-label="模試結果ページ">
-              <ul class="pagination mb-0">
-                <li class="page-item">
-                  <span th:if="${mockTestResults.isFirst()}" class="page-link disabled">前</span>
-                  <a th:unless="${mockTestResults.isFirst()}"
-                     th:href="@{/mockTestResults/{id}(id=${mockTestId}, searchName=${searchName}, page=${mockTestResults.number - 1})}"
-                     class="page-link">前</a>
-                </li>
-                <li th:each="i : ${#numbers.sequence(0, mockTestResults.totalPages - 1)}" class="page-item">
-                  <span th:if="${i == mockTestResults.number}" class="page-link active" th:text="${i + 1}"></span>
-                  <a th:unless="${i == mockTestResults.number}"
-                     th:href="@{/mockTestResults/{id}(id=${mockTestId}, searchName=${searchName}, page=${i})}"
-                     class="page-link" th:text="${i + 1}"></a>
-                </li>
-                <li class="page-item">
-                  <span th:if="${mockTestResults.isLast()}" class="page-link disabled">次</span>
-                  <a th:unless="${mockTestResults.isLast()}"
-                     th:href="@{/mockTestResults/{id}(id=${mockTestId}, searchName=${searchName}, page=${mockTestResults.number + 1})}"
-                     class="page-link">次</a>
-                </li>
-              </ul>
-            </nav>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- モーダル部分を追加 -->
-<div th:replace="~{fragment::mockTestModal}"></div>
+    <!-- モーダル部分を追加 -->
+    <div th:replace="~{fragment::mockTestModal}"></div>
 
-
-<div th:replace="~{fragment::footer}"></div>
-<div th:replace="~{fragment::script}"></div>
-</body>
+    <div th:replace="~{fragment::footer}"></div>
+    <div th:replace="~{fragment::script}"></div>
+  </body>
 </html>

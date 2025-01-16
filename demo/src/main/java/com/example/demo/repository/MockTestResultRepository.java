@@ -25,7 +25,7 @@ public interface MockTestResultRepository extends JpaRepository<MockTestResult, 
     Page<MockTestResult> findAllByMockTestIdAndStudentNameContaining(Integer mockTestId, String studentName, Pageable pageable);
 
     @Query(value = """
-                SELECT rank, subject_score, standard_score, student_name, student_id
+                SELECT `rank`, subject_score, standard_score, student_name, student_id
                 FROM (
                     SELECT 
                         r.student_id,
@@ -47,36 +47,39 @@ public interface MockTestResultRepository extends JpaRepository<MockTestResult, 
                              WHEN :subjectField = 'total5' THEN r.total5_ss                 
                         END as standard_score,
                         RANK() OVER (
-                            ORDER BY 
-                                CASE WHEN :isAsc = true THEN 
-                                    CASE WHEN :subjectField = 'japanese' THEN r.japanese
-                                         WHEN :subjectField = 'math' THEN r.math
-                                         WHEN :subjectField = 'english' THEN r.english
-                                         WHEN :subjectField = 'science' THEN r.science
-                                         WHEN :subjectField = 'social' THEN r.social
-                                         WHEN :subjectField = 'total3' THEN r.total3
-                                         WHEN :subjectField = 'total5' THEN r.total5
-                                    END
-                                END ASC,
-                                CASE WHEN :isAsc = false THEN 
-                                    CASE WHEN :subjectField = 'japanese' THEN r.japanese
-                                         WHEN :subjectField = 'math' THEN r.math
-                                         WHEN :subjectField = 'english' THEN r.english
-                                         WHEN :subjectField = 'science' THEN r.science
-                                         WHEN :subjectField = 'social' THEN r.social
-                                         WHEN :subjectField = 'total3' THEN r.total3
-                                         WHEN :subjectField = 'total5' THEN r.total5                             
-                                    END
-                                END DESC
-                        ) as rank
+                                                  ORDER BY
+                                                      CASE WHEN :isAsc = true THEN
+                                                          CASE WHEN :subjectField = 'japanese' THEN COALESCE(r.japanese,100)
+                                                               WHEN :subjectField = 'math' THEN COALESCE(r.math,100)
+                                                               WHEN :subjectField = 'english' THEN COALESCE(r.english,100)
+                                                               WHEN :subjectField = 'science' THEN COALESCE(r.science,100)
+                                                               WHEN :subjectField = 'social' THEN COALESCE(r.social,100)
+                                                               WHEN :subjectField = 'total3' THEN COALESCE(r.total3,100)
+                                                               WHEN :subjectField = 'total5' THEN COALESCE(r.total5,100)
+                                                          END
+                                                      END ASC,
+                                                      CASE WHEN :isAsc = false THEN
+                                                          CASE WHEN :subjectField = 'japanese' THEN COALESCE(r.japanese,0)
+                                                               WHEN :subjectField = 'math' THEN COALESCE(r.math,0)
+                                                               WHEN :subjectField = 'english' THEN COALESCE(r.english,0)
+                                                               WHEN :subjectField = 'science' THEN COALESCE(r.science,0)
+                                                               WHEN :subjectField = 'social' THEN COALESCE(r.social,0)
+                                                               WHEN :subjectField = 'total3' THEN COALESCE(r.total3,0)
+                                                               WHEN :subjectField = 'total5' THEN COALESCE(r.total5,0)                          
+                                                          END
+                                                      END DESC
+                                              ) as `rank`
                     FROM mock_test_results r
                     JOIN students s ON s.student_id = r.student_id
                     WHERE r.mock_test_id = :mockTestId
                 ) ranking
-                WHERE ranking.rank <= :maxRank
+                WHERE 
+                    ranking.rank <= :maxRank
+                AND
+                    ranking.subject_score IS NOT NULL
                 ORDER BY 
-                    CASE WHEN :isAsc = true THEN ranking.subject_score END ASC,
-                    CASE WHEN :isAsc = false THEN ranking.subject_score END DESC
+                    CASE WHEN :isAsc = true THEN  COALESCE(ranking.subject_score,100) END ASC,
+                    CASE WHEN :isAsc = false THEN COALESCE(ranking.subject_score,0) END DESC
             """, nativeQuery = true)
     List<Map<String, Object>> findSubjectRanking(
             @Param("mockTestId") Integer mockTestId,

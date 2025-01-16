@@ -9,8 +9,8 @@
 }
 
 .navbar-brand {
-  background: url("/images/logo-1.svg") no-repeat center;
-  background-size: contain;
-  height: 50px;
-  width: 200px;
+    background: url("/images/logo-1.svg") no-repeat center;
+    background-size: contain;
+    height: 50px;
+    width: 200px;
 }

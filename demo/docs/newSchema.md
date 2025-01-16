@@ -239,3 +239,4 @@ erDiagram
         date start_date
         date end_date
     }
+```

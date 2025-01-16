@@ -72,10 +72,10 @@ public class MockTestResult implements Serializable {
     @Column(name = "total5_ss")
     private Integer total5Ss;
 
-
+    @Column(name="total3",insertable = false,updatable = false)
     private Integer total3;
 
-
+    @Column(name="total5" , insertable = false ,updatable = false)
     private Integer total5;
 
     @Column(name = "dream_school1")

@@ -1,188 +1,267 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <div th:replace="~{fragment::head}"></div>
 
-    <link rel="stylesheet" th:href="@{/css/showAllResult.css}">
+    <link rel="stylesheet" th:href="@{/css/showAllResult.css}" />
     <script th:src="@{/js/regularTest_modal.js}" defer></script>
-</head>
+  </head>
 
-<body>
-<div th:replace="~{fragment::header}"></div>
+  <body>
+    <div th:replace="~{fragment::header}"></div>
 
-<div class="main-container mt-5">
-    <div class="title-section">
+    <div class="main-container mt-5">
+      <div class="title-section">
         <h2>
-            <span th:text="${regularTestSet.term}+'年度'"></span>
-            <span th:text="${regularTestSet.grade}+'年生'"></span>
-            <span th:text="${regularTestSet.semester}+'学期'"></span>
-            <span th:if="${regularTestSet.isMid == 0}" th:text="'期末テスト'"></span>
-            <span th:if="${regularTestSet.isMid == 1}" th:text="'中間テスト'"></span>結果確認画面
+          <span th:text="${regularTestSet.term}+'年度'"></span>
+          <span th:text="${regularTestSet.grade}+'年生'"></span>
+          <span th:text="${regularTestSet.semester}+'学期'"></span>
+          <span th:if="${regularTestSet.isMid == 0}" th:text="'期末テスト'"></span>
+          <span th:if="${regularTestSet.isMid == 1}" th:text="'中間テスト'"></span>結果確認画面
         </h2>
         <span class="btn btn-outline-success mr-3">
-      <a class="text-decoration-none" th:href="@{/regularTestSet/analysis/__${regularTestSet.regularTestSetId}__}">結果分析</a>
-    </span>
+          <a class="text-decoration-none" th:href="@{/regularTestSet/analysis/__${regularTestSet.regularTestSetId}__}"
+            >結果分析</a
+          >
+        </span>
         <span class="btn btn-outline-info">
-      <a class="text-decoration-none" th:href="@{/regularTestResultChunkEdit/__${regularTestSet.regularTestSetId}__}">編集画面に戻る</a>
-    </span>
-    </div>
+          <a
+            class="text-decoration-none"
+            th:href="@{/regularTestResultChunkEdit/__${regularTestSet.regularTestSetId}__}"
+            >編集画面に戻る</a
+          >
+        </span>
+      </div>
 
-    <div class="card">
+      <div class="card">
         <div class="card-header bg-light">
-            <h5 class="card-title mb-0 text-center">定期テスト結果一覧</h5>
+          <h5 class="card-title mb-0 text-center">定期テスト結果一覧</h5>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>学生名</th>
-                        <th>クラス名
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='klass',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='klass',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            国語
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='japanese',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='japanese',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            数学
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='math',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='math',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            英語
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='english',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='english',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            理科
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='science',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='science',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            社会
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='social',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='social',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            音楽
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='music',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='music',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            美術
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='art',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='art',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            技術
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='tech',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='tech',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            体育
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='pe',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='pe',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            5科目
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='total5',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='total5',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            9科目
-                            <div class="sort-buttons">
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='total9',order='1')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='total9',order='0')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="result : ${regularTestResults}" class="result-row">
-                        <div th:replace="~{fragment::regularTestResultRow}"></div>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>学生名</th>
+                  <th>
+                    クラス名
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='klass',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='klass',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    国語
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='japanese',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='japanese',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    数学
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='math',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='math',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    英語
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='english',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='english',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    理科
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='science',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='science',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    社会
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='social',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='social',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    音楽
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='music',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='music',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    美術
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='art',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='art',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    技術
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='tech',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='tech',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    体育
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='pe',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='pe',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    5科目
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='total5',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='total5',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    9科目
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='total9',order='1')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/regularTestSet/all_result/{id}(id=${regularTestSet.regularTestSetId}, sort='total9',order='0')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="result : ${regularTestResults}" class="result-row">
+                  <div th:replace="~{fragment::regularTestResultRow}"></div>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-<div th:replace="~{fragment::footer}"></div>
-<div th:replace="~{fragment::script}"></div>
-</body>
+    <div th:replace="~{fragment::footer}"></div>
+    <div th:replace="~{fragment::script}"></div>
+  </body>
 </html>

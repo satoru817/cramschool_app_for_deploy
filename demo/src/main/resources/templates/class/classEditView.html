@@ -1,304 +1,322 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <title>クラス登録</title>
     <div th:replace="~{fragment::head}"></div>
     <script th:src="@{/js/classEdit.js}" defer></script>
-</head>
-<body class="bg-light">
-<div th:replace="~{fragment::header}"></div>
+  </head>
+  <body class="bg-light">
+    <div th:replace="~{fragment::header}"></div>
 
-<div class="container my-5">
-    <div class="row justify-content-center">
+    <div class="container my-5">
+      <div class="row justify-content-center">
         <!-- メッセージ表示部分 -->
         <div th:if="${message}" class="alert alert-info alert-dismissible fade show" role="alert">
-            <i class="fa fa-check-circle mr-2"></i>
-            <span th:text="${message}"></span>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+          <i class="fa fa-check-circle mr-2"></i>
+          <span th:text="${message}"></span>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
 
-
         <div class="col-md-10">
-            <!-- タブ切り替え -->
-            <ul class="nav nav-tabs mb-4" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="group-tab" data-toggle="tab" href="#group" role="tab">
-                        <i class="fa fa-users mr-2"></i>集団指導クラス
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="individual-tab" data-toggle="tab" href="#individual" role="tab">
-                        <i class="fa fa-user mr-2"></i>個別指導クラス
-                    </a>
-                </li>
-            </ul>
+          <!-- タブ切り替え -->
+          <ul class="nav nav-tabs mb-4" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="group-tab" data-toggle="tab" href="#group" role="tab">
+                <i class="fa fa-users mr-2"></i>集団指導クラス
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="individual-tab" data-toggle="tab" href="#individual" role="tab">
+                <i class="fa fa-user mr-2"></i>個別指導クラス
+              </a>
+            </li>
+          </ul>
 
-            <!-- タブコンテンツ -->
-            <div class="tab-content">
-                <!-- 集団指導クラス -->
-                <div class="tab-pane fade show active" id="group" role="tabpanel">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-primary text-white">
-                            <h4 class="card-title mb-0">
-                                <i class="fa fa-plus-circle mr-2"></i>集団指導クラス登録
-                            </h4>
-                        </div>
-                        <div class="card-body">
-                            <form th:action="@{/createGroupClass}" method="post" th:object="${klass}" class="needs-validation" novalidate>
-
-                                <!-- クラス名入力 -->
-                                <div class="form-group mb-4">
-                                    <label for="groupName" class="font-weight-bold">
-                                        <i class="fa fa-pencil mr-2"></i>クラス名
-                                    </label>
-                                    <div class="row justify-content-center">
-                                        <div class="col-md-6">
-                                            <input type="text"
-                                                   class="form-control form-control-lg"
-                                                   th:field="*{name}"
-                                                   id="groupName"
-                                                   required
-                                                   placeholder="例：基礎クラス">
-                                            <div class="invalid-feedback">クラス名を入力してください</div>
-                                            <div class="text-danger"
-                                                 th:if="${#fields.hasErrors('name')}"
-                                                 th:errors="*{name}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 順位入力 -->
-                                <div class="form-group mb-4">
-                                    <label for="groupOrder" class="font-weight-bold">
-                                        <i class="fa fa-sort-numeric-down mr-2"></i>順位
-                                    </label>
-                                    <div class="row justify-content-center">
-                                        <div class="col-md-6">
-                                            <input type="number"
-                                                   class="form-control form-control-lg"
-                                                   th:field="*{sortOrder}"
-                                                   id="groupOrder"
-                                                   min="1"
-                                                   required
-                                                   placeholder="1">
-                                            <div class="invalid-feedback">有効な順位を入力してください</div>
-                                            <small class="form-text text-muted">順位が高いクラスに大きな数字（自然数）を振ってください</small>
-                                            <div class="text-danger"
-                                                 th:if="${#fields.hasErrors('sortOrder')}"
-                                                 th:errors="*{sortOrder}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- 科目説明 -->
-                                <div class="alert alert-info" role="alert">
-                                    <i class="fa fa-info-circle mr-2"></i>
-                                    入力したクラス名と順位で、教師に紐づいていない状態の5科目のクラスが一括で作成されます：
-                                    <div class="d-flex flex-wrap mt-2">
-                                        <span class="badge badge-danger mr-2">国語</span>
-                                        <span class="badge badge-primary mr-2">数学</span>
-                                        <span class="badge badge-success mr-2">英語</span>
-                                        <span class="badge badge-info mr-2">理科</span>
-                                        <span class="badge badge-warning">社会</span>
-                                    </div>
-                                </div>
-
-                                <!-- 送信ボタン -->
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-primary btn-lg px-5">
-                                        <i class="fa fa-check-circle mr-2"></i>一括登録する
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+          <!-- タブコンテンツ -->
+          <div class="tab-content">
+            <!-- 集団指導クラス -->
+            <div class="tab-pane fade show active" id="group" role="tabpanel">
+              <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                  <h4 class="card-title mb-0"><i class="fa fa-plus-circle mr-2"></i>集団指導クラス登録</h4>
                 </div>
-
-                <!-- 個別指導クラス -->
-                <div class="tab-pane fade" id="individual" role="tabpanel">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-success text-white">
-                            <h4 class="card-title mb-0">
-                                <i class="fa fa-plus-circle mr-2"></i>個別指導クラス登録
-                            </h4>
+                <div class="card-body">
+                  <form
+                    th:action="@{/createGroupClass}"
+                    method="post"
+                    th:object="${klass}"
+                    class="needs-validation"
+                    novalidate
+                  >
+                    <!-- クラス名入力 -->
+                    <div class="form-group mb-4">
+                      <label for="groupName" class="font-weight-bold">
+                        <i class="fa fa-pencil mr-2"></i>クラス名
+                      </label>
+                      <div class="row justify-content-center">
+                        <div class="col-md-6">
+                          <input
+                            type="text"
+                            class="form-control form-control-lg"
+                            th:field="*{name}"
+                            id="groupName"
+                            required
+                            placeholder="例：基礎クラス"
+                          />
+                          <div class="invalid-feedback">クラス名を入力してください</div>
+                          <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                         </div>
-                        <div class="card-body">
-                            <form th:action="@{/createIndividualClass}" method="post" th:object="${klass}" class="needs-validation" novalidate>
-
-                                <!-- 科目選択 -->
-                                <div class="form-group mb-4">
-                                    <label for="subject" class="font-weight-bold">
-                                        <i class="fa fa-book mr-2"></i>科目
-                                    </label>
-                                    <div class="row justify-content-center">
-                                        <div class="col-md-6">
-                                            <select class="form-control form-control-lg" th:field="*{subject}" id="subject" required>
-                                                <option value="">科目を選択してください</option>
-                                                <option value="japanese">国語</option>
-                                                <option value="math">数学</option>
-                                                <option value="english">英語</option>
-                                                <option value="science">理科</option>
-                                                <option value="social">社会</option>
-                                            </select>
-                                            <div class="invalid-feedback">科目を選択してください</div>
-                                            <div th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}" class="text-danger"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <!-- クラス名入力 -->
-                                <div class="form-group mb-4">
-                                    <label for="individualName" class="font-weight-bold">
-                                        <i class="fa fa-pencil mr-2"></i>クラス名
-                                    </label>
-                                    <div class="row justify-content-center">
-                                        <div class="col-md-6">
-                                            <input type="text"
-                                                   class="form-control form-control-lg"
-                                                   th:field="*{name}"
-                                                   id="individualName"
-                                                   required
-                                                   placeholder="例：基礎クラス">
-                                            <div class="invalid-feedback">クラス名を入力してください</div>
-                                            <div class="text-danger"
-                                                 th:if="${#fields.hasErrors('name')}"
-                                                 th:errors="*{name}">
-                                            </div>
-                                            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 送信ボタン -->
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-success btn-lg px-5">
-                                        <i class="fa fa-check-circle mr-2"></i>登録する
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                      </div>
                     </div>
+
+                    <!-- 順位入力 -->
+                    <div class="form-group mb-4">
+                      <label for="groupOrder" class="font-weight-bold">
+                        <i class="fa fa-sort-numeric-down mr-2"></i>順位
+                      </label>
+                      <div class="row justify-content-center">
+                        <div class="col-md-6">
+                          <input
+                            type="number"
+                            class="form-control form-control-lg"
+                            th:field="*{sortOrder}"
+                            id="groupOrder"
+                            min="1"
+                            required
+                            placeholder="1"
+                          />
+                          <div class="invalid-feedback">有効な順位を入力してください</div>
+                          <small class="form-text text-muted"
+                            >順位が高いクラスに大きな数字（自然数）を振ってください</small
+                          >
+                          <div
+                            class="text-danger"
+                            th:if="${#fields.hasErrors('sortOrder')}"
+                            th:errors="*{sortOrder}"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- 科目説明 -->
+                    <div class="alert alert-info" role="alert">
+                      <i class="fa fa-info-circle mr-2"></i>
+                      入力したクラス名と順位で、教師に紐づいていない状態の5科目のクラスが一括で作成されます：
+                      <div class="d-flex flex-wrap mt-2">
+                        <span class="badge badge-danger mr-2">国語</span>
+                        <span class="badge badge-primary mr-2">数学</span>
+                        <span class="badge badge-success mr-2">英語</span>
+                        <span class="badge badge-info mr-2">理科</span>
+                        <span class="badge badge-warning">社会</span>
+                      </div>
+                    </div>
+
+                    <!-- 送信ボタン -->
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary btn-lg px-5">
+                        <i class="fa fa-check-circle mr-2"></i>一括登録する
+                      </button>
+                    </div>
+                  </form>
                 </div>
+              </div>
             </div>
 
-            <!-- 登録済みクラス一覧 -->
-            <div class="card shadow-sm mt-5">
-                <div class="card-header bg-white">
-                    <h3 class="card-title mb-0">登録済みクラス</h3>
+            <!-- 個別指導クラス -->
+            <div class="tab-pane fade" id="individual" role="tabpanel">
+              <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                  <h4 class="card-title mb-0"><i class="fa fa-plus-circle mr-2"></i>個別指導クラス登録</h4>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>種別</th>
-                                <th>科目</th>
-                                <th>クラス名</th>
-                                <th>順位</th>
-                                <th>操作</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="klass : ${classList}">
-                                <td th:text="${klass.klassId}"></td>
-                                <td>
-                                    <span th:if="${klass.isIndividual}" class="badge badge-success">個別</span>
-                                    <span th:unless="${klass.isIndividual}" class="badge badge-primary">集団</span>
-                                </td>
-                                <td>
-                                    <span th:if="${klass.subject}"
-                                          class="badge"
-                                          th:classappend="${klass.subject == 'japanese' ? 'badge-danger' :
+                <div class="card-body">
+                  <form
+                    th:action="@{/createIndividualClass}"
+                    method="post"
+                    th:object="${klass}"
+                    class="needs-validation"
+                    novalidate
+                  >
+                    <!-- 科目選択 -->
+                    <div class="form-group mb-4">
+                      <label for="subject" class="font-weight-bold"> <i class="fa fa-book mr-2"></i>科目 </label>
+                      <div class="row justify-content-center">
+                        <div class="col-md-6">
+                          <select class="form-control form-control-lg" th:field="*{subject}" id="subject" required>
+                            <option value="">科目を選択してください</option>
+                            <option value="japanese">国語</option>
+                            <option value="math">数学</option>
+                            <option value="english">英語</option>
+                            <option value="science">理科</option>
+                            <option value="social">社会</option>
+                          </select>
+                          <div class="invalid-feedback">科目を選択してください</div>
+                          <div th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}" class="text-danger"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- クラス名入力 -->
+                    <div class="form-group mb-4">
+                      <label for="individualName" class="font-weight-bold">
+                        <i class="fa fa-pencil mr-2"></i>クラス名
+                      </label>
+                      <div class="row justify-content-center">
+                        <div class="col-md-6">
+                          <input
+                            type="text"
+                            class="form-control form-control-lg"
+                            th:field="*{name}"
+                            id="individualName"
+                            required
+                            placeholder="例：基礎クラス"
+                          />
+                          <div class="invalid-feedback">クラス名を入力してください</div>
+                          <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                          <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 送信ボタン -->
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-success btn-lg px-5">
+                        <i class="fa fa-check-circle mr-2"></i>登録する
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 登録済みクラス一覧 -->
+          <div class="card shadow-sm mt-5">
+            <div class="card-header bg-white">
+              <h3 class="card-title mb-0">登録済みクラス</h3>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>ID</th>
+                      <th>種別</th>
+                      <th>科目</th>
+                      <th>クラス名</th>
+                      <th>順位</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="klass : ${classList}">
+                      <td th:text="${klass.klassId}"></td>
+                      <td>
+                        <span th:if="${klass.isIndividual}" class="badge badge-success">個別</span>
+                        <span th:unless="${klass.isIndividual}" class="badge badge-primary">集団</span>
+                      </td>
+                      <td>
+                        <span
+                          th:if="${klass.subject}"
+                          class="badge"
+                          th:classappend="${klass.subject == 'japanese' ? 'badge-danger' :
                                                           klass.subject == 'math' ? 'badge-primary' :
                                                           klass.subject == 'english' ? 'badge-success' :
                                                           klass.subject == 'science' ? 'badge-info' :
-                                                          'badge-warning'}">
-                                        <span th:if="${klass.subject == 'japanese'}">国語</span>
-                                        <span th:if="${klass.subject == 'math'}">数学</span>
-                                        <span th:if="${klass.subject == 'english'}">英語</span>
-                                        <span th:if="${klass.subject == 'social'}">社会</span>
-                                        <span th:if="${klass.subject == 'science'}">理科</span>
-                                    </span>
-                                </td>
-                                <td th:text="${klass.name}"></td>
-                                <td th:text="${klass.sortOrder}" class="order"></td>
-                                <td>
-                                    <button class="btn btn-outline-danger btn-sm"
-                                            th:data-id="${klass.klassId}"
-                                            data-toggle="modal"
-                                            data-target="#deleteModal">
-                                        <i class="fa fa-trash"></i> 削除
-                                    </button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                                                          'badge-warning'}"
+                        >
+                          <span th:if="${klass.subject == 'japanese'}">国語</span>
+                          <span th:if="${klass.subject == 'math'}">数学</span>
+                          <span th:if="${klass.subject == 'english'}">英語</span>
+                          <span th:if="${klass.subject == 'social'}">社会</span>
+                          <span th:if="${klass.subject == 'science'}">理科</span>
+                        </span>
+                      </td>
+                      <td th:text="${klass.name}"></td>
+                      <td th:text="${klass.sortOrder}" class="order"></td>
+                      <td>
+                        <button
+                          class="btn btn-outline-danger btn-sm"
+                          th:data-id="${klass.klassId}"
+                          data-toggle="modal"
+                          data-target="#deleteModal"
+                        >
+                          <i class="fa fa-trash"></i> 削除
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-
-<!-- 削除確認モーダル -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <!-- 削除確認モーダル -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">削除の確認</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>このクラスを削除してもよろしいですか？</p>
-                <p class="text-danger"><i class="fa fa-exclamation-triangle"></i> この操作は取り消せません。</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-                <a href="#" id="deleteLink" class="btn btn-danger">削除する</a>
-            </div>
+          <div class="modal-header">
+            <h5 class="modal-title">削除の確認</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>このクラスを削除してもよろしいですか？</p>
+            <p class="text-danger">
+              <i class="fa fa-exclamation-triangle"></i>
+              この操作は取り消せません。
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+            <a href="#" id="deleteLink" class="btn btn-danger">削除する</a>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-<div th:replace="~{fragment::footer}"></div>
-<div th:replace="~{fragment::script}"></div>
+    <div th:replace="~{fragment::footer}"></div>
+    <div th:replace="~{fragment::script}"></div>
 
-<script>
-    $(document).ready(function() {
+    <script>
+      $(document).ready(function () {
         // 削除モーダルの処理
-        $('#deleteModal').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget);
-            var klassId = button.data('id');
-            var deleteLink = $('#deleteLink');
-            deleteLink.attr('href', '/classDelete/' + klassId);
+        $("#deleteModal").on("show.bs.modal", function (event) {
+          var button = $(event.relatedTarget);
+          var klassId = button.data("id");
+          var deleteLink = $("#deleteLink");
+          deleteLink.attr("href", "/classDelete/" + klassId);
         });
 
         // フォームバリデーションの有効化
-        (function() {
-            'use strict';
-            window.addEventListener('load', function() {
-                var forms = document.getElementsByClassName('needs-validation');
-                var validation = Array.prototype.filter.call(forms, function(form) {
-                    form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
+        (function () {
+          "use strict";
+          window.addEventListener(
+            "load",
+            function () {
+              var forms = document.getElementsByClassName("needs-validation");
+              var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener(
+                  "submit",
+                  function (event) {
+                    if (form.checkValidity() === false) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }
+                    form.classList.add("was-validated");
+                  },
+                  false
+                );
+              });
+            },
+            false
+          );
         })();
-    });
-</script>
-
-</body>
+      });
+    </script>
+  </body>
 </html>

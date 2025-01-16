@@ -1,115 +1,132 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <div th:replace="~{fragment::head}"></div>
-  <title>Mock Tests</title>
-</head>
-<body>
-<div th:replace="~{fragment::header}"></div>
-<div class="container mt-5 justify-content-center align-items-center min-vh-100">
-  <!-- Flash Messages -->
-  <div th:if="${message}" class="alert alert-dismissible fade show mt-3" th:classappend="${message.contains('failed') ? 'alert-danger' : 'alert-success'}" role="alert">
-    <i class="bi" th:classappend="${message.contains('failed') ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill'}"></i>
-    <span th:text="${message}" class="ms-2"></span>
-    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <h1>模試一覧</h1>
+  <head>
+    <div th:replace="~{fragment::head}"></div>
+    <title>Mock Tests</title>
+  </head>
+  <body>
+    <div th:replace="~{fragment::header}"></div>
+    <div class="container mt-5 justify-content-center align-items-center min-vh-100">
+      <!-- Flash Messages -->
+      <div
+        th:if="${message}"
+        class="alert alert-dismissible fade show mt-3"
+        th:classappend="${message.contains('failed') ? 'alert-danger' : 'alert-success'}"
+        role="alert"
+      >
+        <i
+          class="bi"
+          th:classappend="${message.contains('failed') ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill'}"
+        ></i>
+        <span th:text="${message}" class="ms-2"></span>
+        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <h1>模試一覧</h1>
 
-  <table class="table table-striped">
-    <thead class="thead-dark">
-    <tr>
-      <th>模試名</th>
-      <th>実施日</th>
-      <th class="text-center">操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="mockTest : ${mockTests}">
-      <td>
-        <a th:href="@{/mockTestResults/{id}(id=${mockTest.id})}" th:text="${mockTest.name}"></a>
-      </td>
-      <td th:text="${mockTest.date}"></td>
-      <td class="text-center">
-        <button class="btn btn-outline-danger btn-sm"
+      <table class="table table-striped">
+        <thead class="thead-dark">
+          <tr>
+            <th>模試名</th>
+            <th>実施日</th>
+            <th class="text-center">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="mockTest : ${mockTests}">
+            <td>
+              <a th:href="@{/mockTestResults/{id}(id=${mockTest.id})}" th:text="${mockTest.name}"></a>
+            </td>
+            <td th:text="${mockTest.date}"></td>
+            <td class="text-center">
+              <button
+                class="btn btn-outline-danger btn-sm"
                 data-toggle="modal"
                 data-target="#deleteModal"
                 th:data-mock-test-id="${mockTest.id}"
-                th:data-mock-test-name="${mockTest.name}">
-          <i class="bi bi-trash"></i> 削除
-        </button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+                th:data-mock-test-name="${mockTest.name}"
+              >
+                <i class="bi bi-trash"></i> 削除
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-  <div class="d-flex justify-content-between align-items-center mt-4">
-    <span>Page <strong th:text="${mockTests.number + 1}">1</strong> of <strong th:text="${mockTests.totalPages}">1</strong></span>
+      <div class="d-flex justify-content-between align-items-center mt-4">
+        <span
+          >Page <strong th:text="${mockTests.number + 1}">1</strong> of
+          <strong th:text="${mockTests.totalPages}">1</strong></span
+        >
 
-    <nav>
-      <ul class="pagination">
-        <li class="page-item" th:if="${mockTests.hasPrevious()}">
-          <a class="page-link" th:href="@{/mockTests(page=${mockTests.number - 1})}">Previous</a>
-        </li>
-        <li class="page-item" th:each="page : ${#numbers.sequence(0, mockTests.totalPages - 1)}">
-          <a class="page-link" th:href="@{/mockTests(page=${page})}" th:text="${page + 1}"></a>
-        </li>
-        <li class="page-item" th:if="${mockTests.hasNext()}">
-          <a class="page-link" th:href="@{/mockTests(page=${mockTests.number + 1})}">Next</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-</div>
-
-<!-- 削除確認モーダル -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="deleteModalLabel">
-          <i class="bi bi-exclamation-triangle-fill me-2"></i>
-          模試削除の確認
-        </h5>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>以下の模試を削除してもよろしいですか？</p>
-        <p class="font-weight-bold" id="mockTestNameConfirm"></p>
-        <p class="text-danger">
-          <i class="bi bi-exclamation-circle me-2"></i>
-          この操作は取り消せません。
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-          <i class="bi bi-x-circle"></i> キャンセル
-        </button>
-        <a  class="btn btn-danger" id="deleteLink">
-          <i class="bi bi-trash"></i> 削除する
-        </a>
-
+        <nav>
+          <ul class="pagination">
+            <li class="page-item" th:if="${mockTests.hasPrevious()}">
+              <a class="page-link" th:href="@{/mockTests(page=${mockTests.number - 1})}">Previous</a>
+            </li>
+            <li class="page-item" th:each="page : ${#numbers.sequence(0, mockTests.totalPages - 1)}">
+              <a class="page-link" th:href="@{/mockTests(page=${page})}" th:text="${page + 1}"></a>
+            </li>
+            <li class="page-item" th:if="${mockTests.hasNext()}">
+              <a class="page-link" th:href="@{/mockTests(page=${mockTests.number + 1})}">Next</a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
-  </div>
-</div>
 
-<div th:replace="~{fragment::footer}"></div>
-<div th:replace="~{fragment::script}"></div>
+    <!-- 削除確認モーダル -->
+    <div
+      class="modal fade"
+      id="deleteModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="deleteModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteModalLabel">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              模試削除の確認
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>以下の模試を削除してもよろしいですか？</p>
+            <p class="font-weight-bold" id="mockTestNameConfirm"></p>
+            <p class="text-danger">
+              <i class="bi bi-exclamation-circle me-2"></i>
+              この操作は取り消せません。
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              <i class="bi bi-x-circle"></i> キャンセル
+            </button>
+            <a class="btn btn-danger" id="deleteLink"> <i class="bi bi-trash"></i> 削除する </a>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<script>
-  $(document).ready(function() {
-    $('#deleteModal').on('show.bs.modal', function (event) {
-      const button = $(event.relatedTarget);
-      const mockTestId = button.data('mock-test-id');
-      const mockTestName = button.data('mock-test-name');
+    <div th:replace="~{fragment::footer}"></div>
+    <div th:replace="~{fragment::script}"></div>
 
-      const modal = $(this);
-      modal.find('#mockTestNameConfirm').text(mockTestName);
-      modal.find('#deleteLink').attr('href', '/mockTest/delete/' + mockTestId);
-    });
-  });
-</script>
-</body>
+    <script>
+      $(document).ready(function () {
+        $("#deleteModal").on("show.bs.modal", function (event) {
+          const button = $(event.relatedTarget);
+          const mockTestId = button.data("mock-test-id");
+          const mockTestName = button.data("mock-test-name");
+
+          const modal = $(this);
+          modal.find("#mockTestNameConfirm").text(mockTestName);
+          modal.find("#deleteLink").attr("href", "/mockTest/delete/" + mockTestId);
+        });
+      });
+    </script>
+  </body>
 </html>

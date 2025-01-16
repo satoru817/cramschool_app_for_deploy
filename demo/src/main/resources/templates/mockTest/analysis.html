@@ -1,27 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <title>模試結果分析</title>
     <div th:replace="~{fragment::head}"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script th:src="@{/js/mockTestAnalysisExcellFunction.js}" defer></script>
-</head>
-<body>
-<div th:replace="~{fragment::header}"></div>
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+  </head>
+  <body>
+    <div th:replace="~{fragment::header}"></div>
+    <div class="container mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 th:text="${mockTest.name} + ' クラス別平均点分析'" id="testName"></h2>
         <button class="btn btn-success" onclick="exportToExcel()">
-            <i class="bi bi-file-earmark-excel me-2"></i>Excelダウンロード
+          <i class="bi bi-file-earmark-excel me-2"></i>Excelダウンロード
         </button>
-    </div>
+      </div>
 
-    <div class="d-flex flex-wrap">
-        <div class="me-3 mb-3" style="min-width:350px;" th:each="entry : ${subjectAverages}"
-             th:if="${!#lists.isEmpty(entry.value) && entry.value[0].avgScore != null}">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0" th:text="${entry.key == 'japanese' ? '国語' :
+      <div class="d-flex flex-wrap">
+        <div
+          class="me-3 mb-3"
+          style="min-width: 350px"
+          th:each="entry : ${subjectAverages}"
+          th:if="${!#lists.isEmpty(entry.value) && entry.value[0].avgScore != null}"
+        >
+          <div class="card">
+            <div class="card-header">
+              <h5
+                class="card-title mb-0"
+                th:text="${entry.key == 'japanese' ? '国語' :
                                      entry.key == 'math' ? '数学' :
                                      entry.key == 'english' ? '英語' :
                                      entry.key == 'science' ? '理科' :
@@ -31,38 +37,37 @@
                                      entry.key == 'art' ? '美術' :
                                      entry.key == 'music' ? '音楽' :
                                      entry.key == 'pe' ? '体育' :
-                                     '技術'}">
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped analysis-table" th:data-subject="${entry.key}">
-                            <thead>
-                            <tr>
-                                <th>クラス</th>
-                                <th>担当教師</th>
-                                <th>平均点</th>
-                                <th>偏差値</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="average : ${entry.value}">
-                                <td th:text="${average.klassName}"></td>
-                                <td th:text="${average.teacherName}"></td>
-                                <td th:text="${average.avgScore}" style="text-align: right;"></td>
-                                <td th:text="${average.avgStandardScore}" style="text-align: right;"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                                     '技術'}"
+              ></h5>
             </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-striped analysis-table" th:data-subject="${entry.key}">
+                  <thead>
+                    <tr>
+                      <th>クラス</th>
+                      <th>担当教師</th>
+                      <th>平均点</th>
+                      <th>偏差値</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="average : ${entry.value}">
+                      <td th:text="${average.klassName}"></td>
+                      <td th:text="${average.teacherName}"></td>
+                      <td th:text="${average.avgScore}" style="text-align: right"></td>
+                      <td th:text="${average.avgStandardScore}" style="text-align: right"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-<div th:replace="~{fragment::footer}"></div>
-<div th:replace="~{fragment::script}"></div>
-
-</body>
+    <div th:replace="~{fragment::footer}"></div>
+    <div th:replace="~{fragment::script}"></div>
+  </body>
 </html>

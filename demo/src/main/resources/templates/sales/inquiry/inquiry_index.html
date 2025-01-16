@@ -1,375 +1,372 @@
 <!doctype html>
 <html lang="ja" xmlns:th="https://www.thymeleaf.org">
-<head>
+  <head>
     <div th:replace="~{fragment::head}"></div>
     <title>問合せ一覧</title>
-    <link rel="stylesheet" th:href="@{/css/name_badge.css}"/>
-</head>
-<body>
-<div th:replace="~{fragment::header}"></div>
-<div class="container mt-5 min-vh-100">
-    <!-- ヘッダー -->
+    <link rel="stylesheet" th:href="@{/css/name_badge.css}" />
+  </head>
+  <body>
+    <div th:replace="~{fragment::header}"></div>
+    <div class="container mt-5 min-vh-100">
+      <!-- ヘッダー -->
 
-
-    <main>
+      <main>
         <div class="container pt-4 pb-5 container">
-            <h1 class="mb-4 text-center">問合せ一覧</h1>
+          <h1 class="mb-4 text-center">問合せ一覧</h1>
 
-            <div class="text-center mb-4">
-                <button class="btn btn-primary" data-toggle="modal" data-target="#createInquiryModal">
-                    <i class="fas fa-plus"></i> 新規問合せ作成
-                </button>
-            </div>
+          <div class="text-center mb-4">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#createInquiryModal">
+              <i class="fas fa-plus"></i> 新規問合せ作成
+            </button>
+          </div>
 
-            <div class="row justify-content-center">
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
-                                    <tr>
-                                        <th scope="col">ID</th>
-                                        <th scope="col">教室名</th>
-                                        <th scope="col">氏名</th>
-                                        <th scope="col">ファネル</th>
-                                        <th scope="col">学年</th>
-                                        <th scope="col">問合せ日</th>
-                                        <th scope="col">応対録</th>
-                                        <th scope="col">削除</th>
-                                        <th scope="col">編集</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr th:each="inquiry : ${inquiries}">
-                                        <td class="text-muted" th:text="${inquiry.inquiryId}"></td>
-                                        <td>
-                                            <span class="badge text-secondary shadow-sm"
-                                                  th:text="${inquiry.cramSchool.name}">
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge text-info shadow-sm badge_hover"
-                                                  th:text="${inquiry.nameKanji}">
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge text-primary shadow-sm"
-                                                  th:text="${inquiry.funnel.name}">
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="fw-medium" th:text="${inquiry.gradeStr}"></span>
-                                        </td>
-                                        <td>
-                                            <span class="text-muted"
-                                                  th:text="${#temporals.format(inquiry.inquiryDate, 'yyyy/MM/dd')}">
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <a class="btn btn-outline-primary btn-sm"
-                                               th:href="@{/sales/inquiry/actions/__${inquiry.inquiryId}__}">
-                                                <i class="bi bi-clock-history"></i>
-                                            </a>
-
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-outline-danger btn-sm"
-                                                    data-toggle="modal"
-                                                    data-target="#deleteModal"
-                                                    th:data-inquiry-id="${inquiry.inquiryId}"
-                                                    th:data-person-name="${inquiry.nameKanji}">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
-                                        <td>
-                                            <a class="btn btn-outline-info btn-sm"
-                                               th:href="@{/sales/inquiry/edit/__${inquiry.inquiryId}__}">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ページネーション -->
-                    <!-- ページネーション -->
-                    <!-- ページネーション -->
-                    <div th:if="${inquiries.getTotalPages() > 1}" class="d-flex justify-content-center mt-4">
-                        <nav aria-label="問合せ一覧ページ">
-                            <ul class="pagination">
-                                <!-- 前へボタン -->
-                                <li class="page-item">
-        <span
-                th:if="${inquiries.isFirst()}"
-                class="page-link pagination_itemBox rounded-circle disabled"
-        >
-          <span class="pagination_prevArrow"></span>
-        </span>
-                                    <a
-                                    th:unless="${inquiries.isFirst()}"
-                                    th:href="@{/sales/inquiry/index(page=${inquiries.getNumber() - 1})}"
-                                    class="page-link pagination_itemBox rounded-circle"
-                                    >
-                                    <span class="pagination_prevArrow"></span>
-                                    </a>
-                                </li>
-
-                                <!-- ページ番号（最初のページ） -->
-                                <li class="page-item" th:if="${inquiries.getNumber() >= 3}">
-                                <a
-                                    th:href="@{/sales/inquiry/index(page=0)}"
-                                    class="page-link pagination_itemBox rounded-circle"
-                                    >1</a>
-                                </li>
-
-                                <!-- 省略記号（前） -->
-                                <li class="page-item" th:if="${inquiries.getNumber() >= 4}">
-                                    <span class="page-link pagination_itemBox rounded-circle">...</span>
-                                </li>
-
-                                <!-- ページ番号（中央部分） -->
-                                <th:block
-                                        th:with="start=${inquiries.getNumber() <= 2 ? 0 : inquiries.getNumber() - 2},
-                 end=${inquiries.getTotalPages() - inquiries.getNumber() <= 3 ? inquiries.getTotalPages() - 1 : inquiries.getNumber() + 2}"
-                                >
-                                    <li class="page-item" th:each="i : ${#numbers.sequence(start, end)}">
-          <span
-                  th:if="${i == inquiries.getNumber()}"
-                  class="page-link pagination_itemBox rounded-circle active"
-                  th:text="${i + 1}"
-          ></span>
-                                    <a
-                                        th:unless="${i == inquiries.getNumber()}"
-                                        th:href="@{/sales/inquiry/index(page=${i})}"
-                                        class="page-link pagination_itemBox rounded-circle"
-                                        th:text="${i + 1}"
-                                        ></a>
-                                    </li>
-                                </th:block>
-
-                                <!-- 省略記号（後） -->
-                                <li class="page-item" th:if="${inquiries.getTotalPages() - inquiries.getNumber() > 4}">
-                                    <span class="page-link pagination_itemBox rounded-circle">...</span>
-                                </li>
-
-                                <!-- 最後のページ -->
-                                <li class="page-item" th:if="${inquiries.getTotalPages() - inquiries.getNumber() > 3}">
-                                    <a
-                                    th:href="@{/sales/inquiry/index(page=${inquiries.getTotalPages() - 1})}"
-                                    class="page-link pagination_itemBox rounded-circle"
-                                    th:text="${inquiries.getTotalPages()}"
-                                    ></a>
-                                </li>
-
-                                <!-- 次へボタン -->
-                                <li class="page-item">
-        <span
-                th:if="${inquiries.isLast()}"
-                class="page-link pagination_itemBox rounded-circle disabled"
-        >
-          <span class="pagination_nextArrow"></span>
-        </span>
-                                    <a
-                                    th:unless="${inquiries.isLast()}"
-                                    th:href="@{/sales/inquiry/index(page=${inquiries.getNumber() + 1})}"
-                                    class="page-link pagination_itemBox rounded-circle"
-                                    >
-                                    <span class="pagination_nextArrow"></span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- 作成モーダル -->
-            <div class="modal fade" id="createInquiryModal" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">新規問合せ作成</h5>
-                            <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
+          <div class="row justify-content-center">
+            <div class="col-12">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th scope="col">ID</th>
+                          <th scope="col">教室名</th>
+                          <th scope="col">氏名</th>
+                          <th scope="col">ファネル</th>
+                          <th scope="col">学年</th>
+                          <th scope="col">問合せ日</th>
+                          <th scope="col">応対録</th>
+                          <th scope="col">削除</th>
+                          <th scope="col">編集</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr th:each="inquiry : ${inquiries}">
+                          <td class="text-muted" th:text="${inquiry.inquiryId}"></td>
+                          <td>
+                            <span class="badge text-secondary shadow-sm" th:text="${inquiry.cramSchool.name}"> </span>
+                          </td>
+                          <td>
+                            <span class="badge text-info shadow-sm badge_hover" th:text="${inquiry.nameKanji}"> </span>
+                          </td>
+                          <td>
+                            <span class="badge text-primary shadow-sm" th:text="${inquiry.funnel.name}"> </span>
+                          </td>
+                          <td>
+                            <span class="fw-medium" th:text="${inquiry.gradeStr}"></span>
+                          </td>
+                          <td>
+                            <span class="text-muted" th:text="${#temporals.format(inquiry.inquiryDate, 'yyyy/MM/dd')}">
+                            </span>
+                          </td>
+                          <td>
+                            <a
+                              class="btn btn-outline-primary btn-sm"
+                              th:href="@{/sales/inquiry/actions/__${inquiry.inquiryId}__}"
+                            >
+                              <i class="bi bi-clock-history"></i>
+                            </a>
+                          </td>
+                          <td>
+                            <button
+                              class="btn btn-outline-danger btn-sm"
+                              data-toggle="modal"
+                              data-target="#deleteModal"
+                              th:data-inquiry-id="${inquiry.inquiryId}"
+                              th:data-person-name="${inquiry.nameKanji}"
+                            >
+                              <i class="bi bi-trash"></i>
                             </button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="createInquiryForm" th:action="@{/sales/inquiry/create}"
-                                  th:object="${inquiryFirstPostDTO}" method="post">
-
-                                <!-- 問合せ者名 -->
-                                <div class="mb-3">
-                                    <label for="name" class="form-label">問合せ者名</label>
-                                    <input type="text"
-                                           class="form-control"
-                                           id="name"
-                                           name="name"
-                                           th:field="*{name}"
-                                           required
-                                           placeholder="問合せ者名を入力してください">
-
-                                </div>
-
-                                <!-- ふりがな -->
-                                <div class="mb-3">
-                                    <label for="kana" class="form-label">ふりがな</label>
-                                    <input type="text"
-                                           class="form-control"
-                                           id="kana"
-                                           name="kana"
-                                           th:field="*{kana}"
-                                           placeholder="ふりがなを入力してください">
-                                </div>
-
-                                <!-- 教室選択 -->
-                                <div class="mb-3">
-                                    <label for="cramSchoolId" class="form-label">教室選択</label>
-                                    <select class="form-select" id="cramSchoolId" name="cramSchoolId"
-                                            th:field="*{cramSchoolId}" required>
-                                        <option value="">教室を選択してください</option>
-                                        <option th:each="school : ${cramSchools}"
-                                                th:value="${school.cramSchoolId}"
-                                                th:text="${school.name}">
-                                        </option>
-                                    </select>
-
-                                </div>
-
-                                <!-- ファネル選択 -->
-                                <div class="mb-3">
-                                    <label for="funnelId" class="form-label">ファネル選択</label>
-                                    <select class="form-select" id="funnelId" name="funnelId"
-                                            th:field="*{funnelId}" required>
-                                        <option value="">ファネルを選択してください</option>
-                                        <option th:each="funnel : ${funnels}"
-                                                th:value="${funnel.funnelId}"
-                                                th:text="${funnel.name}">
-                                        </option>
-                                    </select>
-
-                                </div>
-
-                                <!-- 学年選択 -->
-                                <div class="mb-3">
-                                    <label for="gradeStr" class="form-label">学年選択</label>
-                                    <select class="form-select" id="gradeStr" name="gradeStr"
-                                            th:field="*{gradeStr}" required>
-                                        <option value="">学年を選択してください</option>
-                                        <option value="小１">小１</option>
-                                        <option value="小２">小２</option>
-                                        <option value="小３">小３</option>
-                                        <option value="小４">小４</option>
-                                        <option value="小５">小５</option>
-                                        <option value="小６">小６</option>
-                                        <option value="中１">中１</option>
-                                        <option value="中２">中２</option>
-                                        <option value="中３">中３</option>
-                                        <option value="高１">高１</option>
-                                        <option value="高２">高２</option>
-                                        <option value="高３">高３</option>
-                                    </select>
-                                </div>
-
-                                <!-- 問合せ日選択 -->
-                                <div class="mb-3">
-                                    <label for="inquiryDate" class="form-label">問合せ日選択</label>
-                                    <input type="date" id="inquiryDate" name="inquiryDate"
-                                           th:field="*{inquiryDate}" required>
-                                </div>
-
-                                <!-- コメント -->
-                                <div class="mb-3">
-                                    <label for="comment" class="form-label">コメント</label>
-                                    <textarea class="form-control" id="comment" name="comment"
-                                              th:field="*{comment}" rows="3"
-                                              placeholder="コメントを入力してください"></textarea>
-                                </div>
-
-                                <!-- 担当者ID（hidden） -->
-                                <div class="mb-3">
-                                    <label for="funnelId" class="form-label">対応者選択</label>
-                                    <select class="form-select" id="userId" name="userId"
-                                            th:field="*{userId}" required>
-                                        <option value="">対応者を選択してください</option>
-                                        <option th:each="user : ${users}"
-                                                th:value="${user.userId}"
-                                                th:text="${user.name}">
-                                        </option>
-                                    </select>
-
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
-                            <button type="submit" form="createInquiryForm" class="btn btn-primary">作成</button>
-                        </div>
-                    </div>
+                          </td>
+                          <td>
+                            <a
+                              class="btn btn-outline-info btn-sm"
+                              th:href="@{/sales/inquiry/edit/__${inquiry.inquiryId}__}"
+                            >
+                              <i class="bi bi-pencil-square"></i>
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-            </div>
+              </div>
 
-            <div class="d-flex justify-content-center" th:if="${message}">
-                <div class="alert alert-info" th:text="${message}"></div>
+              <!-- ページネーション -->
+              <div th:if="${inquiries.getTotalPages() > 1}" class="d-flex justify-content-center mt-4">
+                <nav aria-label="問合せ一覧ページ">
+                  <ul class="pagination">
+                    <!-- 前へボタン -->
+                    <li class="page-item">
+                      <span th:if="${inquiries.isFirst()}" class="page-link pagination_itemBox rounded-circle disabled">
+                        <span class="pagination_prevArrow"></span>
+                      </span>
+                      <a
+                        th:unless="${inquiries.isFirst()}"
+                        th:href="@{/sales/inquiry/index(page=${inquiries.getNumber() - 1})}"
+                        class="page-link pagination_itemBox rounded-circle"
+                      >
+                        <span class="pagination_prevArrow"></span>
+                      </a>
+                    </li>
+
+                    <!-- ページ番号（最初のページ） -->
+                    <li class="page-item" th:if="${inquiries.getNumber() >= 3}">
+                      <a th:href="@{/sales/inquiry/index(page=0)}" class="page-link pagination_itemBox rounded-circle"
+                        >1</a
+                      >
+                    </li>
+
+                    <!-- 省略記号（前） -->
+                    <li class="page-item" th:if="${inquiries.getNumber() >= 4}">
+                      <span class="page-link pagination_itemBox rounded-circle">...</span>
+                    </li>
+
+                    <!-- ページ番号（中央部分） -->
+                    <th:block
+                      th:with="start=${inquiries.getNumber() <= 2 ? 0 : inquiries.getNumber() - 2},
+                 end=${inquiries.getTotalPages() - inquiries.getNumber() <= 3 ? inquiries.getTotalPages() - 1 : inquiries.getNumber() + 2}"
+                    >
+                      <li class="page-item" th:each="i : ${#numbers.sequence(start, end)}">
+                        <span
+                          th:if="${i == inquiries.getNumber()}"
+                          class="page-link pagination_itemBox rounded-circle active"
+                          th:text="${i + 1}"
+                        ></span>
+                        <a
+                          th:unless="${i == inquiries.getNumber()}"
+                          th:href="@{/sales/inquiry/index(page=${i})}"
+                          class="page-link pagination_itemBox rounded-circle"
+                          th:text="${i + 1}"
+                        ></a>
+                      </li>
+                    </th:block>
+
+                    <!-- 省略記号（後） -->
+                    <li class="page-item" th:if="${inquiries.getTotalPages() - inquiries.getNumber() > 4}">
+                      <span class="page-link pagination_itemBox rounded-circle">...</span>
+                    </li>
+
+                    <!-- 最後のページ -->
+                    <li class="page-item" th:if="${inquiries.getTotalPages() - inquiries.getNumber() > 3}">
+                      <a
+                        th:href="@{/sales/inquiry/index(page=${inquiries.getTotalPages() - 1})}"
+                        class="page-link pagination_itemBox rounded-circle"
+                        th:text="${inquiries.getTotalPages()}"
+                      ></a>
+                    </li>
+
+                    <!-- 次へボタン -->
+                    <li class="page-item">
+                      <span th:if="${inquiries.isLast()}" class="page-link pagination_itemBox rounded-circle disabled">
+                        <span class="pagination_nextArrow"></span>
+                      </span>
+                      <a
+                        th:unless="${inquiries.isLast()}"
+                        th:href="@{/sales/inquiry/index(page=${inquiries.getNumber() + 1})}"
+                        class="page-link pagination_itemBox rounded-circle"
+                      >
+                        <span class="pagination_nextArrow"></span>
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
             </div>
+          </div>
+
+          <!-- 作成モーダル -->
+          <div class="modal fade" id="createInquiryModal" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">新規問合せ作成</h5>
+                  <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form
+                    id="createInquiryForm"
+                    th:action="@{/sales/inquiry/create}"
+                    th:object="${inquiryFirstPostDTO}"
+                    method="post"
+                  >
+                    <!-- 問合せ者名 -->
+                    <div class="mb-3">
+                      <label for="name" class="form-label">問合せ者名</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="name"
+                        name="name"
+                        th:field="*{name}"
+                        required
+                        placeholder="問合せ者名を入力してください"
+                      />
+                    </div>
+
+                    <!-- ふりがな -->
+                    <div class="mb-3">
+                      <label for="kana" class="form-label">ふりがな</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="kana"
+                        name="kana"
+                        th:field="*{kana}"
+                        placeholder="ふりがなを入力してください"
+                      />
+                    </div>
+
+                    <!-- 教室選択 -->
+                    <div class="mb-3">
+                      <label for="cramSchoolId" class="form-label">教室選択</label>
+                      <select
+                        class="form-select"
+                        id="cramSchoolId"
+                        name="cramSchoolId"
+                        th:field="*{cramSchoolId}"
+                        required
+                      >
+                        <option value="">教室を選択してください</option>
+                        <option
+                          th:each="school : ${cramSchools}"
+                          th:value="${school.cramSchoolId}"
+                          th:text="${school.name}"
+                        ></option>
+                      </select>
+                    </div>
+
+                    <!-- ファネル選択 -->
+                    <div class="mb-3">
+                      <label for="funnelId" class="form-label">ファネル選択</label>
+                      <select class="form-select" id="funnelId" name="funnelId" th:field="*{funnelId}" required>
+                        <option value="">ファネルを選択してください</option>
+                        <option
+                          th:each="funnel : ${funnels}"
+                          th:value="${funnel.funnelId}"
+                          th:text="${funnel.name}"
+                        ></option>
+                      </select>
+                    </div>
+
+                    <!-- 学年選択 -->
+                    <div class="mb-3">
+                      <label for="gradeStr" class="form-label">学年選択</label>
+                      <select class="form-select" id="gradeStr" name="gradeStr" th:field="*{gradeStr}" required>
+                        <option value="">学年を選択してください</option>
+                        <option value="小１">小１</option>
+                        <option value="小２">小２</option>
+                        <option value="小３">小３</option>
+                        <option value="小４">小４</option>
+                        <option value="小５">小５</option>
+                        <option value="小６">小６</option>
+                        <option value="中１">中１</option>
+                        <option value="中２">中２</option>
+                        <option value="中３">中３</option>
+                        <option value="高１">高１</option>
+                        <option value="高２">高２</option>
+                        <option value="高３">高３</option>
+                      </select>
+                    </div>
+
+                    <!-- 問合せ日選択 -->
+                    <div class="mb-3">
+                      <label for="inquiryDate" class="form-label">問合せ日選択</label>
+                      <input type="date" id="inquiryDate" name="inquiryDate" th:field="*{inquiryDate}" required />
+                    </div>
+
+                    <!-- コメント -->
+                    <div class="mb-3">
+                      <label for="comment" class="form-label">コメント</label>
+                      <textarea
+                        class="form-control"
+                        id="comment"
+                        name="comment"
+                        th:field="*{comment}"
+                        rows="3"
+                        placeholder="コメントを入力してください"
+                      ></textarea>
+                    </div>
+
+                    <!-- 担当者ID（hidden） -->
+                    <div class="mb-3">
+                      <label for="funnelId" class="form-label">対応者選択</label>
+                      <select class="form-select" id="userId" name="userId" th:field="*{userId}" required>
+                        <option value="">対応者を選択してください</option>
+                        <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.name}"></option>
+                      </select>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                  <button type="submit" form="createInquiryForm" class="btn btn-primary">作成</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-center" th:if="${message}">
+            <div class="alert alert-info" th:text="${message}"></div>
+          </div>
         </div>
-    </main>
-</div>
-
-
-<!--削除モーダル-->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="deleteModalLabel">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    問合せ削除の確認
-                </h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>以下の問合せを削除してもよろしいですか？</p>
-                <p class="font-weight-bold" id="personNameConfirm"></p>
-                <p class="text-danger">
-                    <i class="bi bi-exclamation-circle me-2"></i>
-                    この操作は取り消せません。
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="bi bi-x-circle"></i> キャンセル
-                </button>
-                <a class="btn btn-danger" id="deleteLink">
-                    <i class="bi bi-trash"></i> 削除する
-                </a>
-
-            </div>
-        </div>
+      </main>
     </div>
-</div>
-<!-- フッター -->
-<div th:replace="~{fragment::footer}"></div>
 
-<script>
-    $(document).ready(function() {
-      $('#deleteModal').on('show.bs.modal', function (event) {
-        const button = $(event.relatedTarget);
-        const inquiryId = button.data('inquiry-id');
-        const personName = button.data('person-name');
+    <!--削除モーダル-->
+    <div
+      class="modal fade"
+      id="deleteModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="deleteModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteModalLabel">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              問合せ削除の確認
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>以下の問合せを削除してもよろしいですか？</p>
+            <p class="font-weight-bold" id="personNameConfirm"></p>
+            <p class="text-danger">
+              <i class="bi bi-exclamation-circle me-2"></i>
+              この操作は取り消せません。
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              <i class="bi bi-x-circle"></i> キャンセル
+            </button>
+            <a class="btn btn-danger" id="deleteLink"> <i class="bi bi-trash"></i> 削除する </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- フッター -->
+    <div th:replace="~{fragment::footer}"></div>
 
-        const modal = $(this);
-        modal.find('#personNameConfirm').text(personName);
-        modal.find('#deleteLink').attr('href', '/sales/inquiry/delete/' + inquiryId);
+    <script>
+      $(document).ready(function () {
+        $("#deleteModal").on("show.bs.modal", function (event) {
+          const button = $(event.relatedTarget);
+          const inquiryId = button.data("inquiry-id");
+          const personName = button.data("person-name");
+
+          const modal = $(this);
+          modal.find("#personNameConfirm").text(personName);
+          modal.find("#deleteLink").attr("href", "/sales/inquiry/delete/" + inquiryId);
+        });
       });
-    });
-</script>
-</body>
+    </script>
+  </body>
 </html>

@@ -234,3 +234,4 @@ erDiagram
     }
     OTHER_TEST_RESULTS }|..|| OTHER_TESTS : "other_test_id"
     OTHER_TEST_RESULTS }|..|| STUDENTS : "student_id"
+```

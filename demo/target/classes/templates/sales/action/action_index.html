@@ -1,205 +1,220 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <div th:replace="~{fragment::head}"></div>
     <title>アクション一覧</title>
     <style>
-        .btn-action {
-            background-color: #4A90E2;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: 0.3s;
-            padding: 8px 16px;
-        }
+      .btn-action {
+        background-color: #4a90e2;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        transition: 0.3s;
+        padding: 8px 16px;
+      }
 
-        .btn-action:hover {
-            background-color: #357ABD;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
-        }
+      .btn-action:hover {
+        background-color: #357abd;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
+      }
 
-        .icon-button {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            padding: 0;
-            font-size: 12px;
-            line-height: 1;
-            border-radius: 50%;
-            transition: transform 0.2s;
-        }
+      .icon-button {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        font-size: 12px;
+        line-height: 1;
+        border-radius: 50%;
+        transition: transform 0.2s;
+      }
 
-        .edit-button {
-            top: -8px;
-            right: -8px;
-        }
+      .edit-button {
+        top: -8px;
+        right: -8px;
+      }
 
-        .delete-button {
-            top: -8px;
-            right: 20px;
-        }
+      .delete-button {
+        top: -8px;
+        right: 20px;
+      }
 
-        .icon-button:hover {
-            transform: scale(1.1);
-        }
+      .icon-button:hover {
+        transform: scale(1.1);
+      }
     </style>
-</head>
-<body class="d-flex flex-column min-vh-100">
-<div th:replace="~{fragment::header}"></div>
-<main class="flex-grow-1">
-    <div class="container mt-5">
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragment::header}"></div>
+    <main class="flex-grow-1">
+      <div class="container mt-5">
         <h1 class="mb-4 mt-4">アクション一覧</h1>
 
         <div class="text-center mb-4">
-            <button class="btn btn-primary" data-toggle="modal" data-target="#createActionModal">
-                <i class="fas fa-plus"></i> 新規アクション作成
-            </button>
+          <button class="btn btn-primary" data-toggle="modal" data-target="#createActionModal">
+            <i class="fas fa-plus"></i> 新規アクション作成
+          </button>
         </div>
 
         <div class="d-flex justify-content-center flex-wrap">
-            <div th:each="action : ${actions}" class="m-3">
-                <div class="position-relative d-inline-block">
-                    <button class="btn btn-action" th:text="${action.getActionName()}"
-                            data-toggle="modal"
-                            th:data-target="'#actionInfo' + ${action.getActionId()}">
-                    </button>
+          <div th:each="action : ${actions}" class="m-3">
+            <div class="position-relative d-inline-block">
+              <button
+                class="btn btn-action"
+                th:text="${action.getActionName()}"
+                data-toggle="modal"
+                th:data-target="'#actionInfo' + ${action.getActionId()}"
+              ></button>
 
-                    <button class="btn btn-sm btn-warning icon-button edit-button"
-                            data-toggle="modal"
-                            th:data-target="'#editModal' + ${action.getActionId()}">
-                        <i class="fas fa-edit"></i>
-                    </button>
+              <button
+                class="btn btn-sm btn-warning icon-button edit-button"
+                data-toggle="modal"
+                th:data-target="'#editModal' + ${action.getActionId()}"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
 
-                    <button class="btn btn-sm btn-danger icon-button delete-button"
-                            data-toggle="modal"
-                            th:data-target="'#deleteModal' + ${action.getActionId()}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-
-                <!-- 編集モーダル -->
-                <div class="modal fade" th:id="'editModal' + ${action.getActionId()}" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">アクション編集</h5>
-                                <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:id="'editForm' + ${action.getActionId()}" th:action="@{/action/edit}" method="post">
-                                    <input type="hidden" name="actionId" th:value="${action.getActionId()}">
-                                    <div class="form-group">
-                                        <label for="name">アクション名</label>
-                                        <input type="text" class="form-control" id="name" name="name"
-                                               th:value="${action.getActionName()}" required>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-                                <button type="submit" th:form="'editForm' + ${action.getActionId()}" class="btn btn-primary">保存</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 削除モーダル -->
-                <div class="modal fade" th:id="'deleteModal' + ${action.getActionId()}" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">アクション削除</h5>
-                                <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <p th:text="${action.getActionName()} + 'を削除しますか？この操作は取り消せません。'"></p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-                                <form th:action="@{/action/delete}" method="post">
-                                    <input type="hidden" name="actionId" th:value="${action.getActionId()}">
-                                    <button type="submit" class="btn btn-danger">削除</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- アクション情報モーダル -->
-                <div class="modal fade" th:id="'actionInfo' + ${action.getActionId()}" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">アクション情報</h5>
-                                <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="container-fluid">
-                                    <div class="row mb-3">
-                                        <div class="col-4 font-weight-bold">アクションID:</div>
-                                        <div class="col-8" th:text="${action.getActionId()}"></div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-4 font-weight-bold">アクション名:</div>
-                                        <div class="col-8" th:text="${action.getActionName()}"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              <button
+                class="btn btn-sm btn-danger icon-button delete-button"
+                data-toggle="modal"
+                th:data-target="'#deleteModal' + ${action.getActionId()}"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
             </div>
+
+            <!-- 編集モーダル -->
+            <div class="modal fade" th:id="'editModal' + ${action.getActionId()}" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">アクション編集</h5>
+                    <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form th:id="'editForm' + ${action.getActionId()}" th:action="@{/action/edit}" method="post">
+                      <input type="hidden" name="actionId" th:value="${action.getActionId()}" />
+                      <div class="form-group">
+                        <label for="name">アクション名</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="name"
+                          name="name"
+                          th:value="${action.getActionName()}"
+                          required
+                        />
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+                    <button type="submit" th:form="'editForm' + ${action.getActionId()}" class="btn btn-primary">
+                      保存
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 削除モーダル -->
+            <div class="modal fade" th:id="'deleteModal' + ${action.getActionId()}" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">アクション削除</h5>
+                    <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <p th:text="${action.getActionName()} + 'を削除しますか？この操作は取り消せません。'"></p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+                    <form th:action="@{/action/delete}" method="post">
+                      <input type="hidden" name="actionId" th:value="${action.getActionId()}" />
+                      <button type="submit" class="btn btn-danger">削除</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- アクション情報モーダル -->
+            <div class="modal fade" th:id="'actionInfo' + ${action.getActionId()}" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">アクション情報</h5>
+                    <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="container-fluid">
+                      <div class="row mb-3">
+                        <div class="col-4 font-weight-bold">アクションID:</div>
+                        <div class="col-8" th:text="${action.getActionId()}"></div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-4 font-weight-bold">アクション名:</div>
+                        <div class="col-8" th:text="${action.getActionName()}"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 作成モーダル -->
         <div class="modal fade" id="createActionModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">新規アクション作成</h5>
-                        <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="createActionForm" th:action="@{/action/create}" method="post">
-                            <div class="form-group">
-                                <label for="createActionName">アクション名</label>
-                                <input type="text"
-                                       class="form-control"
-                                       id="createActionName"
-                                       name="name"
-                                       required
-                                       placeholder="アクション名を入力してください">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-                        <button type="submit" form="createActionForm" class="btn btn-primary">作成</button>
-                    </div>
-                </div>
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">新規アクション作成</h5>
+                <button type="button" class="close bg-dark" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form id="createActionForm" th:action="@{/action/create}" method="post">
+                  <div class="form-group">
+                    <label for="createActionName">アクション名</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="createActionName"
+                      name="name"
+                      required
+                      placeholder="アクション名を入力してください"
+                    />
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+                <button type="submit" form="createActionForm" class="btn btn-primary">作成</button>
+              </div>
             </div>
+          </div>
         </div>
 
         <div class="d-flex justify-content-center" th:if="${message}">
-            <div class="alert alert-info" th:text="${message}"></div>
+          <div class="alert alert-info" th:text="${message}"></div>
         </div>
-    </div>
-</main>
+      </div>
+    </main>
 
-<div th:replace="~{fragment::footer}"></div>
-<div th:replace="~{fragment::script}"></div>
-
-</body>
+    <div th:replace="~{fragment::footer}"></div>
+    <div th:replace="~{fragment::script}"></div>
+  </body>
 </html>

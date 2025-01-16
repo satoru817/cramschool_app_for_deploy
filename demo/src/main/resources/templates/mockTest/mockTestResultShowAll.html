@@ -1,255 +1,289 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <div th:replace="~{fragment::head}"></div>
 
-    <link rel="stylesheet" th:href="@{/css/showAllResult.css}">
+    <link rel="stylesheet" th:href="@{/css/showAllResult.css}" />
     <script th:src="@{/js/mockTest_modal.js}" defer></script>
-</head>
+  </head>
 
-<body>
-<div th:replace="~{fragment::header}"></div>
+  <body>
+    <div th:replace="~{fragment::header}"></div>
 
-<div class="main-container mt-5">
-    <div class="title-section">
-        <h2>
-            <span th:text="${mockTestResults.get(0).mockTest.name}"></span>結果確認画面
-        </h2>
+    <div class="main-container mt-5">
+      <div class="title-section">
+        <h2><span th:text="${mockTestResults.get(0).mockTest.name}"></span>結果確認画面</h2>
         <span class="btn btn-outline-success mr-3">
-            <a class="text-decoration-none" th:href="@{/mockTest/analysis/__${mockTestResults.get(0).mockTest.id}__}">結果分析</a>
+          <a class="text-decoration-none" th:href="@{/mockTest/analysis/__${mockTestResults.get(0).mockTest.id}__}"
+            >結果分析</a
+          >
         </span>
-    </div>
+      </div>
 
-    <div class="card">
+      <div class="card">
         <div class="card-header bg-light">
-            <h5 class="card-title mb-0 text-center">模試結果一覧</h5>
+          <h5 class="card-title mb-0 text-center">模試結果一覧</h5>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>学生名</th>
-                        <th>クラス名
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='klass,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='klass,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <!-- 国語のグループ -->
-                        <th>
-                            国語
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='japanese,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='japanese,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            国偏
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='japaneseSs,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='japaneseSs,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <!-- 数学のグループ -->
-                        <th>
-                            数学
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='math,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='math,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            数偏
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='mathSs,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='mathSs,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <!-- 英語のグループ -->
-                        <th>
-                            英語
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='english,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='english,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            英偏
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='englishSs,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='englishSs,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <!-- 社会のグループ -->
-                        <th>
-                            社会
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='social,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='social,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            社偏
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='socialSs,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='socialSs,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <!-- 理科のグループ -->
-                        <th>
-                            理科
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='science,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='science,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            理偏
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='scienceSs,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='scienceSs,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <!-- 合計のグループ -->
-                        <th>
-                            3科
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total3,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total3,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            3科偏
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total3Ss,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total3Ss,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            5科
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total5,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total5,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <th>
-                            5科偏
-                            <div class="sort-buttons">
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total5Ss,asc')}" class="sort-btn">
-                                    <i class="bi bi-caret-up-fill"></i>
-                                </a>
-                                <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total5Ss,desc')}" class="sort-btn">
-                                    <i class="bi bi-caret-down-fill"></i>
-                                </a>
-                            </div>
-                        </th>
-                        <!-- 志望校情報 -->
-                        <th class="text-no-wrap">志望校1</th>
-                        <th class="text-nowrap">合格可能性1</th>
-                        <th class="text-nowrap">志望校2</th>
-                        <th class="text-nowrap">合格可能性2</th>
-                        <th class="text-nowrap">志望校3</th>
-                        <th class="text-nowrap">合格可能性3</th>
-                        <th class="text-nowrap">志望校4</th>
-                        <th class="text-nowrap">合格可能性4</th>
-                        <th class="text-nowrap">志望校5</th>
-                        <th class="text-nowrap">合格可能性5</th>
-                        <th class="text-nowrap">志望校6</th>
-                        <th class="text-nowrap">合格可能性6</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="result : ${mockTestResults}" class="result-row">
-                        <td>
-                            <a th:href="@{/student/all_score/__${result.student.id}__}" th:text="${result.student.getName()}"
-                               class="student-name text-blue-600 hover:text-blue-800 hover:underline text-nowrap"></a>
-                        </td>
-                        <td class="text-nowrap">
-                            <span class="badge badge-info" th:text="${result.klassName}"></span>
-                        </td>
-                        <td class="japanese solid" th:text="${result.japanese}"></td>
-                        <td class="japanese-ss" th:text="${result.japaneseSs}"></td>
-                        <td class="math solid" th:text="${result.math}"></td>
-                        <td class="math-ss" th:text="${result.mathSs}"></td>
-                        <td class="english solid" th:text="${result.english}"></td>
-                        <td class="english-ss" th:text="${result.englishSs}"></td>
-                        <td class="social solid" th:text="${result.social}"></td>
-                        <td class="social-ss" th:text="${result.socialSs}"></td>
-                        <td class="science solid" th:text="${result.science}"></td>
-                        <td class="science-ss" th:text="${result.scienceSs}"></td>
-                        <td class="total-3" th:text="${result.getTotal3()}"></td>
-                        <td class="total3-ss" th:text="${result.total3Ss}"></td>
-                        <td class="total-5" th:text="${result.getTotal5()}"></td>
-                        <td class="total5-ss" th:text="${result.total5Ss}"></td>
-                        <div th:replace="~{fragment::dreamSchool}"></div>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>学生名</th>
+                  <th>
+                    クラス名
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='klass,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='klass,desc')}" class="sort-btn">
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <!-- 国語のグループ -->
+                  <th>
+                    国語
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='japanese,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='japanese,desc')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    国偏
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='japaneseSs,asc')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='japaneseSs,desc')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <!-- 数学のグループ -->
+                  <th>
+                    数学
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='math,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='math,desc')}" class="sort-btn">
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    数偏
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='mathSs,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='mathSs,desc')}" class="sort-btn">
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <!-- 英語のグループ -->
+                  <th>
+                    英語
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='english,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='english,desc')}" class="sort-btn">
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    英偏
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='englishSs,asc')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='englishSs,desc')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <!-- 社会のグループ -->
+                  <th>
+                    社会
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='social,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='social,desc')}" class="sort-btn">
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    社偏
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='socialSs,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='socialSs,desc')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <!-- 理科のグループ -->
+                  <th>
+                    理科
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='science,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='science,desc')}" class="sort-btn">
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    理偏
+                    <div class="sort-buttons">
+                      <a
+                        th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='scienceSs,asc')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='scienceSs,desc')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <!-- 合計のグループ -->
+                  <th>
+                    3科
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total3,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total3,desc')}" class="sort-btn">
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    3科偏
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total3Ss,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total3Ss,desc')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    5科
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total5,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total5,desc')}" class="sort-btn">
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <th>
+                    5科偏
+                    <div class="sort-buttons">
+                      <a th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total5Ss,asc')}" class="sort-btn">
+                        <i class="bi bi-caret-up-fill"></i>
+                      </a>
+                      <a
+                        th:href="@{/mockTestResults/all/{id}(id=${mockTestId}, sort='total5Ss,desc')}"
+                        class="sort-btn"
+                      >
+                        <i class="bi bi-caret-down-fill"></i>
+                      </a>
+                    </div>
+                  </th>
+                  <!-- 志望校情報 -->
+                  <th class="text-no-wrap">志望校1</th>
+                  <th class="text-nowrap">合格可能性1</th>
+                  <th class="text-nowrap">志望校2</th>
+                  <th class="text-nowrap">合格可能性2</th>
+                  <th class="text-nowrap">志望校3</th>
+                  <th class="text-nowrap">合格可能性3</th>
+                  <th class="text-nowrap">志望校4</th>
+                  <th class="text-nowrap">合格可能性4</th>
+                  <th class="text-nowrap">志望校5</th>
+                  <th class="text-nowrap">合格可能性5</th>
+                  <th class="text-nowrap">志望校6</th>
+                  <th class="text-nowrap">合格可能性6</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="result : ${mockTestResults}" class="result-row">
+                  <td>
+                    <a
+                      th:href="@{/student/all_score/__${result.student.id}__}"
+                      th:text="${result.student.getName()}"
+                      class="student-name text-blue-600 hover:text-blue-800 hover:underline text-nowrap"
+                    ></a>
+                  </td>
+                  <td class="text-nowrap">
+                    <span class="badge badge-info" th:text="${result.klassName}"></span>
+                  </td>
+                  <td class="japanese solid" th:text="${result.japanese}"></td>
+                  <td class="japanese-ss" th:text="${result.japaneseSs}"></td>
+                  <td class="math solid" th:text="${result.math}"></td>
+                  <td class="math-ss" th:text="${result.mathSs}"></td>
+                  <td class="english solid" th:text="${result.english}"></td>
+                  <td class="english-ss" th:text="${result.englishSs}"></td>
+                  <td class="social solid" th:text="${result.social}"></td>
+                  <td class="social-ss" th:text="${result.socialSs}"></td>
+                  <td class="science solid" th:text="${result.science}"></td>
+                  <td class="science-ss" th:text="${result.scienceSs}"></td>
+                  <td class="total-3" th:text="${result.getTotal3()}"></td>
+                  <td class="total3-ss" th:text="${result.total3Ss}"></td>
+                  <td class="total-5" th:text="${result.getTotal5()}"></td>
+                  <td class="total5-ss" th:text="${result.total5Ss}"></td>
+                  <div th:replace="~{fragment::dreamSchool}"></div>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-<div th:replace="~{fragment::mockTestModal}"></div>
-<div th:replace="~{fragment::footer}"></div>
-<div th:replace="~{fragment::script}"></div>
-</body>
+    <div th:replace="~{fragment::mockTestModal}"></div>
+    <div th:replace="~{fragment::footer}"></div>
+    <div th:replace="~{fragment::script}"></div>
+  </body>
 </html>

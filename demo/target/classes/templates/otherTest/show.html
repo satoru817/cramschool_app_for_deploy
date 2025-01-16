@@ -1,73 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <div th:replace="~{fragment::head}"></div>
-  <title>Other Tests</title>
-</head>
-<body>
-<div th:replace="~{fragment::header}"></div>
-<div class="container mt-5 min-vh-100">
-  <h1 class="text-center mb-4">その他のテスト一覧</h1>
-  <form th:action="@{/otherTest/show}" method="get" class="mb-4">
-    <div class="input-group　d-flex justify-content-center row">
-      <input type="text" name="searchQuery" class="form-control col-md-4" placeholder="学校名あるいはテスト名で部分一致検索" aria-label="学生名で検索" th:value="${searchQuery}"/>
-      <button class="btn btn-outline-secondary" type="submit">検索</button>
-    </div>
-  </form>
-  <div class="row">
-    <div class="col-md-8 offset-md-2">
-      <ul class="list-group">
-        <li class="list-group-item mb-3 shadow-sm rounded" th:each="test : ${otherTests}">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h5 class="mb-1">
-                <span th:text="${test.school.name}" class="fw-bold text-primary"></span> -
-                <span th:text="${test.date}"></span>
-              </h5>
-              <p class="mb-0">
-                <span th:text="${test.grade} + '年生'"></span>
-                <span th:text="${test.semester} + '学期'"></span>
-              </p>
-              <small class="text-muted" th:text="'Test ID: ' + ${test.otherTestId}"></small>
-            </div>
-            <div class="d-flex flex-column">
-              <a th:href="@{/otherTest/edit/__${test.otherTestId}__}" class="btn btn-outline-secondary btn-sm mb-1">テスト内容編集</a>
-              <a th:href="@{/otherTest/resultEdit/__${test.otherTestId}__}" class="btn btn-outline-primary btn-sm">テスト結果確認・入力・編集</a>
-            </div>
-          </div>
-        </li>
-      </ul>
-
-      <!-- ページネーション -->
-      <div th:if="${otherTests.totalPages > 1}" class="d-flex justify-content-center mt-4">
-        <nav aria-label="模試結果ページ">
-          <ul class="pagination">
-            <li class="page-item">
-              <span th:if="${otherTests.isFirst()}" class="page-link disabled">前</span>
-              <a th:unless="${otherTests.isFirst()}"
-                 th:href="@{/otherTest/show(page=${otherTests.number - 1},searchQuery=${searchQuery})}"
-                 class="page-link">前</a>
-            </li>
-            <li th:each="i : ${#numbers.sequence(0, otherTests.totalPages - 1)}" class="page-item">
-              <span th:if="${i == otherTests.number}" class="page-link active" th:text="${i + 1}"></span>
-              <a th:unless="${i == otherTests.number}"
-                 th:href="@{/otherTest/show( page=${i},searchQuery=${searchQuery})}"
-                 class="page-link" th:text="${i + 1}"></a>
-            </li>
-            <li class="page-item">
-              <span th:if="${otherTests.isLast()}" class="page-link disabled">次</span>
-              <a th:unless="${otherTests.isLast()}"
-                 th:href="@{/otherTest/show(page=${otherTests.number + 1},searchQuery=${searchQuery})}"
-                 class="page-link">次</a>
+  <head>
+    <div th:replace="~{fragment::head}"></div>
+    <title>Other Tests</title>
+  </head>
+  <body>
+    <div th:replace="~{fragment::header}"></div>
+    <div class="container mt-5 min-vh-100">
+      <h1 class="text-center mb-4">その他のテスト一覧</h1>
+      <form th:action="@{/otherTest/show}" method="get" class="mb-4">
+        <div class="input-group d-flex justify-content-center row">
+          <input
+            type="text"
+            name="searchQuery"
+            class="form-control col-md-4"
+            placeholder="学校名あるいはテスト名で部分一致検索"
+            aria-label="学生名で検索"
+            th:value="${searchQuery}"
+          />
+          <button class="btn btn-outline-secondary" type="submit">検索</button>
+        </div>
+      </form>
+      <div class="row">
+        <div class="col-md-8 offset-md-2">
+          <ul class="list-group">
+            <li class="list-group-item mb-3 shadow-sm rounded" th:each="test : ${otherTests}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="mb-1">
+                    <span th:text="${test.school.name}" class="fw-bold text-primary"></span>
+                    -
+                    <span th:text="${test.date}"></span>
+                  </h5>
+                  <p class="mb-0">
+                    <span th:text="${test.grade} + '年生'"></span>
+                    <span th:text="${test.semester} + '学期'"></span>
+                  </p>
+                  <small class="text-muted" th:text="'Test ID: ' + ${test.otherTestId}"></small>
+                </div>
+                <div class="d-flex flex-column">
+                  <a th:href="@{/otherTest/edit/__${test.otherTestId}__}" class="btn btn-outline-secondary btn-sm mb-1"
+                    >テスト内容編集</a
+                  >
+                  <a th:href="@{/otherTest/resultEdit/__${test.otherTestId}__}" class="btn btn-outline-primary btn-sm"
+                    >テスト結果確認・入力・編集</a
+                  >
+                </div>
+              </div>
             </li>
           </ul>
-        </nav>
+
+          <!-- ページネーション -->
+          <div th:if="${otherTests.totalPages > 1}" class="d-flex justify-content-center mt-4">
+            <nav aria-label="模試結果ページ">
+              <ul class="pagination">
+                <li class="page-item">
+                  <span th:if="${otherTests.isFirst()}" class="page-link disabled">前</span>
+                  <a
+                    th:unless="${otherTests.isFirst()}"
+                    th:href="@{/otherTest/show(page=${otherTests.number - 1},searchQuery=${searchQuery})}"
+                    class="page-link"
+                    >前</a
+                  >
+                </li>
+                <li th:each="i : ${#numbers.sequence(0, otherTests.totalPages - 1)}" class="page-item">
+                  <span th:if="${i == otherTests.number}" class="page-link active" th:text="${i + 1}"></span>
+                  <a
+                    th:unless="${i == otherTests.number}"
+                    th:href="@{/otherTest/show( page=${i},searchQuery=${searchQuery})}"
+                    class="page-link"
+                    th:text="${i + 1}"
+                  ></a>
+                </li>
+                <li class="page-item">
+                  <span th:if="${otherTests.isLast()}" class="page-link disabled">次</span>
+                  <a
+                    th:unless="${otherTests.isLast()}"
+                    th:href="@{/otherTest/show(page=${otherTests.number + 1},searchQuery=${searchQuery})}"
+                    class="page-link"
+                    >次</a
+                  >
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-<div th:replace="~{fragment::footer}"></div>
-<div th:replace="~{fragment::script}"></div>
-</body>
+    <div th:replace="~{fragment::footer}"></div>
+    <div th:replace="~{fragment::script}"></div>
+  </body>
 </html>
-

@@ -48,6 +48,7 @@ insert ignore into students(student_id,el1,code,name )values
 
 
 insert ignore into roles(role_id,name) values
+(3,"ROLE_SUPER_ADMIN"),
 (1,"ROLE_ADMIN"),
 (2,"ROLE_GENERAL");
 

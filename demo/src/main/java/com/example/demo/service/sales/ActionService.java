@@ -23,6 +23,11 @@ public class ActionService {
         return actionHistoryRepository.findByInquiry(inquiry,pageable);
     }
 
+    public Action getById(Integer actionId){
+        return actionRepository.findById(actionId)
+                .orElseThrow(()->new RuntimeException("該当のActionは存在しません。"));
+    }
+
     public List<Action> getAll() {
         return actionRepository.findAll();
     }
@@ -45,5 +50,9 @@ public class ActionService {
     @Transactional
     public void deleteAction(Integer actionId) {
         actionRepository.deleteById(actionId);
+    }
+
+    public List<Action> findAll() {
+        return actionRepository.findAll();
     }
 }

@@ -75,4 +75,9 @@ public class InquiryService {
 
         return inquiry;
     }
+
+    public Inquiry getById(Integer inquiryId){
+        return inquiryRepository.findById(inquiryId)
+                .orElseThrow(()->new RuntimeException("該当の問い合わせは存在しません。"));
+    }
 }

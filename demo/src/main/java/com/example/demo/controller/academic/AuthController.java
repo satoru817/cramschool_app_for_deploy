@@ -1,14 +1,17 @@
 package com.example.demo.controller.academic;
 
 import com.example.demo.entity.CramSchool;
+import com.example.demo.entity.User;
 import com.example.demo.repository.CramSchoolRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.UserDetailsImpl;
 import com.example.demo.security.UserDetailsServiceImpl;
+import com.example.demo.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,8 +21,12 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 認証処理を担当するコントローラークラスです。
@@ -32,6 +39,7 @@ public class AuthController {
     private final CramSchoolRepository cramSchoolRepository;
     private final UserRepository userRepository;
     private final UserDetailsServiceImpl userDetailsService;
+    private final UserService userService;
 
     /**
      * ログイン画面を表示します。
@@ -42,10 +50,27 @@ public class AuthController {
      */
     @GetMapping("/login")
     public String login(Model model) {
-        List<CramSchool> cramSchools = cramSchoolRepository.findAll();
-        model.addAttribute("cramSchools", cramSchools);
+//        List<CramSchool> cramSchools = cramSchoolRepository.findAll();
+//        model.addAttribute("cramSchools", cramSchools);
         return "auth/login";
     }
+
+    @GetMapping("/api/schools-by-username")
+    @ResponseBody
+    public ResponseEntity<List<CramSchool>> getSchoolsByUsername(@RequestParam String username) {
+        User user = userService.findByName(username);
+        if (user == null) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+        List<CramSchool> schools = user.getCramSchoolUsers().stream()
+                .map(cramSchoolUser -> cramSchoolUser.getCramSchool())
+                .collect(Collectors.toUnmodifiableList());
+
+        return ResponseEntity.ok(schools);
+    }
+
+    //todo ログイン時の教室選択をjavascriptで制御する
 
     /**
      * ログイン成功時の処理を行います。

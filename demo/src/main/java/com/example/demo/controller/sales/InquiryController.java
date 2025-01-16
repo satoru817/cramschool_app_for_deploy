@@ -120,11 +120,12 @@ public class InquiryController {
 
         Inquiry inquiry = inquiryService.findById(inquiryId);
         List<Action> actions = actionRepository.findAll();
-
+        List<User> users = userRepository.findAll();
         Page<ActionHistory> actionHistories = actionService.getAllActionHistory(inquiry,pageable);
 
         model.addAttribute("actionHistories",actionHistories);
         model.addAttribute("actions",actions);
+        model.addAttribute("users",users);
         return "sales/action_history/of_one_inquiry";
     }
 

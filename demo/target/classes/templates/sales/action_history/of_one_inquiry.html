@@ -75,16 +75,63 @@
                           <td th:text="${#temporals.format(history.actionDate, 'yyyy/MM/dd')}"></td>
                           <td th:text="${history.user.name}"></td>
                           <td>
-                            <span
-                              class="text-truncate d-inline-block"
-                              style="max-width: 200px"
-                              th:text="${history.comment}"
-                            ></span>
+                            <!-- コメントセルをクリック可能に -->
+                            <a
+                              href="#"
+                              class="text-decoration-none text-body"
+                              data-toggle="modal"
+                              th:data-target="'#commentModal'+${history.actionHistoryId}"
+                            >
+                              <span
+                                class="text-truncate d-inline-block"
+                                style="max-width: 200px"
+                                th:text="${history.comment}"
+                              >
+                              </span>
+                              <i class="bi bi-arrows-angle-expand ms-1 text-muted small"></i>
+                            </a>
+
+                            <div class="modal fade" th:id="'commentModal'+${history.actionHistoryId}" tabindex="-1">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title">アクション履歴詳細</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <div class="mb-3">
+                                      <div class="text-muted small mb-1">アクション</div>
+                                      <span
+                                        class="badge text-primary shadow-sm"
+                                        th:text="${history.action.actionName}"
+                                      ></span>
+                                    </div>
+                                    <div class="mb-3">
+                                      <div class="text-muted small mb-1">日付</div>
+                                      <div th:text="${#temporals.format(history.actionDate, 'yyyy年MM月dd日')}"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                      <div class="text-muted small mb-1">担当者</div>
+                                      <div th:text="${history.user.name}"></div>
+                                    </div>
+                                    <div>
+                                      <div class="text-muted small mb-1">コメント</div>
+                                      <div class="border rounded p-3 bg-light" th:text="${history.comment}"></div>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                           </td>
                           <td>
                             <a
                               class="btn btn-outline-info btn-sm"
-                              th:href="@{/sales/action/edit/__${history.actionHistoryId}__}"
+                              th:href="@{/action/actionHistory/edit/__${history.actionHistoryId}__}"
                             >
                               <i class="bi bi-pencil-square"></i>
                             </a>
@@ -93,13 +140,80 @@
                             <button
                               class="btn btn-outline-danger btn-sm"
                               data-toggle="modal"
-                              data-target="#deleteModal"
-                              th:data-action-id="${history.actionHistoryId}"
-                              th:data-action-date="${#temporals.format(history.actionDate, 'yyyy/MM/dd')}"
+                              th:data-target="'#deleteModal'+${history.actionHistoryId}"
                             >
                               <i class="bi bi-trash"></i>
                             </button>
                           </td>
+
+                          <div class="modal fade" th:id="'deleteModal'+${history.actionHistoryId}" tabindex="-1">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                  <h5 class="modal-title">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    アクション履歴削除の確認
+                                  </h5>
+                                  <button
+                                    type="button"
+                                    class="close text-white"
+                                    data-dismiss="modal"
+                                    aria-label="Close"
+                                  >
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <p class="mb-4">以下のアクション履歴を削除してもよろしいですか？</p>
+
+                                  <div class="card border-danger">
+                                    <div class="card-body">
+                                      <div class="row mb-2">
+                                        <div class="col-4 text-muted">アクション：</div>
+                                        <div class="col-8">
+                                          <span
+                                            class="badge text-primary shadow-sm"
+                                            th:text="${history.action.actionName}"
+                                          ></span>
+                                        </div>
+                                      </div>
+                                      <div class="row mb-2">
+                                        <div class="col-4 text-muted">実施日：</div>
+                                        <div
+                                          class="col-8"
+                                          th:text="${#temporals.format(history.actionDate, 'yyyy年MM月dd日')}"
+                                        ></div>
+                                      </div>
+                                      <div class="row mb-2">
+                                        <div class="col-4 text-muted">担当者：</div>
+                                        <div class="col-8" th:text="${history.user.name}"></div>
+                                      </div>
+                                      <div class="row">
+                                        <div class="col-4 text-muted">コメント：</div>
+                                        <div class="col-8" th:text="${history.comment}"></div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div class="alert alert-danger mt-4">
+                                    <i class="bi bi-exclamation-circle me-2"></i>
+                                    この操作は取り消せません。削除前に内容を十分ご確認ください。
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                    <i class="bi bi-x-circle me-1"></i>キャンセル
+                                  </button>
+                                  <a
+                                    th:href="@{/action/actionHistory/delete/__${history.inquiry.inquiryId}__/__${history.actionHistoryId}__}"
+                                    class="btn btn-danger"
+                                  >
+                                    <i class="bi bi-trash me-1"></i>削除する
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </tr>
                       </tbody>
                     </table>
@@ -183,7 +297,7 @@
                   </button>
                 </div>
                 <div class="modal-body">
-                  <form id="createActionForm" th:action="@{/sales/action/create}" method="post">
+                  <form id="createActionForm" th:action="@{/action/actionHistory/create}" method="post">
                     <input
                       type="hidden"
                       name="inquiryId"
@@ -197,8 +311,16 @@
                         <option
                           th:each="action : ${actions}"
                           th:value="${action.actionId}"
-                          th:text="${action.name}"
+                          th:text="${action.actionName}"
                         ></option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="userId" class="form-label">対応者</label>
+                      <select class="form-select" id="userId" name="userId" required>
+                        <option value="">対応者を選択してください</option>
+                        <option th:each="user:${users}" th:value="${user.userId}" th:text="${user.name}"></option>
                       </select>
                     </div>
 
@@ -221,38 +343,7 @@
             </div>
           </div>
 
-          <!-- 削除確認モーダル -->
-          <div class="modal fade" id="deleteModal" tabindex="-1">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                  <h5 class="modal-title">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    アクション履歴削除の確認
-                  </h5>
-                  <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <p>以下のアクション履歴を削除してもよろしいですか？</p>
-                  <p class="font-weight-bold" id="actionDateConfirm"></p>
-                  <p class="text-danger">
-                    <i class="bi bi-exclamation-circle me-2"></i>
-                    この操作は取り消せません。
-                  </p>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="bi bi-x-circle"></i> キャンセル
-                  </button>
-                  <a class="btn btn-danger" id="deleteLink"> <i class="bi bi-trash"></i> 削除する </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="d-flex justify-content-center" th:if="${message}">
+          <div class="d-flex justify-content-center mt-2" th:if="${message}">
             <div class="alert alert-info" th:text="${message}"></div>
           </div>
         </div>
@@ -261,16 +352,16 @@
 
     <div th:replace="~{fragment::footer}"></div>
 
-    <!-- 削除モーダル用のJavaScript -->
-    <script th:inline="javascript">
-      document.getElementById("deleteModal").addEventListener("show.bs.modal", function (event) {
-        var button = event.relatedTarget;
-        var actionId = button.getAttribute("data-action-id");
-        var actionDate = button.getAttribute("data-action-date");
+    <!--    &lt;!&ndash; 削除モーダル用のJavaScript &ndash;&gt;-->
+    <!--    <script th:inline="javascript">-->
+    <!--      document.getElementById("deleteModal").addEventListener("show.bs.modal", function (event) {-->
+    <!--        var button = event.relatedTarget;-->
+    <!--        var actionId = button.getAttribute("data-action-id");-->
+    <!--        var actionDate = button.getAttribute("data-action-date");-->
 
-        document.getElementById("actionDateConfirm").textContent = actionDate + "のアクション";
-        document.getElementById("deleteLink").href = "/sales/action/delete/" + actionId;
-      });
-    </script>
+    <!--        document.getElementById("actionDateConfirm").textContent = actionDate + "のアクション";-->
+    <!--        document.getElementById("deleteLink").href = "/sales/action/delete/" + actionId;-->
+    <!--      });-->
+    <!--    </script>-->
   </body>
 </html>

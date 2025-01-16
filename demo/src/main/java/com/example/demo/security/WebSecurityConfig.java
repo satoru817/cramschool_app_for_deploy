@@ -24,7 +24,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/signUp**", "/userRegister", "/css/**", "/js/**", "/", "/passwordChange", "/storage/**","/images/**").permitAll()
+                        .requestMatchers("/api/schools-by-username","/signUp**", "/userRegister", "/css/**", "/js/**", "/", "/passwordChange", "/storage/**","/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/**").hasRole("ADMIN") // すべてのPOSTリクエストにADMIN権限を必要とする
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
@@ -35,6 +35,8 @@ public class WebSecurityConfig {
                         .defaultSuccessUrl("/success")
                         .permitAll()
                 )
+                .csrf(csrf->csrf
+                        .ignoringRequestMatchers("/api/schools-by-username"))
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")

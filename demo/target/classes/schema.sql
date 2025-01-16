@@ -328,7 +328,7 @@ CREATE TABLE IF NOT EXISTS action_histories (
     action_date DATE NOT NULL,
     user_id INT NOT NULL,--担当者を入れる
     comment TEXT,
-    FOREIGN KEY (inquiry_id) REFERENCES inquiries(inquiry_id),
+    FOREIGN KEY (inquiry_id) REFERENCES inquiries(inquiry_id) ON DELETE CASCADE,
     FOREIGN KEY (action_id) REFERENCES actions(action_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );

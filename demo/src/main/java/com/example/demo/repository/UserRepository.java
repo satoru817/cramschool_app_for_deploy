@@ -27,4 +27,5 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     List<User> findAllByCramSchool(@Param("cramSchool")CramSchool cramSchool);
 
 
+
 }

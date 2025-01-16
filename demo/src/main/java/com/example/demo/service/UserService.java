@@ -25,6 +25,11 @@ public class UserService {
     private final KlassUserRepository klassUserRepository;
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
+    public User getById(Integer userId){
+        return userRepository.findById(userId)
+                .orElseThrow(()->new RuntimeException("該当のuserは存在しません。"));
+    }
+
     public User createUserFromUserRegisterDto(UserRegisterDto userRegisterDto, CramSchool cramSchool){
         User user = new User();
         user.setRole(roleRepository.getReferenceById(userRegisterDto.getRoleId()));
@@ -117,5 +122,13 @@ public class UserService {
         Optional<KlassUser> ku = klassUserRepository.findByNameAndSubjectAndGradeAndTestDate(cramSchool,klassName,subject,grade,testDate);
         String teacherName = (ku.isPresent())? ku.get().getUser().getName() : "不明";
         average.setTeacherName(teacherName);
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    public User findByName(String username) {
+        return userRepository.getByName(username);
     }
 }

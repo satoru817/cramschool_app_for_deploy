@@ -399,26 +399,12 @@ public class OtherTestController {
             return "redirect:/otherTest/create";
         }else{
             try{
-                //todo:otherTestのschoolIdとgradeとdate(ここからel1を算出する)を利用してstudentをすべて取ってきてOtherTestResultを作成して保存
                 otherTest.setSchool(schoolRepository.getReferenceById(otherTest.getSchoolId()));
                 otherTestRepository.save(otherTest);
 
-                Student ave;
-                Optional<Student> optionalAve = studentService.getAverageStudent(userDetails.getCramSchool());
-
-                ave = optionalAve.orElseGet(() -> {
-                    Student student = new Student();
-                    student.setCramSchool(cramSchool);
-                    student.setName("ave");
-                    student.setFurigana("へいきん");
-                    student.setCode((long) cramSchool.getCramSchoolId());
-                    student.setEl1(2000);
-                    studentService.save(student);
-                    return student;
-                });
 
                 List<Student> students = studentService.getStudentForSchoolIdAndGradeAndDate(otherTest.getSchoolId(), Integer.valueOf(otherTest.getGrade()),otherTest.getDate());
-                students.add(ave);//塾ごとの平均君をテストに結びつける
+
 
                 log.info("studentsのlength:{}",students.size());
                 students.forEach(student -> {

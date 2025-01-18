@@ -99,19 +99,19 @@ body {
     border-color: var(--color-accent-pink-dark) !important;
 }
 .drop-zone {
-  min-height: 200px;
-  background-color: #f8f9fa;
-  border: 2px dashed #dee2e6;
-  transition: all 0.3s ease;
-  cursor: pointer;
+    min-height: 200px;
+    background-color: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .drop-zone.drag-over {
-  background-color: #e9ecef;
-  border-color: #0d6efd;
+    background-color: #e9ecef;
+    border-color: #0d6efd;
 }
 
 .drop-zone .bi {
-  display: block;
-  color: #6c757d;
+    display: block;
+    color: #6c757d;
 }

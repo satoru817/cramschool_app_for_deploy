@@ -48,7 +48,7 @@
               <div sec:authorize="hasAnyRole('SUPER_ADMIN','ADMIN')">
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" th:href="@{/user/show}"><i class="bi mr-2 bi-list-stars"></i> ユーザー一覧</a>
-                <a sec:authorize="hasRole('SUPER_ADMIN')"  class="dropdown-item" th:href="@{/user/register}"
+                <a sec:authorize="hasRole('SUPER_ADMIN')" class="dropdown-item" th:href="@{/user/register}"
                   ><i class="bi mr-2 bi-person-plus-fill"></i> 新規ユーザー作成</a
                 >
               </div>
@@ -500,7 +500,7 @@
     </div>
 
     <div th:fragment="footer" th:remove="tag">
-      <footer class="text-center mt-auto p-3 bg-light">
+      <footer class="text-center mt-auto p-3 bg-light ">
         <p class="mb-0">© shoeiApplication</p>
       </footer>
     </div>

@@ -63,7 +63,7 @@
               </button>
               <!-- 編集ボタン -->
               <button
-                      sec:authorize="hasRole('SUPER_ADMIN')"
+                sec:authorize="hasRole('SUPER_ADMIN')"
                 class="btn btn-sm btn-warning rounded-circle icon-button-top-right"
                 data-toggle="modal"
                 th:data-target="'#editModal' + ${user.getUserId()}"
@@ -72,7 +72,7 @@
               </button>
               <!-- 削除ボタン -->
               <button
-                      sec:authorize="hasRole('SUPER_ADMIN')"
+                sec:authorize="hasRole('SUPER_ADMIN')"
                 class="btn btn-sm btn-danger rounded-circle icon-button-top-right-second"
                 data-toggle="modal"
                 th:data-target="'#deleteModal' + ${user.getUserId()}"
@@ -83,7 +83,7 @@
 
             <!-- 編集モーダル -->
             <div
-                    sec:authorize="hasRole('SUPER_ADMIN')"
+              sec:authorize="hasRole('SUPER_ADMIN')"
               class="modal fade"
               th:id="'editModal' + ${user.getUserId()}"
               tabindex="-1"
@@ -170,7 +170,7 @@
 
             <!-- 削除用モーダル -->
             <div
-                    sec:authorize="hasRole('SUPER_ADMIN')"
+              sec:authorize="hasRole('SUPER_ADMIN')"
               class="modal fade"
               th:id="'deleteModal' + ${user.getUserId()}"
               tabindex="-1"

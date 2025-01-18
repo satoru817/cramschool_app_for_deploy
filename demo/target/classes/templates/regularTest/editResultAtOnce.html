@@ -94,18 +94,18 @@
             </div>
             <div class="card-body">
               <form
-                      method="post"
-                      enctype="multipart/form-data"
-                      th:action="@{/registerRegularTestResultsFromCsv/{regularTestSetId}(regularTestSetId=${regularTestSetId})}"
-                      class="mb-4"
-                      id="uploadForm"
+                method="post"
+                enctype="multipart/form-data"
+                th:action="@{/registerRegularTestResultsFromCsv/{regularTestSetId}(regularTestSetId=${regularTestSetId})}"
+                class="mb-4"
+                id="uploadForm"
               >
                 <div
-                        id="drop-zone"
-                        class="drop-zone mb-3 p-4 text-center border rounded"
-                        ondrop="dropHandler(event)"
-                        ondragover="dragOverHandler(event)"
-                        ondragleave="dragLeaveHandler(event)"
+                  id="drop-zone"
+                  class="drop-zone mb-3 p-4 text-center border rounded"
+                  ondrop="dropHandler(event)"
+                  ondragover="dragOverHandler(event)"
+                  ondragleave="dragLeaveHandler(event)"
                 >
                   <div class="drop-zone-content">
                     <i class="bi bi-cloud-upload fs-2 mb-2"></i>
@@ -125,22 +125,23 @@
               </form>
 
               <div class="m-2">
-                <a
-                        th:href="@{/regularTest/csvDownload/__${regularTestSetId}__}"
-                        class="btn btn-outline-primary w-100"
-                >
+                <a th:href="@{/regularTest/csvDownload/__${regularTestSetId}__}" class="btn btn-outline-primary w-100">
                   <i class="bi bi-download me-2"></i>Excelダウンロード
-                  <small class="d-block mt-1">(入力フォームとしても使用可<br>その際はUTF8でencodeされたcsvに変換してください)</small>
+                  <small class="d-block mt-1"
+                    >(入力フォームとしても使用可<br />その際はUTF8でencodeされたcsvに変換してください)</small
+                  >
                 </a>
               </div>
 
               <div class="m-2">
                 <a
-                        th:href="@{/regularTest/csvDownload/__${regularTestSetId}__(klassId=${klassId})}"
-                        class="btn btn-outline-success w-100"
+                  th:href="@{/regularTest/csvDownload/__${regularTestSetId}__(klassId=${klassId})}"
+                  class="btn btn-outline-success w-100"
                 >
-                  <i class="bi bi-download me-2"></i>選択クラスのCSVダウンロード
-                  <small class="d-block mt-1">(ご担当のクラスのcsvをダウンロードすると入力フォームとして使いやすいです)</small>
+                  <i class="bi bi-download me-2"></i>選択クラスのExcelダウンロード
+                  <small class="d-block mt-1"
+                    >(ご担当のクラスのExcelをダウンロードすると入力フォームとして使いやすいです)</small
+                  >
                 </a>
               </div>
             </div>

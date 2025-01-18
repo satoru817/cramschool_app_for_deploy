@@ -5,55 +5,220 @@
     <meta charset="UTF-8" />
     <title>CSVファイルアップロード</title>
   </head>
-  <body>
+  <body class="d-flex flex-column min-vh-100">
     <div th:replace="~{fragment::header}"></div>
-    <div class="container mt-5 justify-content-center align-items-center min-vh-100">
-      <h1>進研模試CSVファイルアップロード</h1>
-      <form th:action="@{/registerMockTest}" enctype="multipart/form-data" method="post">
-        <label for="file">CSVファイルを選択:</label>
-        <input type="file" id="file" name="file" accept=".csv" required /><br /><br />
+    <main class="flex-grow-1">
+      <div class="container mt-5 justify-content-center align-items-center">
+        <div class="row">
+          <!-- 進研模試フォーム -->
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-header bg-light">
+                <h5 class="card-title mb-0">進研模試CSVファイルアップロード</h5>
+              </div>
+              <div class="card-body">
+                <form th:action="@{/registerMockTest}" enctype="multipart/form-data" method="post" id="shinkenmockForm">
+                  <div
+                          id="drop-zone-shinken"
+                          class="drop-zone mb-3 p-3 text-center border rounded"
+                          ondrop="dropHandler(event, 'file')"
+                          ondragover="dragOverHandler(event)"
+                          ondragleave="dragLeaveHandler(event)"
+                  >
+                    <div class="drop-zone-content">
+                      <i class="bi bi-cloud-upload fs-4 mb-1"></i>
+                      <p class="mb-1">ここにCSVファイルをドラッグ＆ドロップ</p>
+                      <p class="text-muted small mb-1">または</p>
+                      <p class="mb-1">クリックしてファイルを選択</p>
+                      <input type="file" id="file" name="file" accept=".csv" required class="form-control d-none" />
+                    </div>
+                    <div id="file-info-shinken" class="mt-2 d-none">
+                      <p class="text-success mb-1">選択されたファイル:</p>
+                      <p id="file-name-shinken" class="mb-0"></p>
+                    </div>
+                  </div>
 
-        <label for="date">実施日:</label>
-        <input type="date" id="date" name="date" required /><br /><br />
+                  <div class="form-group mb-3">
+                    <label for="date" class="form-label">実施日:</label>
+                    <input type="date" id="date" name="date" required class="form-control" />
+                  </div>
 
-        <button type="submit">アップロード</button>
-      </form>
-      <div th:if="${error}">
-        <p style="color: red" th:text="${error}"></p>
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-upload me-2"></i>アップロード
+                  </button>
+                </form>
+
+                <div th:if="${error}" class="alert alert-danger mt-3 py-2 small" role="alert">
+                  <p class="mb-0" th:text="${error}"></p>
+                </div>
+                <div th:if="${success}" class="alert alert-success mt-3 py-2 small" role="alert">
+                  <p class="mb-0" th:text="${success}"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ハイレベル模試フォーム -->
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-header bg-light">
+                <h5 class="card-title mb-0">ハイレベル模試CSVファイルアップロード</h5>
+              </div>
+              <div class="card-body">
+                <form
+                        th:action="@{/registerHighLevelMockTest}"
+                        enctype="multipart/form-data"
+                        method="post"
+                        id="highlevelForm"
+                >
+                  <div
+                          id="drop-zone-high"
+                          class="drop-zone mb-3 p-3 text-center border rounded"
+                          ondrop="dropHandler(event, 'highFile')"
+                          ondragover="dragOverHandler(event)"
+                          ondragleave="dragLeaveHandler(event)"
+                  >
+                    <div class="drop-zone-content">
+                      <i class="bi bi-cloud-upload fs-4 mb-1"></i>
+                      <p class="mb-1">ここにCSVファイルをドラッグ＆ドロップ</p>
+                      <p class="text-muted small mb-1">または</p>
+                      <p class="mb-1">クリックしてファイルを選択</p>
+                      <input type="file" id="highFile" name="file" accept=".csv" required class="form-control d-none" />
+                    </div>
+                    <div id="file-info-high" class="mt-2 d-none">
+                      <p class="text-success mb-1">選択されたファイル:</p>
+                      <p id="file-name-high" class="mb-0"></p>
+                    </div>
+                  </div>
+
+                  <div class="row g-2">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="highDate" class="form-label">実施日:</label>
+                        <input type="date" id="highDate" name="date" required class="form-control" />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="testGrade" class="form-label">学年:</label>
+                        <select id="testGrade" name="testGrade" required class="form-select">
+                          <option value="" disabled selected>選択してください</option>
+                          <option value="中１">中1</option>
+                          <option value="中２">中2</option>
+                          <option value="中３">中3</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary w-100 mt-3">
+                    <i class="bi bi-upload me-2"></i>アップロード
+                  </button>
+                </form>
+
+                <div th:if="${highError}" class="alert alert-danger mt-3 py-2 small" role="alert">
+                  <p class="mb-0" th:text="${highError}"></p>
+                </div>
+                <div th:if="${highSuccess}" class="alert alert-success mt-3 py-2 small" role="alert">
+                  <p class="mb-0" th:text="${highSuccess}"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div th:if="${success}">
-        <p style="color: green" th:text="${success}"></p>
-      </div>
+    </main>
 
-      <div style="margin: 40px 0"></div>
-      <!-- フォームの間隔を広げるためのスペーサー -->
 
-      <h1>ハイレべル模試CSVファイルアップロード</h1>
-      <form th:action="@{/registerHighLevelMockTest}" enctype="multipart/form-data" method="post">
-        <label for="highFile">CSVファイルを選択:</label>
-        <input type="file" id="highFile" name="file" accept=".csv" required /><br /><br />
-
-        <label for="highDate">実施日:</label>
-        <input type="date" id="highDate" name="date" required /><br /><br />
-
-        <label for="testGrade">学年を選択:</label>
-        <select id="testGrade" name="testGrade" required>
-          <option value="" disabled selected>選択してください</option>
-          <option value="中１">中1</option>
-          <option value="中２">中2</option>
-          <option value="中３">中3</option></select
-        ><br /><br />
-
-        <button type="submit">アップロード</button>
-      </form>
-      <div th:if="${highError}">
-        <p style="color: red" th:text="${highError}"></p>
-      </div>
-      <div th:if="${highSuccess}">
-        <p style="color: green" th:text="${highSuccess}"></p>
-      </div>
-    </div>
     <div th:replace="~{fragment::footer}"></div>
     <div th:replace="~{fragment::script}"></div>
+
+    <!-- 前回と同じJavaScriptとCSS -->
+    <script>
+      // ドロップゾーンのクリックハンドラを設定
+      document.getElementById("drop-zone-shinken").addEventListener("click", function () {
+        document.getElementById("file").click();
+      });
+
+      document.getElementById("drop-zone-high").addEventListener("click", function () {
+        document.getElementById("highFile").click();
+      });
+
+      // ファイル選択時の処理
+      document.getElementById("file").addEventListener("change", function (e) {
+        updateFileInfo(e.target.files[0], "file-info-shinken", "file-name-shinken");
+      });
+
+      document.getElementById("highFile").addEventListener("change", function (e) {
+        updateFileInfo(e.target.files[0], "file-info-high", "file-name-high");
+      });
+
+      function dragOverHandler(event) {
+        event.preventDefault();
+        event.currentTarget.classList.add("border-primary");
+      }
+
+      function dragLeaveHandler(event) {
+        event.preventDefault();
+        event.currentTarget.classList.remove("border-primary");
+      }
+
+      function dropHandler(event, inputId) {
+        event.preventDefault();
+        event.currentTarget.classList.remove("border-primary");
+
+        const dt = event.dataTransfer;
+        const files = dt.files;
+
+        if (files.length) {
+          const file = files[0];
+          if (file.type === "text/csv" || file.name.endsWith(".csv")) {
+            const input = document.getElementById(inputId);
+            input.files = files;
+
+            const fileInfo = inputId === "file" ? "file-info-shinken" : "file-info-high";
+            const fileName = inputId === "file" ? "file-name-shinken" : "file-name-high";
+            updateFileInfo(file, fileInfo, fileName);
+          }
+        }
+      }
+
+      function updateFileInfo(file, fileInfoId, fileNameId) {
+        const fileInfo = document.getElementById(fileInfoId);
+        const fileName = document.getElementById(fileNameId);
+
+        if (file) {
+          fileInfo.classList.remove("d-none");
+          fileName.textContent = file.name;
+        } else {
+          fileInfo.classList.add("d-none");
+          fileName.textContent = "";
+        }
+      }
+    </script>
+
+    <style>
+      .drop-zone {
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .drop-zone:hover {
+        border-color: #0d6efd !important;
+        background-color: #f8f9fa;
+      }
+      .border-primary {
+        border-color: #0d6efd !important;
+        background-color: #f8f9fa;
+      }
+      .card-body {
+        padding: 1rem;
+      }
+      .drop-zone {
+        min-height: 160px;
+      }
+      .form-label {
+        margin-bottom: 0.25rem;
+      }
+    </style>
   </body>
 </html>

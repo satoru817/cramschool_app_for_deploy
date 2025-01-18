@@ -2,7 +2,9 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
   <head>
     <div th:replace="~{fragment::head}"></div>
+    <script th:src="@{/js/DnD.js}" defer></script>
     <title>学校ごとの内申点編集</title>
+
   </head>
 
   <body>
@@ -82,29 +84,46 @@
             </div>
             <div class="card-body">
               <form
-                method="post"
-                enctype="multipart/form-data"
-                th:action="@{/registerSchoolRecordResultsFromCsv/{schoolRecordId}(schoolRecordId=${schoolRecordDTO.schoolRecordId})}"
-                class="mb-4"
+                      method="post"
+                      enctype="multipart/form-data"
+                      th:action="@{/registerSchoolRecordResultsFromCsvForEachSchool/{schoolRecordId}(schoolRecordId=${schoolRecordDTO.schoolRecordId})}"
+                      class="mb-4"
               >
-                <div class="form-group mb-3">
-                  <label for="csvFile" class="form-label">CSVファイルを選択</label>
-                  <input type="file" id="csvFile" name="file" accept=".csv" required class="form-control" />
+                <div
+                        id="drop-zone"
+                        class="drop-zone mb-3 p-3 text-center border rounded"
+                        ondrop="dropHandler(event)"
+                        ondragover="dragOverHandler(event)"
+                        ondragleave="dragLeaveHandler(event)"
+                >
+                  <div class="drop-zone-content">
+                    <i class="bi bi-cloud-upload fs-4 mb-1"></i>
+                    <p class="mb-1">ここにCSVファイルをドラッグ＆ドロップ</p>
+                    <p class="text-muted small mb-1">または</p>
+                    <p class="mb-1">クリックしてファイルを選択</p>
+                    <input type="file" id="csvFile" name="file" accept=".csv" required class="form-control d-none" />
+                  </div>
+                  <div id="file-info" class="mt-2 d-none">
+                    <p class="text-success mb-1">選択されたファイル:</p>
+                    <p id="file-name" class="mb-0"></p>
+                  </div>
                 </div>
+
                 <button type="submit" class="btn btn-primary w-100 mb-3">
-                  <i class="bi bi-upload mr-2"></i>CSVアップロード
+                  <i class="bi bi-upload me-2"></i>CSVアップロード
                 </button>
               </form>
 
               <a
-                th:href="@{/schoolRecord/csvDownload/eachSchool/__${schoolRecordDTO.schoolRecordId}__}"
-                class="btn btn-outline-primary w-100"
+              th:href="@{/schoolRecord/csvDownload/eachSchool/__${schoolRecordDTO.schoolRecordId}__}"
+              class="btn btn-outline-primary w-100"
               >
-                <i class="bi bi-download mr-2"></i>CSVダウンロード
-                <small class="d-block mt-1">(入力フォームとしても使用可)</small>
+              <i class="bi bi-download me-2"></i>CSVダウンロード
+              <small class="d-block mt-1">(入力フォームとしても使用可<br>その際はUTF8でencodeされたcsvに変換してください)</small>
               </a>
             </div>
           </div>
+
         </div>
 
         <!-- 右カラム：成績表示・編集 -->

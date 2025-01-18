@@ -692,6 +692,68 @@ public class SchoolRecordController {
     }
 
 
+    @PostMapping("/registerSchoolRecordResultsFromCsvForEachSchool/{schoolRecordId}")
+    public String registerSchoolRecordResultsFromCsvForEachSchool(@PathVariable("schoolRecordId") Integer schoolRecordId,
+                                                     @RequestParam("file") MultipartFile file,
+                                                     Model model,
+                                                     RedirectAttributes redirectAttributes) {
+        if (file.isEmpty()) {
+            model.addAttribute("error", "Please select a CSV file to upload.");
+            return "error";
+        }
+
+        // student.code をキーとして SchoolRecordResult を効率的に取得するために Map に変換
+        List<SchoolRecordResult> schoolRecordResults = schoolRecordResultRepository.findAllBySchoolRecord(schoolRecordRepository.getReferenceById(schoolRecordId));
+        log.info("schoolRecordResult lengh:{}", schoolRecordResults.size());
+
+        Map<Long, SchoolRecordResult> resultMap = schoolRecordResults.stream()
+                .filter(result -> result.getStudent().getCode() != null)
+                .collect(Collectors.toMap(result -> result.getStudent().getCode(), result -> result));
+
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT
+                    .withDelimiter(',')
+                    .withQuote('"')
+                    .withFirstRecordAsHeader()
+                    .parse(reader);
+
+
+            for (CSVRecord record : records) {
+                record.toMap().forEach((header, value) -> log.info("Header:{}, Value:{}, is生徒番号:{}", header, value,header.trim().equals("生徒番号")));  // 全てのカラム名と値を表示
+                String stringStudentCode = record.get("生徒番号");
+                log.info("stringStudentCode:{}",stringStudentCode);
+
+
+                SchoolRecordResult existingRecord = resultMap.get(Long.valueOf(stringStudentCode));
+
+
+                //studentCode が一致する SchoolRecordResult が存在する場合のみ更新
+                if (existingRecord != null) {
+
+                    existingRecord.setJapanese(parseOrNull(record.get("国語")));
+                    existingRecord.setMath(parseOrNull(record.get("数学")));
+                    existingRecord.setEnglish(parseOrNull(record.get("英語")));
+                    existingRecord.setSocial(parseOrNull(record.get("社会")));
+                    existingRecord.setScience(parseOrNull(record.get("理科")));
+                    existingRecord.setMusic(parseOrNull(record.get("音楽")));
+                    existingRecord.setArt(parseOrNull(record.get("美術")));
+                    existingRecord.setTech(parseOrNull(record.get("技術")));
+                    existingRecord.setPe(parseOrNull(record.get("体育")));
+                }
+            }
+            schoolRecordResultRepository.saveAll(schoolRecordResults);
+            return "redirect:/schoolRecordResultRegister/" + schoolRecordId;
+
+        } catch (Exception e) {
+            log.info("errorが出ています:{}",e.toString());
+
+            return "redirect:/schoolRecordResultRegister/" + schoolRecordId;
+        }
+    }
+
+
 
 
 

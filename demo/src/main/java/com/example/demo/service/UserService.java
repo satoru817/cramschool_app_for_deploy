@@ -5,7 +5,9 @@ import com.example.demo.dto.AverageScoreForKlass;
 import com.example.demo.dto.UserRegisterDto;
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
+import com.example.demo.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,10 +26,25 @@ public class UserService {
     private final CramSchoolRepository cramSchoolRepository;
     private final KlassUserRepository klassUserRepository;
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    private final static SimpleGrantedAuthority ROLE_SUPER_ADMIN = new SimpleGrantedAuthority("ROLE_SUPER_ADMIN");
+    private final static SimpleGrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
+    private final static SimpleGrantedAuthority ROLE_GENERAL = new SimpleGrantedAuthority("ROLE_GENERAL");
 
     public User getById(Integer userId){
         return userRepository.findById(userId)
                 .orElseThrow(()->new RuntimeException("該当のuserは存在しません。"));
+    }
+
+    public static boolean isSuperAdmin(UserDetailsImpl userDetails){
+        return userDetails.getAuthorities().contains(ROLE_SUPER_ADMIN);
+    }
+
+    public static boolean isAdmin(UserDetailsImpl userDetails){
+        return userDetails.getAuthorities().contains(ROLE_ADMIN);
+    }
+
+    public static boolean isGeneral(UserDetailsImpl userDetails){
+        return userDetails.getAuthorities().contains(ROLE_GENERAL);
     }
 
     public User createUserFromUserRegisterDto(UserRegisterDto userRegisterDto, CramSchool cramSchool){

@@ -70,4 +70,24 @@ public class StudentService {
         return studentRepository.findById(studentId)
                 .orElseThrow(()->new RuntimeException("該当の生徒は見つかりませんでした"));
     }
+
+    public Page<Student> findAllCurrentStudent(Pageable pageable) {
+        Integer currentTerm = termAndYearService.getTerm();
+        Integer pastTerm = currentTerm -12;
+        return studentRepository.getStudentsInEl1Range(currentTerm,pastTerm,pageable);
+    }
+
+    public Page<Student> findAllCurrentStudentsByName(String validName, Pageable pageable) {
+        Integer currentTerm = termAndYearService.getTerm();
+        Integer pastTerm = currentTerm -12;
+        return studentRepository.getStudentsByNameAndEl1Range(validName,pastTerm,currentTerm,pageable);
+    }
+
+    public Page<Student> findAllStudentsByEl1(Integer el1, Pageable pageable) {
+        return studentRepository.getStudentsByEl1(el1,pageable);
+    }
+
+    public Page<Student> findAllStudentsByEl1AndName(String validName, Integer el1, Pageable pageable) {
+        return studentRepository.getAllStudentsByEl1AndName(validName,el1,pageable);
+    }
 }

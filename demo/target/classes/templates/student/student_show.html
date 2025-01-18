@@ -28,7 +28,13 @@
               </select>
             </div>
             <div class="col-md-3">
-              <input type="text" name="name" class="form-control" placeholder="名前で検索" />
+              <select name="cramSchoolId" class="form-control">
+                <option value="-1">あなたの所属校舎すべて</option>
+                <option th:each="cs:${cramSchools}" th:value="${cs.cramSchoolId}" th:text="${cs.name}" th:selected="${cramSchoolId==cs.cramSchoolId}"></option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <input type="text" name="name" class="form-control" th:text="${name}" placeholder="名前で検索" />
             </div>
             <div class="col-md-3">
               <button type="submit" class="btn btn-primary">フィルター</button>

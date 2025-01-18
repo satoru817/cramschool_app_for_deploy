@@ -26,6 +26,14 @@ public interface UserRepository extends JpaRepository<User,Integer> {
             """)
     List<User> findAllByCramSchool(@Param("cramSchool")CramSchool cramSchool);
 
+    @Query("""
+            SELECT c FROM CramSchool c
+            INNER JOIN CramSchoolUser csu
+            ON csu.cramSchool = c
+            WHERE csu.user = :user
+            """)
+    List<CramSchool> findAllByUser(@Param("user")User user);
+
 
 
 }

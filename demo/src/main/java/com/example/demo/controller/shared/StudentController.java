@@ -14,7 +14,9 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.core.Conventions;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -55,19 +57,23 @@ public class StudentController {
     private final OtherTestResultRepository otherTestResultRepository;
     private final ClassStudentService classStudentService;
     private final RegularTestResultMapper regularTestResultMapper;
+    private final UserService userService;
+    private final RoleService roleService;
+    private final CramSchoolService cramSchoolService;
+    private final UserRepository userRepository;
 
+    private static final int ALL_SCHOOLS = -1;
     ArrayList<String> gradeList = new ArrayList<>(Arrays.asList("未就学","小１","小２","小３","小４","小５","小６","中１","中２","中３","高１","高２","高３"));
     //これは順番付きの配列
 
 
-    //個人成績まとめページ
+    //個人成績まとめページ。これにはcramSchool情報は不要である。
     @GetMapping("/student/all_score/{id}")
-    public String showAllScore(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                               @PathVariable("id")Integer studentId,
+    public String showAllScore(@PathVariable("id")Integer studentId,
                                Model model){
         log.info("showAllScoreは呼ばれています");
         Student student = studentRepository.getReferenceById(studentId);
-        CramSchool cramSchool = userDetails.getCramSchool();
+
 
         //定期テストの結果をdtoに変換
         List<RegularTestResult> regularTestResultsUnconverted = regularTestResultRepository.findAllByStudentId(studentId);
@@ -100,6 +106,7 @@ public class StudentController {
     //OK
     @Transactional
     @GetMapping("/studentRegister")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     public String studentRegister_g(@AuthenticationPrincipal UserDetailsImpl userDetails, Model model) {
         CramSchool cramSchool = userDetails.getCramSchool();
         if (!model.containsAttribute("studentForm")) {
@@ -116,6 +123,7 @@ public class StudentController {
     }
 
     //OK
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     @Transactional
     @PostMapping("/studentRegister")
     public String studentRegister_p(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -168,40 +176,111 @@ public class StudentController {
         }
     }
 
-    //OK
+    //todo:改修が必要。まず、はじめは何も表示しない。filterボタンが押された時点で、Pageを作るようにする。
+    @Transactional
     @GetMapping("/studentShow")
     public String studentShow_g(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                 @PageableDefault(page = 0, size = 20, sort = "code", direction = Sort.Direction.DESC) Pageable pageable,
                                 @RequestParam(required = false) String grade,
                                 @RequestParam(required = false) String name,
+                                @RequestParam(required = false) Integer cramSchoolId,
                                 Model model) {
         CramSchool cramSchool = userDetails.getCramSchool();
         Page<Student> studentPage;
+        List<CramSchool> cramSchools = prepareCramSchools(userDetails);
 
-        if (grade != null && !grade.isEmpty() && name != null && !name.isEmpty()) {
-            // 学年からel1を取得して、条件検索
-            Integer el1 = termAndYearService.getWhenEnteredElementarySchool(termAndYearService.convertGrade(grade));
-            studentPage = studentRepository.findByEl1AndNameContainingOrFuriganaContainingAndCramSchool(el1, name,name,cramSchool, pageable);
-        } else if (grade != null && !grade.isEmpty()) {
-            // 学年で条件検索
-            Integer el1 = termAndYearService.getWhenEnteredElementarySchool(termAndYearService.convertGrade(grade));
-            studentPage = studentRepository.findAllByEl1AndCramSchool(el1,cramSchool, pageable);
-        } else if (name != null && !name.trim().isEmpty()) {
-            // 名前で条件検索
-            studentPage = studentRepository.findByNameContainingOrFuriganaContainingAndCramSchool(name,name,cramSchool, pageable);
-        } else {
-            // それ以外は現在の生徒を取得
-            studentPage = studentService.findCurrentStudentsByCramSchool(cramSchool,pageable);
-            log.info("elseの最後が呼び出されています。{}",studentPage);
-        }
 
+//        if (grade != null && !grade.isEmpty() && name != null && !name.isEmpty()) {
+//            // 学年からel1を取得して、条件検索
+//            Integer el1 = termAndYearService.getWhenEnteredElementarySchool(termAndYearService.convertGrade(grade));
+//            studentPage = studentRepository.findByEl1AndNameContainingOrFuriganaContainingAndCramSchool(el1, name,name,cramSchool, pageable);
+//        } else if (grade != null && !grade.isEmpty()) {
+//            // 学年で条件検索
+//            Integer el1 = termAndYearService.getWhenEnteredElementarySchool(termAndYearService.convertGrade(grade));
+//            studentPage = studentRepository.findAllByEl1AndCramSchool(el1,cramSchool, pageable);
+//        } else if (name != null && !name.trim().isEmpty()) {
+//            // 名前で条件検索
+//            studentPage = studentRepository.findByNameContainingOrFuriganaContainingAndCramSchool(name,name,cramSchool, pageable);
+//        } else {
+//            // それ以外は現在の生徒を取得
+//            studentPage = studentService.findCurrentStudentsByCramSchool(cramSchool,pageable);
+//            log.info("elseの最後が呼び出されています。{}",studentPage);
+//        }
+
+        model.addAttribute("cramSchools" , cramSchools);
         model.addAttribute("studentShows", convertToStudentShowList(studentPage.getContent()));
         model.addAttribute("currentPage", studentPage.getNumber());
         model.addAttribute("totalPages", studentPage.getTotalPages());
         model.addAttribute("grades", termAndYearService.getAvailableGrades());
         model.addAttribute("grade",grade);
+        model.addAttribute("name",name);
+        model.addAttribute("cramSchoolId",cramSchoolId);
         
         return "student/student_show";
+    }
+
+
+
+    private List<CramSchool> prepareCramSchools (UserDetailsImpl userDetails){
+        List<CramSchool> cramSchools = new ArrayList<>();
+        if(UserService.isSuperAdmin(userDetails)){
+            cramSchools = cramSchoolService.getAllCramSchools();
+        }else{
+            cramSchools = userRepository.findAllByUser(userDetails.getUser());
+        }
+        return cramSchools;
+    }
+
+    /**
+     * 複雑な条件分岐をしてPage<Student>を作成します。
+     * SUPER_ADMINであり、かつcramSchoolIdが-1の場合は全教室の対応する学年、名前の生徒をとってくる。
+     * SUPER_ADMINではなく、かつcramSchoolIdが-1の場合はその教師に紐付けられた教室の対応する学年、名前の生徒をとってくる
+     * cramSchoolIdがNULLのときはNULLを返す
+     * @param userDetails
+     * @param grade
+     * @param name
+     * @param cramSchoolId
+     * @param pageable
+     * @return
+     */
+    private Page<Student> getPageOnCondition(UserDetailsImpl userDetails,
+                                             String grade,
+                                             String name,
+                                             Integer cramSchoolId,
+                                             Pageable pageable){
+        //初期アクセスのときはnullを返す
+        if(cramSchoolId == null){
+            return null;
+        }
+        Page<Student> studentPage;
+
+        Integer el1 = null;
+        String validName = null;
+
+        if(grade != null && !grade.isEmpty()){
+            el1 = termAndYearService.getWhenEnteredElementarySchool(termAndYearService.convertGrade(grade));
+        }
+
+        if(name != null && !name.trim().isEmpty()){
+            validName = name;
+        }
+
+
+        if(UserService.isSuperAdmin(userDetails) && cramSchoolId == ALL_SCHOOLS){
+            if(el1 == null && validName == null){
+                studentPage = studentService.findAllCurrentStudent(pageable);
+            }else if(el1 == null){
+                studentPage = studentService.findAllCurrentStudentsByName(validName,pageable);
+            }else if(validName == null){
+                studentPage = studentService.findAllStudentsByEl1(el1,pageable);
+            }else{
+                studentPage = studentService.findAllStudentsByEl1AndName(validName,el1,pageable);
+            }
+        }else if(UserService.isSuperAdmin(userDetails)){
+            //ここからですね。
+        }
+
+
     }
 
 
@@ -209,6 +288,7 @@ public class StudentController {
 
     //書き換え不要
     @GetMapping("/studentEdit/{id}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     public String editStudent(@AuthenticationPrincipal UserDetailsImpl userDetails,
                               @PathVariable(name = "id") Integer id,
                               Model model) {
@@ -232,6 +312,7 @@ public class StudentController {
     //ログイン時のユーザー情報から生徒と関連づけられる塾が決まる。
     @Transactional
     @PostMapping("/studentUploadCSV")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     public String uploadCsv(@AuthenticationPrincipal UserDetailsImpl userDetails,
                             @RequestParam("file") MultipartFile file, Model model,RedirectAttributes redirectAttributes) {
         if (file.isEmpty()) {
@@ -355,6 +436,7 @@ public class StudentController {
 
     //OK
     @PostMapping("/studentExecEdit/{id}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     public String DoEdit(@PathVariable(name="id")Integer id,
                          @Validated StudentForm studentForm,
                          BindingResult bindingResult,
@@ -408,7 +490,7 @@ public class StudentController {
     public StudentShow convertStudentToStudentShow(Student student,LocalDate now){
 
         String schoolGrade = gradeList.get(termAndYearService.getSchoolGrade(student));
-        String status = getStatusNowYouBelongTo(student).getName();//TODO:ここでエラーがでてる。一括CSV登録時にstatus_studentに登録してないでしょ。
+        String status = getStatusNowYouBelongTo(student).getName();
         String klassName = classStudentService.findIntegratedKlassName(student,now);
 
         return new StudentShow(student.getId(),student.getName(),student.getFurigana(),klassName,student.getCode(),schoolGrade,status,getSchoolNowYouBelongTo(student).getName());

@@ -60,11 +60,11 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     Page<Student> findByName(String name, Pageable pageable);
 
     @Query("SELECT s FROM Student s " +
-            "WHERE s.el1 <= :el1 " +
-            "AND s.el1 > :minValue")
+            "WHERE s.el1 <= :currentTerm " +
+            "AND s.el1 > :pastTerm")
     Page<Student> getStudentsInEl1Range(
-            @Param("el1") Integer el1,
-            @Param("minValue") Integer minValue,
+            @Param("currentTerm") Integer currentTerm,
+            @Param("pastTerm") Integer pastTerm,
             Pageable pageable);
 
     Page<Student> findByEl1AndNameContainingAndCramSchool(Integer el1, String name, CramSchool cramSchool, Pageable pageable);
@@ -155,4 +155,27 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     Page<Student> findByEl1AndNameContainingOrFuriganaContainingAndCramSchool(Integer el1, String name, String name1, CramSchool cramSchool, Pageable pageable);
 
     Page<Student> findByNameContainingOrFuriganaContainingAndCramSchool(String name, String name1, CramSchool cramSchool, Pageable pageable);
+
+    @Query("""
+            SELECT s FROM Student s
+            WHERE s.el1 BETWEEN :pastTerm AND :currentTerm
+            AND (s.name LIKE %:validName% OR s.furigana LIKE %:validName%) 
+            """)
+    Page<Student> getStudentsByNameAndEl1Range(@Param("validName")String validName,
+                                               @Param("pastTerm")Integer pastTerm,
+                                               @Param("currentTerm")Integer currentTerm, Pageable pageable);
+
+    @Query("""
+            SELECT s FROM Student s
+            WHERE s.el1 = :el1
+            """)
+    Page<Student> getStudentsByEl1(@Param("el1")Integer el1, Pageable pageable);
+
+    @Query("""
+            SELECT s FROM Student s
+            WHERE s.el1 = :el1
+            AND (s.name LIKE %:validName% OR s.furigana LIKE %:validName%)
+            """)
+    Page<Student> getAllStudentsByEl1AndName(@Param("validName")String validName,
+                                             @Param("el1")Integer el1, Pageable pageable);
 }

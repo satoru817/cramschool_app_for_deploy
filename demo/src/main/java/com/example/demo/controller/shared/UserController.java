@@ -57,7 +57,6 @@ public class UserController {
         try{
             userRepository.save(user);
             userService.tieUserToCramSchools(user,selectedCramSchoolIds);
-
             message="user registry success";
         } catch (RuntimeException e) {
             message="user registry failure";

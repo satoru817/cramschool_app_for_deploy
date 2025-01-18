@@ -10,6 +10,7 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.security.UserDetailsImpl;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ public class UserController {
 
     //todo:教師に複数の校舎を紐づけられるようにする
     //todo:教師の登録内容を編集出来るようにする。
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/register")
     public String registerUser(Model model){
         model.addAttribute("userRegisterDto",new UserRegisterDto());
@@ -44,6 +46,7 @@ public class UserController {
 
     @Transactional
     @PostMapping("/register")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public String registerUser_p(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                  @RequestParam List<Integer> selectedCramSchoolIds,
                                  @ModelAttribute UserRegisterDto userRegisterDto,
@@ -64,6 +67,7 @@ public class UserController {
     }
 
     @PostMapping("/delete")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public String deleteUser(@RequestParam("userId") String userId, RedirectAttributes redirectAttributes){
         String message;
         try{
@@ -81,6 +85,7 @@ public class UserController {
 
 
     @GetMapping("/show")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     public String showUsers(Model model){
         List<CramSchool> cramSchools = cramSchoolRepository.findAll();
         List<User> users = userRepository.findAll();
@@ -95,6 +100,7 @@ public class UserController {
 
 
     @PostMapping("/edit")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public String editUser(@RequestParam("userId")Integer userId,
                            @RequestParam("name")String name,
                            @RequestParam(name="password",required = false)String rowPass,

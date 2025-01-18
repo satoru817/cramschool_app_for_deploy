@@ -25,8 +25,9 @@ public class WebSecurityConfig {
         http
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/schools-by-username","/signUp**", "/userRegister", "/css/**", "/js/**", "/", "/passwordChange", "/storage/**","/images/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/**").hasRole("ADMIN") // すべてのPOSTリクエストにADMIN権限を必要とする
+                        .requestMatchers(HttpMethod.POST, "/**").hasAnyRole("ADMIN","SUPER_ADMIN") // すべてのPOSTリクエストにADMINあるいはSUPER_ADMIN権限を必要とする。GENERALアカウントはできない。GENERALアカウントはバイト用
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/register").hasRole("SUPER_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login

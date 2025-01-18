@@ -45,10 +45,10 @@
               <a class="dropdown-item" th:href="@{/studentRegister}"><i class="bi mr-2 bi-person-plus"></i> 生徒登録</a>
               <a class="dropdown-item" th:href="@{/studentShow}"><i class="bi mr-2 bi-people"></i> 生徒一覧</a>
               <a class="dropdown-item" th:href="@{/registerSchool}"><i class="bi mr-2 bi-building"></i> 学校登録</a>
-              <div sec:authorize="hasRole('ROLE_ADMIN')">
+              <div sec:authorize="hasAnyRole('SUPER_ADMIN','ADMIN')">
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" th:href="@{/user/show}"><i class="bi mr-2 bi-list-stars"></i> ユーザー一覧</a>
-                <a class="dropdown-item" th:href="@{/user/register}"
+                <a sec:authorize="hasRole('SUPER_ADMIN')"  class="dropdown-item" th:href="@{/user/register}"
                   ><i class="bi mr-2 bi-person-plus-fill"></i> 新規ユーザー作成</a
                 >
               </div>

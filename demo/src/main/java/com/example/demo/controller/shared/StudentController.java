@@ -189,9 +189,16 @@ public class StudentController {
         Page<Student> studentPage = getPageOnCondition(userDetails,grade,name,cramSchoolId,cramSchools,pageable);
 
         model.addAttribute("cramSchools" , cramSchools);
-        model.addAttribute("studentShows", convertToStudentShowList(studentPage.getContent()));
-        model.addAttribute("currentPage", studentPage.getNumber());
-        model.addAttribute("totalPages", studentPage.getTotalPages());
+
+        if(studentPage != null){
+            model.addAttribute("currentPage", studentPage.getNumber());
+            model.addAttribute("totalPages", studentPage.getTotalPages());
+            model.addAttribute("studentShows", convertToStudentShowList(studentPage.getContent()));
+
+        }else{
+            model.addAttribute("currentPage",0);
+            model.addAttribute("totalPages",0);
+        }
         model.addAttribute("grades", termAndYearService.getAvailableGrades());
         model.addAttribute("grade",grade);
         model.addAttribute("name",name);

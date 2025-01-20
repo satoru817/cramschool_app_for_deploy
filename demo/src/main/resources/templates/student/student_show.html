@@ -90,7 +90,7 @@
               <span th:if="${currentPage == 0}" class="page-link disabled">前</span>
               <a
                 th:unless="${currentPage == 0}"
-                th:href="@{/studentShow(page=${currentPage - 1}, grade=${grade})}"
+                th:href="@{/studentShow(page=${currentPage - 1}, grade=${grade},cramSchoolId=${cramSchoolId})}"
                 class="page-link"
                 >前</a
               >
@@ -99,7 +99,7 @@
               <span th:if="${i == currentPage}" class="page-link active" th:text="${i + 1}"></span>
               <a
                 th:unless="${i == currentPage}"
-                th:href="@{/studentShow(page=${i}, grade=${grade})}"
+                th:href="@{/studentShow(page=${i}, grade=${grade},cramSchoolId=${cramSchoolId})}"
                 class="page-link"
                 th:text="${i + 1}"
               ></a>
@@ -108,7 +108,7 @@
               <span th:if="${currentPage == totalPages - 1}" class="page-link disabled">次</span>
               <a
                 th:unless="${currentPage == totalPages - 1}"
-                th:href="@{/studentShow(page=${currentPage + 1}, grade=${grade})}"
+                th:href="@{/studentShow(page=${currentPage + 1}, grade=${grade}, cramSchoolId=${cramSchoolId})}"
                 class="page-link"
                 >次</a
               >

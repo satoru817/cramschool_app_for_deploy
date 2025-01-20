@@ -213,7 +213,7 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     @Query("""
             SELECT s FROM Student s
-            WHERE e.el1 = :el1
+            WHERE s.el1 = :el1
             AND s.cramSchool IN :cramSchools
             AND (s.name LIKE %:validName% OR s.furigana LIKE %:validName%)
             """)

@@ -178,4 +178,85 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
             """)
     Page<Student> getAllStudentsByEl1AndName(@Param("validName")String validName,
                                              @Param("el1")Integer el1, Pageable pageable);
+
+
+    @Query("""
+            SELECT s FROM Student s
+            WHERE s.el1 BETWEEN :pastTerm AND :currentTerm
+            AND s.cramSchool IN :cramSchools
+            """)
+    Page<Student> getAllCurrentStudentInCramSchools(
+            @Param("cramSchools")List<CramSchool> cramSchools,
+            @Param("pastTerm")Integer pastTerm,
+            @Param("currentTerm")Integer currentTerm, Pageable pageable);
+
+    @Query("""
+            SELECT s FROM Student s
+            WHERE s.el1 BETWEEN :pastTerm AND :currentTerm
+            AND s.cramSchool IN :cramSchools
+            AND (s.name LIKE %:validName% OR s.furigana LIKE %:validName%)
+            """)
+    Page<Student> getAllCurrentStudentsByNameInCramSchools(@Param("cramSchools")List<CramSchool> cramSchools,
+                                                           @Param("pastTerm")Integer pastTerm,
+                                                           @Param("currentTerm")Integer currentTerm,
+                                                           @Param("validName")String validName,
+                                                           Pageable pageable);
+
+    @Query("""
+            SELECT s FROM Student s
+            WHERE s.el1 = :el1
+            AND s.cramSchool IN :cramSchools
+            """)
+    Page<Student> getAllStudentByEL1InCramSchools(@Param("el1")Integer el1,
+                                                  @Param("cramSchools")List<CramSchool> cramSchools,
+                                                  Pageable pageable);
+
+    @Query("""
+            SELECT s FROM Student s
+            WHERE e.el1 = :el1
+            AND s.cramSchool IN :cramSchools
+            AND (s.name LIKE %:validName% OR s.furigana LIKE %:validName%)
+            """)
+    Page<Student> getAllStudentByEl1AndNameInCramSchools(@Param("validName")String validName,
+                                                         @Param("el1")Integer el1,
+                                                         @Param("cramSchools")List<CramSchool> cramSchools,
+                                                         Pageable pageable);
+
+    @Query("""
+            SELECT s FROM Student s
+            WHERE s.el1 BETWEEN :pastTerm AND :currentTerm
+            AND s.cramSchool = :cramSchool
+            """)
+    Page<Student> getAllCurrentStudentInACramSchool(@Param("pastTerm")Integer pastTerm,
+                                                    @Param("currentTerm")Integer currentTerm,
+                                                    @Param("cramSchool")CramSchool cramSchool, Pageable pageable);
+
+    @Query("""
+            SELECT s FROM Student s
+            WHERE s.el1 BETWEEN :pastTerm AND :currentTerm
+            AND s.cramSchool = :cramSchool
+            AND (s.name LIKE %:validName% OR s.furigana LIKE %:validName%)
+            """)
+    Page<Student> getAllCurrentStudentsByNameInACramSchool(@Param("pastTerm")Integer pastTerm,
+                                                           @Param("currentTerm")Integer currentTerm,
+                                                           @Param("cramSchool")CramSchool cramSchool,
+                                                           @Param("validName")String validName, Pageable pageable);
+
+    @Query("""
+            SELECT s FROM Student s
+            WHERE s.cramSchool = :cramSchool
+            AND s.el1 = :el1
+            """)
+    Page<Student> getAllStudentsByEl1InACramSchool(@Param("cramSchool")CramSchool cramSchool,
+                                                   @Param("el1")Integer el1, Pageable pageable);
+
+    @Query("""
+            SELECT s FROM Student s
+            WHERE s.cramSchool = :cramSchool
+            AND s.el1 = :el1
+            AND (s.name LIKE %:validName% OR s.furigana LIKE %:validName%)
+            """)
+    Page<Student> getAllStudentsByEl1AndNameInACramSchool(@Param("cramSchool")CramSchool cramSchool,
+                                                          @Param("validName")String validName,
+                                                          @Param("el1")Integer el1, Pageable pageable);
 }

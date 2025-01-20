@@ -90,4 +90,44 @@ public class StudentService {
     public Page<Student> findAllStudentsByEl1AndName(String validName, Integer el1, Pageable pageable) {
         return studentRepository.getAllStudentsByEl1AndName(validName,el1,pageable);
     }
+
+    public Page<Student> findAllCurrentStudentInCramSchools(List<CramSchool> cramSchools, Pageable pageable) {
+        Integer currentTerm = termAndYearService.getTerm();
+        Integer pastTerm = currentTerm -12;
+        return studentRepository.getAllCurrentStudentInCramSchools(cramSchools,pastTerm,currentTerm,pageable);
+    }
+
+    public Page<Student> findAllCurrentStudentsByNameInCramSchools(String validName, List<CramSchool> cramSchools, Pageable pageable) {
+        Integer currentTerm = termAndYearService.getTerm();
+        Integer pastTerm = currentTerm -12;
+        return studentRepository.getAllCurrentStudentsByNameInCramSchools(cramSchools,pastTerm,currentTerm,validName,pageable);
+    }
+
+    public Page<Student> findAllStudentsByEl1InCramSchools(Integer el1, List<CramSchool> cramSchools, Pageable pageable) {
+        return studentRepository.getAllStudentByEL1InCramSchools(el1,cramSchools,pageable);
+    }
+
+    public Page<Student> findAllStudentsByEl1AndNameInCramSchools(String validName, Integer el1, List<CramSchool> cramSchools, Pageable pageable) {
+        return studentRepository.getAllStudentByEl1AndNameInCramSchools(validName,el1,cramSchools,pageable);
+    }
+
+    public Page<Student> findAllCurrentStudentInACramSchool(CramSchool cramSchool, Pageable pageable) {
+        Integer currentTerm = termAndYearService.getTerm();
+        Integer pastTerm = currentTerm -12;
+        return studentRepository.getAllCurrentStudentInACramSchool(pastTerm,currentTerm,cramSchool,pageable);
+    }
+
+    public Page<Student> findAllCurrentStudentsByNameInACramSchool(CramSchool cramSchool, String validName, Pageable pageable) {
+        Integer currentTerm = termAndYearService.getTerm();
+        Integer pastTerm = currentTerm -12;
+        return studentRepository.getAllCurrentStudentsByNameInACramSchool(pastTerm,currentTerm,cramSchool,validName,pageable);
+    }
+
+    public Page<Student> findAllStudentsByEl1InACramSchool(CramSchool cramSchool, Integer el1, Pageable pageable) {
+        return studentRepository.getAllStudentsByEl1InACramSchool(cramSchool,el1,pageable);
+    }
+
+    public Page<Student> findAllStudentsByEl1AndNameInACramSchool(CramSchool cramSchool, String validName, Integer el1, Pageable pageable) {
+        return studentRepository.getAllStudentsByEl1AndNameInACramSchool(cramSchool,validName,el1,pageable);
+    }
 }

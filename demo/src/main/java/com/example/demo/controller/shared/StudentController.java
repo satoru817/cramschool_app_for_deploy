@@ -29,10 +29,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -186,26 +184,9 @@ public class StudentController {
                                 @RequestParam(required = false) Integer cramSchoolId,
                                 Model model) {
         CramSchool cramSchool = userDetails.getCramSchool();
-        Page<Student> studentPage;
         List<CramSchool> cramSchools = prepareCramSchools(userDetails);
 
-
-//        if (grade != null && !grade.isEmpty() && name != null && !name.isEmpty()) {
-//            // 学年からel1を取得して、条件検索
-//            Integer el1 = termAndYearService.getWhenEnteredElementarySchool(termAndYearService.convertGrade(grade));
-//            studentPage = studentRepository.findByEl1AndNameContainingOrFuriganaContainingAndCramSchool(el1, name,name,cramSchool, pageable);
-//        } else if (grade != null && !grade.isEmpty()) {
-//            // 学年で条件検索
-//            Integer el1 = termAndYearService.getWhenEnteredElementarySchool(termAndYearService.convertGrade(grade));
-//            studentPage = studentRepository.findAllByEl1AndCramSchool(el1,cramSchool, pageable);
-//        } else if (name != null && !name.trim().isEmpty()) {
-//            // 名前で条件検索
-//            studentPage = studentRepository.findByNameContainingOrFuriganaContainingAndCramSchool(name,name,cramSchool, pageable);
-//        } else {
-//            // それ以外は現在の生徒を取得
-//            studentPage = studentService.findCurrentStudentsByCramSchool(cramSchool,pageable);
-//            log.info("elseの最後が呼び出されています。{}",studentPage);
-//        }
+        Page<Student> studentPage = getPageOnCondition(userDetails,grade,name,cramSchoolId,cramSchools,pageable);
 
         model.addAttribute("cramSchools" , cramSchools);
         model.addAttribute("studentShows", convertToStudentShowList(studentPage.getContent()));
@@ -247,12 +228,12 @@ public class StudentController {
                                              String grade,
                                              String name,
                                              Integer cramSchoolId,
+                                             List<CramSchool> cramSchools,
                                              Pageable pageable){
-        //初期アクセスのときはnullを返す
+        //初期アクセスの場合nullを返す
         if(cramSchoolId == null){
             return null;
         }
-        Page<Student> studentPage;
 
         Integer el1 = null;
         String validName = null;
@@ -265,21 +246,41 @@ public class StudentController {
             validName = name;
         }
 
+        //「全校舎選択」の場合
 
         if(UserService.isSuperAdmin(userDetails) && cramSchoolId == ALL_SCHOOLS){
             if(el1 == null && validName == null){
-                studentPage = studentService.findAllCurrentStudent(pageable);
+                return  studentService.findAllCurrentStudent(pageable);
             }else if(el1 == null){
-                studentPage = studentService.findAllCurrentStudentsByName(validName,pageable);
+                return studentService.findAllCurrentStudentsByName(validName,pageable);
             }else if(validName == null){
-                studentPage = studentService.findAllStudentsByEl1(el1,pageable);
+                return  studentService.findAllStudentsByEl1(el1,pageable);
             }else{
-                studentPage = studentService.findAllStudentsByEl1AndName(validName,el1,pageable);
+                return  studentService.findAllStudentsByEl1AndName(validName,el1,pageable);
             }
-        }else if(UserService.isSuperAdmin(userDetails)){
-            //ここからですね。
+        }else if(!UserService.isSuperAdmin(userDetails) && cramSchoolId == ALL_SCHOOLS){
+            if(el1 == null && validName == null){
+                return studentService.findAllCurrentStudentInCramSchools(cramSchools,pageable);
+            }else if(el1 == null){
+                return studentService.findAllCurrentStudentsByNameInCramSchools(validName,cramSchools,pageable);
+            }else if(validName == null){
+                return studentService.findAllStudentsByEl1InCramSchools(el1,cramSchools,pageable);
+            }else{
+                return studentService.findAllStudentsByEl1AndNameInCramSchools(validName,el1,cramSchools,pageable);
+            }
         }
 
+        //校舎が決定されている場合はそれも考慮してpageを作成する
+        CramSchool cramSchool = cramSchoolService.getById(cramSchoolId);
+        if(el1 == null && validName == null){
+            return  studentService.findAllCurrentStudentInACramSchool(cramSchool,pageable);
+        }else if(el1 == null){
+            return studentService.findAllCurrentStudentsByNameInACramSchool(cramSchool,validName,pageable);
+        }else if(validName == null){
+            return  studentService.findAllStudentsByEl1InACramSchool(cramSchool,el1,pageable);
+        }else{
+            return  studentService.findAllStudentsByEl1AndNameInACramSchool(cramSchool,validName,el1,pageable);
+        }
 
     }
 

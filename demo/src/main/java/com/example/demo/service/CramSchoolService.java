@@ -14,4 +14,9 @@ public class CramSchoolService {
     public List<CramSchool> getAllCramSchools(){
         return cramSchoolRepository.findAll();
     }
+
+    public CramSchool getById(Integer cramSchoolId) {
+        return cramSchoolRepository.findById(cramSchoolId)
+                .orElseThrow(()->new RuntimeException("該当の校舎は見つかりません"));
+    }
 }
